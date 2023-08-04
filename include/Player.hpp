@@ -37,7 +37,7 @@ class Player {
 
         void updateInput();
 
-        void Player::update(sf::RenderTarget* target);
+        void update(sf::RenderTarget* target);
 
         void render(sf::RenderTarget* target);
 

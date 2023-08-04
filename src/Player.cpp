@@ -8,7 +8,7 @@
     @return void
 */  
 void Player::initVariables() {
-    this->movementSpeed = 10.f;
+    this->movementSpeed = 7.f;
 }
 
 /*  Initializes the window.
@@ -56,7 +56,6 @@ void Player::update(sf::RenderTarget* target) {
 
     // Window bounds collision
     // TODO
-    target->getSize();
 
     // Keybord Input
     this->updateInput();
