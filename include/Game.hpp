@@ -1,10 +1,6 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/Audio.hpp>
-#include <SFML/Network.hpp>
+#include "Player.hpp"
 
 class Game {    
     private:
@@ -14,6 +10,8 @@ class Game {
         sf::RenderWindow* window;
         sf::Event evnt;
         sf::VideoMode vMode;
+
+        Player player;
 
         /*  Sets window as nullptr before getting initialized. More a style thing.
             @return void
@@ -41,6 +39,11 @@ class Game {
             @return bool
         */
         const bool running() const;
+
+        /*  It's the getter for the Videomode.
+            @return sf::VideoMode
+        */
+        sf::VideoMode getVMode();
 
         /*  Like a event manager. It's active while running == true and checks every frame, if one of these Events happend.
             If so do action.

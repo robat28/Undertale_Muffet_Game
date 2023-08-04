@@ -19,7 +19,10 @@ void Game::initWindow() {
     this->vMode.width = 800;
 
     this->window = new sf::RenderWindow(this->vMode, "robat game", sf::Style::Titlebar | sf::Style::Close);
+
+    this->window->setFramerateLimit(60);
 } 
+
 
 /*
     public Functions
@@ -72,7 +75,10 @@ void Game::pollEvents() {
     @return void
 */
 void Game::update() {
+
     this->pollEvents();
+
+    this->player.update(this->window);
 }
 
 /*  Displays the window after all events got handled. display() needs to be the last function in render(), because you 
@@ -80,7 +86,10 @@ void Game::update() {
     @return void
 */
 void Game::render() {
-    this->window->clear(sf::Color::Blue);
+    this->window->clear();
+
+    // Render stuff
+    this->player.render(this->window);
 
     this->window->display();
 }
