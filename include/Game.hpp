@@ -11,7 +11,7 @@ class Game {
         sf::Event evnt;
         sf::VideoMode vMode;
 
-        Player player;
+        Player* player;
 
         /*  Sets window as nullptr before getting initialized. More a style thing.
             @return void
@@ -22,6 +22,8 @@ class Game {
             @return void
         */
         void initWindow();
+
+        void initPlayer();
 
     public:
 

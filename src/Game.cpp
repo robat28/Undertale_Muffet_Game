@@ -23,7 +23,6 @@ void Game::initWindow() {
     this->window->setFramerateLimit(60);
 } 
 
-
 /*
     public Functions
 */
@@ -32,14 +31,18 @@ void Game::initWindow() {
     After creating a Game instance, all variables and the window are getting intitialized. 
 */
 Game::Game() {
+    this->player = new Player();
+
     this->initVariables();
     this->initWindow();
 }
+
 /*  Destructor
     Destroys the Object after usage. 
 */
 Game::~Game() {
     delete this->window;
+    delete this->player;
 }
 
 /*  Returns true, if the window is still open and returns false, if the window got closed.
@@ -78,7 +81,16 @@ void Game::update() {
 
     this->pollEvents();
 
-    this->player.update(this->window);
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+        this->player->move(-1.f, 0.f);
+    } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+        this->player->move(1.f, 0.f);
+    }
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+        this->player->move(0.f, -1.f);
+    } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+        this->player->move(0.f, 1.f);
+    }
 }
 
 /*  Displays the window after all events got handled. display() needs to be the last function in render(), because you 
@@ -89,7 +101,7 @@ void Game::render() {
     this->window->clear();
 
     // Render stuff
-    this->player.render(this->window);
+    this->player->render(*this->window);
 
     this->window->display();
 }

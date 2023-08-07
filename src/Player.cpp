@@ -4,30 +4,34 @@
     private Functions
 */
 
-/*  
-    @return void
-*/  
-void Player::initVariables() {
-    this->movementSpeed = 8.f;
-}
 
-/*  Initializes the window.
+/*  Load a texture from file.
     @return void
 */
-void Player::initPlayer() {
-    this->shape.setFillColor(sf::Color::Green);
-    this->shape.setSize(sf::Vector2f(30.f,30.f));
+void Player::initTexture() {
+    if(!this->texture.loadFromFile("textures/heart_icon.png")) {
+        std::cout << "TEXTURE LOADING ERROR :: PLAYER: textures/heart_icon.png";
+    }
+}
+
+/*  Set the texture to the sprite.
+    @return void
+*/
+void Player::initSprite() {
+    this->sprite.setTexture(this->texture);
+
+    // Resize the sprite
+    this->sprite.scale(0.04f,0.04f);
 }
 
 /*  Constructor
 
 */
-Player::Player(float x, float y) {
-    this->shape.setPosition(x,y);
+Player::Player() {
 
-    this->initVariables();
-    this->initPlayer();
-
+    this->movementSpeed = 7.f;
+    this->initTexture();
+    this->initSprite();
 }
 
 /*  Destructor
@@ -36,53 +40,15 @@ Player::Player(float x, float y) {
 Player::~Player() {
 }
 
-void Player::updateInput() {
-
-    // Keybord Input
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-        this->shape.move(-this->movementSpeed, 0.f);
-    } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-        this->shape.move(this->movementSpeed, 0.f);
-    }
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-        this->shape.move(0.f, -this->movementSpeed);
-    } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-        this->shape.move(0.f, this->movementSpeed);
-    }
-
-}
-
-void Player::updateWindowBoundsCollision(const sf::RenderTarget* target) {
-
-    // Left
-    if(this->shape.getGlobalBounds().left <= 0.f) {
-        this->shape.setPosition(0.f, this->shape.getGlobalBounds().top);
-    }
-    // Right    
-    if(this->shape.getGlobalBounds().left + this->shape.getGlobalBounds().width >= target->getSize().x) {
-        this->shape.setPosition(target->getSize().x - this->shape.getGlobalBounds().width, this->shape.getGlobalBounds().top);
-    }
-    // Top
-    if(this->shape.getGlobalBounds().top <= 0.f) {
-        this->shape.setPosition(this->shape.getGlobalBounds().left ,0.f);  
-    }
-    // Bottom  
-    if(this->shape.getGlobalBounds().top + this->shape.getGlobalBounds().height >= target->getSize().y) {
-        this->shape.setPosition(this->shape.getGlobalBounds().left, target->getSize().y - this->shape.getGlobalBounds().height);
-    }
+void Player::move(const float x, const float y) {
+    this->sprite.move(this->movementSpeed * x, this->movementSpeed * y);
 }
 
 void Player::update(const sf::RenderTarget* target) {
 
-     // Keybord Input
-    this->updateInput();
-
-    // Window bounds collision
-    this->updateWindowBoundsCollision(target);
-
 }
 
-void Player::render(sf::RenderTarget* target) {
-    target->draw(this->shape);
+void Player::render(sf::RenderTarget& target) {
+    target.draw(this->sprite);
 }
 

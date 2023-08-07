@@ -5,42 +5,35 @@
 #include <SFML/Window.hpp>
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
+#include <iostream>
 
 class Player {
     private:
 
-        sf::RectangleShape shape;
+        sf::Sprite sprite;
+        sf::Texture texture;
 
         float movementSpeed;
 
-        /*  
-            @return void
-        */  
-        void initVariables();
-
-        /*  Initializes the Player model.
-            @return void
-        */
-        void initPlayer();
+        void initTexture();
+        void initSprite();
 
     public:
 
         /*  Constructor
 
         */
-        Player(float x = 10.f, float y = 10.f);
+        Player();
 
         /*  Destructor
             Destroys the Object after usage. 
         */
         ~Player();
 
-        void updateInput();
-
-        void updateWindowBoundsCollision(const sf::RenderTarget* target);
+        void move(const float x, const float y);
 
         void update(const sf::RenderTarget* target);
 
-        void render(sf::RenderTarget* target);
+        void render(sf::RenderTarget& target);
 
 };
