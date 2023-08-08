@@ -73,14 +73,8 @@ void Game::pollEvents() {
     }
 }
 
-/*  Executes the pollEvents function. Basically it the "update" of the game, by checking at the beginnig of the
-    frame, if a Event happend and if so, handle it.
-    @return void
-*/
-void Game::update() {
-
-    this->pollEvents();
-
+void Game::updateInput() {
+    
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
         this->player->move(-1.f, 0.f);
     } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
@@ -91,6 +85,41 @@ void Game::update() {
     } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
         this->player->move(0.f, 1.f);
     }
+
+    // Player Window Collison
+    this->updateCollison();
+
+}
+
+void Game::updateCollison() {
+    //Left
+    if(this->player->getBounds().left < 0.f) {
+        this->player->setPosition(0.f, this->player->getBounds().top);
+    }
+    //Right
+    else if(this->player->getBounds().left + this->player->getBounds().width > this->window->getSize().x) {
+        this->player->setPosition(this->window->getSize().x - this->player->getBounds().width, this->player->getBounds().top);
+    }
+    //Top
+    if(this->player->getBounds().top < 0.f) {
+        this->player->setPosition(this->player->getBounds().left, 0.f);
+    }
+    //Bottom
+    else if(this->player->getBounds().top + this->player->getBounds().height > this->window->getSize().y) {
+        this->player->setPosition(this->player->getBounds().left, this->window->getSize().y - this->player->getBounds().height);
+    }
+
+
+}
+
+/*  Executes the pollEvents function. Basically it the "update" of the game, by checking at the beginnig of the
+    frame, if a Event happend and if so, handle it.
+    @return void
+*/
+void Game::update() {
+
+    this->pollEvents();
+    this->updateInput();
 }
 
 /*  Displays the window after all events got handled. display() needs to be the last function in render(), because you 

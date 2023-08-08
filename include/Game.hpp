@@ -53,11 +53,15 @@ class Game {
         */
         void pollEvents();
 
+        void updateInput();
+
         /*  Executes the pollEvents function. Basically it the "update" of the game, by checking at the beginnig of the
             frame, if a Event happend and if so, handle it.
             @return void
         */
         void update();
+
+        void updateCollison();
 
         /*  Displays the window after all events got handled. display() needs to be the last function in render(), because you 
             have to make sure that all Elements of your Game are set in your window before displaying it.

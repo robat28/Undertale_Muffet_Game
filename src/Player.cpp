@@ -4,12 +4,11 @@
     private Functions
 */
 
-
 /*  Load a texture from file.
     @return void
 */
 void Player::initTexture() {
-    if(!this->texture.loadFromFile("textures/heart_icon.png")) {
+    if(!this->texture.loadFromFile("../../GitHub/Undertale_Muffet_Game/textures/player_icon.png")) {
         std::cout << "TEXTURE LOADING ERROR :: PLAYER: textures/heart_icon.png";
     }
 }
@@ -21,7 +20,7 @@ void Player::initSprite() {
     this->sprite.setTexture(this->texture);
 
     // Resize the sprite
-    this->sprite.scale(0.04f,0.04f);
+    this->sprite.scale(0.02f,0.02f);
 }
 
 /*  Constructor
@@ -29,7 +28,7 @@ void Player::initSprite() {
 */
 Player::Player() {
 
-    this->movementSpeed = 7.f;
+    this->movementSpeed = 5.f;
     this->initTexture();
     this->initSprite();
 }
@@ -39,6 +38,16 @@ Player::Player() {
 */
 Player::~Player() {
 }
+
+
+const sf::FloatRect Player::getBounds() const {
+    return this->sprite.getGlobalBounds();
+}
+
+void Player::setPosition(const float x, const float y) {
+    this->sprite.setPosition(x,y);
+}
+
 
 void Player::move(const float x, const float y) {
     this->sprite.move(this->movementSpeed * x, this->movementSpeed * y);

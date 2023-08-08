@@ -30,6 +30,10 @@ class Player {
         */
         ~Player();
 
+        const sf::FloatRect getBounds() const;
+
+        void setPosition(const float x, const float y);
+
         void move(const float x, const float y);
 
         void update(const sf::RenderTarget* target);
