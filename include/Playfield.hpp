@@ -11,20 +11,27 @@ class Playfield {
     private:
 
         sf::RectangleShape playfield;
-
-        float xCenter;
-        float yCenter;
+        
 
         void initVariables();
 
     public:
 
         Playfield();
+
         ~Playfield();
 
         const sf::FloatRect getBounds() const;
+
+        const float getHeight() const;
+
+        const float getWidth() const;
+
+
         void setPosition(const float x, const float y);
 
+
         void update();
+
         void render(sf::RenderTarget* target);
 };

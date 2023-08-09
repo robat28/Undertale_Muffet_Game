@@ -9,8 +9,9 @@
 */  
 void Game::initVariables() {
     this->window = nullptr;
-    this->playfieldPosX = 0;
-    this->playfieldPosY = 0;
+    this->playfieldPosX = 0.f;
+    this->playfieldPosY = 0.f;
+
 }
 
 /*  Initializes the window.
@@ -21,16 +22,20 @@ void Game::initWindow() {
     this->vMode.height = 600;
     this->window = new sf::RenderWindow(this->vMode, "robat game", sf::Style::Titlebar | sf::Style::Close);
     this->window->setFramerateLimit(60);
+
+    this->playfieldCenterX = this->window->getSize().x / 2.f;
+    this->playfieldCenterY = this->window->getSize().y / 1.5f;
 } 
 
 void Game::initPlayfield() {
-    this->playfieldPosX = (this->window->getSize().x / 2.f) - (this->playfield.getBounds().width / 2.f) - 5;
-    this->playfieldPosY = ((this->window->getSize().y) / 1.5f) - (this->playfield.getBounds().height / 2.f) + 5;
+    this->playfieldPosX = playfieldCenterX - (this->playfield.getWidth() / 2.f - 5.f);
+    this->playfieldPosY = playfieldCenterY - (this->playfield.getHeight() / 2.f - 5.f);
     this->playfield.setPosition(playfieldPosX, playfieldPosY);
 }
 
 void Game::initPlayer() {
-    this->player->setPosition(playfieldPosX, playfieldPosY);
+    this->player->setPosition(this->window->getSize().x / 2.f - this->player->getWidth() / 2.f, 
+                              this->playfield.getBounds().top + this->playfield.getHeight() / 2 - this->player->getHeight() / 2.f);
 }
 
 /*
@@ -82,7 +87,7 @@ void Game::pollEvents() {
                     this->window->close();
                 }
                 break;    
-            default: std::cout << "EVENT NOT DEFINED!";
+            default:
                 break;
         }
     }
@@ -102,11 +107,11 @@ void Game::updateInput() {
     }
 
     // Player Window Collison
-    this->updateCollison();
+    this->updateCollisonPlayfiled();
 
 }
 
-void Game::updateCollison() {
+void Game::updateCollisonWindow() {
     //Left
     if(this->player->getBounds().left < 0.f) {
         this->player->setPosition(0.f, this->player->getBounds().top);
@@ -123,9 +128,29 @@ void Game::updateCollison() {
     else if(this->player->getBounds().top + this->player->getBounds().height > this->window->getSize().y) {
         this->player->setPosition(this->player->getBounds().left, this->window->getSize().y - this->player->getBounds().height);
     }
-
-
 }
+
+void Game::updateCollisonPlayfiled() {
+    //Left
+    if(this->player->getBounds().left < this->playfield.getBounds().left + 5) {
+        this->player->setPosition(this->playfield.getBounds().left + 5, this->player->getBounds().top);
+    }
+    //Right
+    else if(this->player->getBounds().left + this->player->getBounds().width > this->playfield.getBounds().left + this->playfield.getBounds().width - 5) {
+        this->player->setPosition(this->playfield.getBounds().left + this->playfield.getBounds().width - this->player->getBounds().width - 5, this->player->getBounds().top );
+    }
+    //Top
+    if(this->player->getBounds().top < this->playfield.getBounds().top + 5) {
+        this->player->setPosition(this->player->getBounds().left, this->playfield.getBounds().top + 5);
+    }
+    //Bottom
+    else if(this->player->getBounds().top + this->player->getBounds().height > this->playfield.getBounds().top + this->playfield.getBounds().height - 5) {
+        this->player->setPosition(this->player->getBounds().left, this->playfield.getBounds().top + this->playfield.getBounds().height - this->player->getBounds().height - 5);
+    }
+}
+
+
+
 
 /*  Executes the pollEvents function. Basically it the "update" of the game, by checking at the beginnig of the
     frame, if a Event happend and if so, handle it.

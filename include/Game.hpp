@@ -8,15 +8,24 @@ class Game {
         /*
             private Variables
         */
+
+        // Window Variables 
         sf::RenderWindow* window;
         sf::Event evnt;
         sf::VideoMode vMode;
 
+        float playfieldCenterX;
+        float playfieldCenterY;
+
         Player* player;
 
+        // Playfield Variables 
         Playfield playfield;
+
         float playfieldPosX;
         float playfieldPosY;
+
+
 
 
         /*  Sets window as nullptr before getting initialized. More a style thing.
@@ -69,7 +78,9 @@ class Game {
         */
         void update();
 
-        void updateCollison();
+        void updateCollisonWindow();
+
+        void updateCollisonPlayfiled();
 
         /*  Displays the window after all events got handled. display() needs to be the last function in render(), because you 
             have to make sure that all Elements of your Game are set in your window before displaying it.

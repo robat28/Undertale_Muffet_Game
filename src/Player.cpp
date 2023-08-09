@@ -1,9 +1,5 @@
 #include "Player.hpp"
 
-/*
-    private Functions
-*/
-
 /*  Load a texture from file.
     @return void
 */
@@ -28,7 +24,7 @@ void Player::initSprite() {
 */
 Player::Player() {
 
-    this->movementSpeed = 5.f;
+    this->movementSpeed = 4.f;
     this->initTexture();
     this->initSprite();
 }
@@ -42,6 +38,14 @@ Player::~Player() {
 
 const sf::FloatRect Player::getBounds() const {
     return this->sprite.getGlobalBounds();
+}
+
+const float Player::getHeight() const {
+    return this->getBounds().height;
+}
+
+const float Player::getWidth() const {
+    return this->getBounds().width;
 }
 
 

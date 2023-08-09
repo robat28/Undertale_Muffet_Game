@@ -1,4 +1,3 @@
-#include <iostream>
 #include "Game.hpp"
 
 int main() {
@@ -10,7 +9,6 @@ int main() {
 
         // Update 
         game.update();
-
         // Render
         game.render();
         
