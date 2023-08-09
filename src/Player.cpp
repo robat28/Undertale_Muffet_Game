@@ -4,7 +4,7 @@
     @return void
 */
 void Player::initTexture() {
-    if(!this->texture.loadFromFile("../../GitHub/Undertale_Muffet_Game/textures/player_icon.png")) {
+    if(!this->texture.loadFromFile("/Users/roberttarabrin/Documents/GitHub/Undertale_Muffet_Game/textures/player_icon.png")) {
         std::cout << "TEXTURE LOADING ERROR :: PLAYER: textures/heart_icon.png";
     }
 }
