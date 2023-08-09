@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Player.hpp"
+#include "Playfield.hpp"
 
 class Game {    
     private:
@@ -13,6 +14,11 @@ class Game {
 
         Player* player;
 
+        Playfield playfield;
+        float playfieldPosX;
+        float playfieldPosY;
+
+
         /*  Sets window as nullptr before getting initialized. More a style thing.
             @return void
         */  
@@ -22,6 +28,8 @@ class Game {
             @return void
         */
         void initWindow();
+
+        void initPlayfield();
 
         void initPlayer();
 

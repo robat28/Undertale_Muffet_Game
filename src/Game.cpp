@@ -9,19 +9,29 @@
 */  
 void Game::initVariables() {
     this->window = nullptr;
+    this->playfieldPosX = 0;
+    this->playfieldPosY = 0;
 }
 
 /*  Initializes the window.
     @return void
 */
 void Game::initWindow() {
-    this->vMode.height = 600;
     this->vMode.width = 800;
-
+    this->vMode.height = 600;
     this->window = new sf::RenderWindow(this->vMode, "robat game", sf::Style::Titlebar | sf::Style::Close);
-
     this->window->setFramerateLimit(60);
 } 
+
+void Game::initPlayfield() {
+    this->playfieldPosX = (this->window->getSize().x / 2.f) - (this->playfield.getBounds().width / 2.f) - 5;
+    this->playfieldPosY = ((this->window->getSize().y) / 1.5f) - (this->playfield.getBounds().height / 2.f) + 5;
+    this->playfield.setPosition(playfieldPosX, playfieldPosY);
+}
+
+void Game::initPlayer() {
+    this->player->setPosition(playfieldPosX, playfieldPosY);
+}
 
 /*
     public Functions
@@ -35,6 +45,8 @@ Game::Game() {
 
     this->initVariables();
     this->initWindow();
+    this->initPlayfield();
+    this->initPlayer();
 }
 
 /*  Destructor
@@ -51,6 +63,7 @@ Game::~Game() {
 const bool Game::running() const {
     return this->window->isOpen();
 }
+
 
 /*  Like a event manager. It's active while running == true and checks every frame, if one of these Events happend.
     If so do action.
@@ -69,6 +82,8 @@ void Game::pollEvents() {
                     this->window->close();
                 }
                 break;    
+            default: std::cout << "EVENT NOT DEFINED!";
+                break;
         }
     }
 }
@@ -120,6 +135,7 @@ void Game::update() {
 
     this->pollEvents();
     this->updateInput();
+    //std::cout << this->player->getBounds().getPosition().y << '\n';
 }
 
 /*  Displays the window after all events got handled. display() needs to be the last function in render(), because you 
@@ -130,7 +146,9 @@ void Game::render() {
     this->window->clear();
 
     // Render stuff
+    this->playfield.render(this->window);
     this->player->render(*this->window);
+
 
     this->window->display();
 }
