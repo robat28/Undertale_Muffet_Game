@@ -19,14 +19,15 @@ class Game {
 
         Player* player;
 
-        // Playfield Variables 
+        // Playfield Variables
+
         Playfield playfield;
 
         float playfieldPosX;
         float playfieldPosY;
 
-
-
+        float buttonCooldown;
+        float buttonCooldownMax;
 
         /*  Sets window as nullptr before getting initialized. More a style thing.
             @return void
@@ -59,10 +60,7 @@ class Game {
         */
         const bool running() const;
 
-        /*  It's the getter for the Videomode.
-            @return sf::VideoMode
-        */
-        sf::VideoMode getVMode();
+        void isKeyPressed();
 
         /*  Like a event manager. It's active while running == true and checks every frame, if one of these Events happend.
             If so do action.
@@ -78,9 +76,10 @@ class Game {
         */
         void update();
 
-        void updateCollisonWindow();
+        void updateCollisonPlayfield();
 
-        void updateCollisonPlayfiled();
+        void updateButtonCooldown();
+        const bool canPressButton();
 
         /*  Displays the window after all events got handled. display() needs to be the last function in render(), because you 
             have to make sure that all Elements of your Game are set in your window before displaying it.

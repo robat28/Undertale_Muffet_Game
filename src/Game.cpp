@@ -11,26 +11,30 @@ void Game::initVariables() {
     this->window = nullptr;
     this->playfieldPosX = 0.f;
     this->playfieldPosY = 0.f;
-
+    this->buttonCooldownMax = 4.5f;
+    this->buttonCooldown = this->buttonCooldownMax;
 }
 
 /*  Initializes the window.
     @return void
 */
 void Game::initWindow() {
-    this->vMode.width = 800;
-    this->vMode.height = 600;
+    this->vMode.width = 1000;
+    this->vMode.height = 750;
     this->window = new sf::RenderWindow(this->vMode, "robat game", sf::Style::Titlebar | sf::Style::Close);
     this->window->setFramerateLimit(60);
 
-    this->playfieldCenterX = this->window->getSize().x / 2.f;
-    this->playfieldCenterY = this->window->getSize().y / 1.5f;
 } 
 
 void Game::initPlayfield() {
+    this->playfieldCenterX = this->window->getSize().x / 2.f;
+    this->playfieldCenterY = this->window->getSize().y / 1.4f;
+
     this->playfieldPosX = playfieldCenterX - (this->playfield.getWidth() / 2.f - 5.f);
     this->playfieldPosY = playfieldCenterY - (this->playfield.getHeight() / 2.f - 5.f);
     this->playfield.setPosition(playfieldPosX, playfieldPosY);
+
+    this->playfield.setLevelPositions(this->playfield.getBounds().left, playfieldCenterY);
 }
 
 void Game::initPlayer() {
@@ -69,7 +73,6 @@ const bool Game::running() const {
     return this->window->isOpen();
 }
 
-
 /*  Like a event manager. It's active while running == true and checks every frame, if one of these Events happend.
     If so do action.
     @return void
@@ -94,43 +97,57 @@ void Game::pollEvents() {
 }
 
 void Game::updateInput() {
-    
+    //Left
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
         this->player->move(-1.f, 0.f);
-    } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+    } 
+    // Right
+    else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
         this->player->move(1.f, 0.f);
     }
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-        this->player->move(0.f, -1.f);
-    } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-        this->player->move(0.f, 1.f);
-    }
+
+        // Top
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::W) && this->canPressButton()) {
+            switch(this->player->getCurrentLevel()) {
+                case TOP: 
+                    break;
+                case MIDDLE: 
+                    this->player->setNewLevel(TOP);
+                    this->player->setPosition(this->player->getBounds().left, playfieldCenterY - (this->playfield.getBounds().height / 4) - 
+                                            (this->player->getHeight() / 2));
+                    break;
+                case BOTTOM:
+                    this->player->setNewLevel(MIDDLE);
+                    this->player->setPosition(this->player->getBounds().left, playfieldCenterY - (this->player->getHeight() / 2));
+                    break;
+                default:
+                    break;
+            }
+        }
+        // Bottom
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S) && this->canPressButton())  {
+            switch(this->player->getCurrentLevel()) {
+                case TOP: 
+                    this->player->setNewLevel(MIDDLE);
+                    this->player->setPosition(this->player->getBounds().left, playfieldCenterY - (this->player->getHeight() / 2));
+                    break;
+                case MIDDLE: 
+                    this->player->setNewLevel(BOTTOM);
+                    this->player->setPosition(this->player->getBounds().left, (playfieldCenterY + this->playfield.getBounds().height / 4) - 
+                                            (this->player->getHeight() / 2));
+                    break;
+                case BOTTOM:
+                    break;
+                default:
+                    break;
+            }
+        }
 
     // Player Window Collison
-    this->updateCollisonPlayfiled();
-
+    this->updateCollisonPlayfield();
 }
 
-void Game::updateCollisonWindow() {
-    //Left
-    if(this->player->getBounds().left < 0.f) {
-        this->player->setPosition(0.f, this->player->getBounds().top);
-    }
-    //Right
-    else if(this->player->getBounds().left + this->player->getBounds().width > this->window->getSize().x) {
-        this->player->setPosition(this->window->getSize().x - this->player->getBounds().width, this->player->getBounds().top);
-    }
-    //Top
-    if(this->player->getBounds().top < 0.f) {
-        this->player->setPosition(this->player->getBounds().left, 0.f);
-    }
-    //Bottom
-    else if(this->player->getBounds().top + this->player->getBounds().height > this->window->getSize().y) {
-        this->player->setPosition(this->player->getBounds().left, this->window->getSize().y - this->player->getBounds().height);
-    }
-}
-
-void Game::updateCollisonPlayfiled() {
+void Game::updateCollisonPlayfield() {
     //Left
     if(this->player->getBounds().left < this->playfield.getBounds().left + 5) {
         this->player->setPosition(this->playfield.getBounds().left + 5, this->player->getBounds().top);
@@ -139,17 +156,21 @@ void Game::updateCollisonPlayfiled() {
     else if(this->player->getBounds().left + this->player->getBounds().width > this->playfield.getBounds().left + this->playfield.getBounds().width - 5) {
         this->player->setPosition(this->playfield.getBounds().left + this->playfield.getBounds().width - this->player->getBounds().width - 5, this->player->getBounds().top );
     }
-    //Top
-    if(this->player->getBounds().top < this->playfield.getBounds().top + 5) {
-        this->player->setPosition(this->player->getBounds().left, this->playfield.getBounds().top + 5);
-    }
-    //Bottom
-    else if(this->player->getBounds().top + this->player->getBounds().height > this->playfield.getBounds().top + this->playfield.getBounds().height - 5) {
-        this->player->setPosition(this->player->getBounds().left, this->playfield.getBounds().top + this->playfield.getBounds().height - this->player->getBounds().height - 5);
+}
+
+void Game::updateButtonCooldown() {
+    if(this->buttonCooldown < this->buttonCooldownMax) {
+        this->buttonCooldown += 0.5f;
     }
 }
 
-
+const bool Game::canPressButton() {
+    if(this->buttonCooldown >=  this->buttonCooldownMax) {
+        this->buttonCooldown = 0.f;
+        return true;
+    }
+    return false;
+}
 
 
 /*  Executes the pollEvents function. Basically it the "update" of the game, by checking at the beginnig of the
@@ -160,6 +181,8 @@ void Game::update() {
 
     this->pollEvents();
     this->updateInput();
+    this->updateButtonCooldown();
+
     //std::cout << this->player->getBounds().getPosition().y << '\n';
 }
 

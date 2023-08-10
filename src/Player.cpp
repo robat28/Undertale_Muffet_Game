@@ -27,6 +27,7 @@ Player::Player() {
     this->movementSpeed = 4.f;
     this->initTexture();
     this->initSprite();
+    this->currentLevel = MIDDLE;
 }
 
 /*  Destructor
@@ -48,6 +49,13 @@ const float Player::getWidth() const {
     return this->getBounds().width;
 }
 
+ LEVEL Player::getCurrentLevel() {
+    return this->currentLevel;
+ }
+
+void Player::setNewLevel(LEVEL newLevel) {
+    this->currentLevel = newLevel;
+}
 
 void Player::setPosition(const float x, const float y) {
     this->sprite.setPosition(x,y);

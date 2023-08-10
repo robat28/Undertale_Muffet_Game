@@ -6,16 +6,20 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 #include <iostream>
+#include <vector>
 
 class Playfield {
     private:
 
         sf::RectangleShape playfield;
-        
 
-        void initVariables();
+        void initPlayfield();
+
+        void initLevels();
 
     public:
+
+        std::vector<sf::RectangleShape> levels;
 
         Playfield();
 
@@ -29,6 +33,10 @@ class Playfield {
 
 
         void setPosition(const float x, const float y);
+
+        void setLevelPositions(const float x, const float y);
+
+        void setColor();
 
 
         void update();
