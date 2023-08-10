@@ -1,7 +1,7 @@
 #include "Playfield.hpp"
 
 void Playfield::initPlayfield() {
-    this->playfield.setSize(sf::Vector2f(300, 175));
+    this->playfield.setSize(sf::Vector2f(325, 180));
 
     this->playfield.setFillColor(sf::Color(0, 0, 0, 255));
     this->playfield.setOutlineThickness(5);
