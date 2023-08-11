@@ -14,6 +14,8 @@ class Game {
         sf::Event evnt;
         sf::VideoMode vMode;
 
+        GUI gui;
+
         float playfieldCenterX;
         float playfieldCenterY;
 
@@ -29,6 +31,10 @@ class Game {
         float buttonCooldown;
         float buttonCooldownMax;
 
+        sf::Clock clock;
+
+
+
         /*  Sets window as nullptr before getting initialized. More a style thing.
             @return void
         */  
@@ -42,6 +48,8 @@ class Game {
         void initPlayfield();
 
         void initPlayer();
+
+        void initAnimation();
 
     public:
 
@@ -80,6 +88,8 @@ class Game {
 
         void updateButtonCooldown();
         const bool canPressButton();
+
+        void updateDeltaTime();
 
         /*  Displays the window after all events got handled. display() needs to be the last function in render(), because you 
             have to make sure that all Elements of your Game are set in your window before displaying it.

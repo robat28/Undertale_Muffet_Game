@@ -11,12 +11,12 @@ void Game::initVariables() {
     this->window = nullptr;
     this->playfieldPosX = 0.f;
     this->playfieldPosY = 0.f;
-    this->buttonCooldownMax = 4.5f;
+    this->buttonCooldownMax = 5.f;
     this->buttonCooldown = this->buttonCooldownMax;
 }
 
 /*  Initializes the window.
-    @return void
+    @return void    
 */
 void Game::initWindow() {
     this->vMode.width = 1000;
@@ -42,6 +42,10 @@ void Game::initPlayer() {
                               this->playfield.getBounds().top + this->playfield.getHeight() / 2 - this->player->getHeight() / 2.f);
 }
 
+void Game::initAnimation() {
+    this->gui.setSpritePosition(this->window->getSize().x / 2, this->window->getSize().y / 1.8);
+}
+
 /*
     public Functions
 */
@@ -52,10 +56,13 @@ void Game::initPlayer() {
 Game::Game() {
     this->player = new Player();
 
+
     this->initVariables();
     this->initWindow();
     this->initPlayfield();
     this->initPlayer();
+
+    this->initAnimation();
 }
 
 /*  Destructor
@@ -172,12 +179,19 @@ const bool Game::canPressButton() {
     return false;
 }
 
+void Game::updateDeltaTime() {
+    sf::Time deltaTime = clock.restart();
+    this->gui.update(deltaTime);
+}
+
 
 /*  Executes the pollEvents function. Basically it the "update" of the game, by checking at the beginnig of the
     frame, if a Event happend and if so, handle it.
     @return void
 */
 void Game::update() {
+
+    this->updateDeltaTime();
 
     this->pollEvents();
     this->updateInput();
@@ -196,7 +210,7 @@ void Game::render() {
     // Render stuff
     this->playfield.render(this->window);
     this->player->render(*this->window);
-
+    this->gui.render(this->window);
 
     this->window->display();
 }

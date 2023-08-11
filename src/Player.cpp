@@ -67,7 +67,6 @@ void Player::move(const float x, const float y) {
 }
 
 void Player::update(const sf::RenderTarget* target) {
-
 }
 
 void Player::render(sf::RenderTarget& target) {
