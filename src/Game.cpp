@@ -25,7 +25,7 @@ void Game::initVariables() {
 void Game::initWindow() {
     this->vMode.width = 1000;
     this->vMode.height = 750;
-    this->window = new sf::RenderWindow(this->vMode, "robat game", sf::Style::Titlebar | sf::Style::Close);
+    this->window = new sf::RenderWindow(this->vMode, "Undertale Muffet Minigame", sf::Style::Titlebar | sf::Style::Close);
     this->window->setFramerateLimit(60);
 } 
 
