@@ -10,33 +10,39 @@
 
 class GUI {
     private:
+
+        // Animation Variables
+        int numFrames;
+        int frameLength;
+        sf::Time frameDuration;
+        sf::IntRect frameRect;
+        int currentFrame;
+
+        // Texture of Animation
         sf::Texture spritesheetTexture;
         sf::Sprite sprite;
 
-        int numFrames;
-        sf::Time frameDuration;
-
-        int frameWidth;
-        int frameHeight;
-
-        sf::IntRect frameRect;
-
+        // Timer
         sf::Time totalTime;
-        int currentFrame;
-
-        void initVariables();
+        
+        // Private Functions
+        void initAnimationVariables();
         void initSprite();
-
         void loadSpriteSheetTexture();
 
     public:
 
+        // Constructor
         GUI();
+
+        // Destructor
         ~GUI();
 
+        // Setter
         void setFrameRect(const int currentFrame);
         void setSpritePosition(const float x, const float y);
 
-        void update(sf::Time deltaTime);
+        // Public Functions
+        void updateSprite(sf::Time deltaTime);
         void render(sf::RenderTarget* target);
 };

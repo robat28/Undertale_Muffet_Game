@@ -4,14 +4,14 @@ int main() {
     
     Game game;
 
-    // Game Loop
+    /**
+     *  @brief The game loop. 
+     *  One iteration is one frame of the game. 
+     *  It updates the render objects and draws them every frame.
+     */
     while (game.running()) {
-
-        // Update 
         game.update();
-        // Render
         game.render();
-        
     }
 
     return 0;

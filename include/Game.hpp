@@ -5,95 +5,56 @@
 
 class Game {    
     private:
-        /*
-            private Variables
-        */
 
-        // Window Variables 
+        // Window and Display
         sf::RenderWindow* window;
         sf::Event evnt;
         sf::VideoMode vMode;
 
-        GUI gui;
-
-        float playfieldCenterX;
-        float playfieldCenterY;
-
+        // Render objects
+        GUI* gui;
+        Playfield* playfield;
         Player* player;
 
-        // Playfield Variables
+        // Update Time 
+        sf::Clock clock;
+        sf::Time deltaTime;
 
-        Playfield playfield;
-
+        // Private Variables
+        float playfieldCenterX;
+        float playfieldCenterY;
         float playfieldPosX;
         float playfieldPosY;
 
         float buttonCooldown;
         float buttonCooldownMax;
 
-        sf::Clock clock;
-
-
-
-        /*  Sets window as nullptr before getting initialized. More a style thing.
-            @return void
-        */  
+        // Private Functions
         void initVariables();
-
-        /*  Initializes the window.
-            @return void
-        */
         void initWindow();
-
         void initPlayfield();
-
-        void initPlayer();
-
         void initAnimation();
+        void initPlayer();
 
     public:
 
-        /*  Constructor
-            After creating a Game instance, all variables and the window are getting intitialized. 
-        */
+        // Constructor
         Game();
 
-        /*  Destructor
-            Destroys the Object after usage. 
-        */
+        // Destructor
         ~Game();
 
-        /*  Returns true, if the window is still open and returns false, if the window got closed.
-            @return bool
-        */
         const bool running() const;
-
-        void isKeyPressed();
-
-        /*  Like a event manager. It's active while running == true and checks every frame, if one of these Events happend.
-            If so do action.
-            @return void
-        */
-        void pollEvents();
-
-        void updateInput();
-
-        /*  Executes the pollEvents function. Basically it the "update" of the game, by checking at the beginnig of the
-            frame, if a Event happend and if so, handle it.
-            @return void
-        */
-        void update();
-
-        void updateCollisonPlayfield();
-
-        void updateButtonCooldown();
         const bool canPressButton();
 
+        void pollEvents();
+
+        // Update Functions
+        void update();
+        void updateInput();
+        void updateCollisonPlayfield();
+        void updateButtonCooldown();
         void updateDeltaTime();
 
-        /*  Displays the window after all events got handled. display() needs to be the last function in render(), because you 
-            have to make sure that all Elements of your Game are set in your window before displaying it.
-            @return void
-        */
         void render();
 };
