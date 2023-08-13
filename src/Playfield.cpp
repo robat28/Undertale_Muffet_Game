@@ -98,12 +98,12 @@ void Playfield::setLevelPositions(const float& x, const float& y) {
  * @brief Draws the playfield Rectangle and the three levels.
  * @param target The window
  */
-void Playfield::render(sf::RenderTarget* target) {
-    target->draw(this->playfield);
+void Playfield::render(sf::RenderTarget& target) {
+    target.draw(this->playfield);
 
-    target->draw(this->levels[0]);
-    target->draw(this->levels[1]);
-    target->draw(this->levels[2]);
+    target.draw(this->levels[0]);
+    target.draw(this->levels[1]);
+    target.draw(this->levels[2]);
 }
 
 

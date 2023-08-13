@@ -6,7 +6,7 @@
 
 
 /**
- *  @brief Initializes all variables for the player.
+ *  @brief Initializes all variables of the player.
  */
 void Player::initPlayer() {
     this->movementSpeed = 4.f;
@@ -17,8 +17,8 @@ void Player::initPlayer() {
  *  @brief Loads the Texture from the file and handles it if it can't.
  */
 void Player::initTexture() {
-    if(!this->texture.loadFromFile("../../GitHub/Undertale_Muffet_Game/textures/player_icon.png")) {
-        std::cout << "TEXTURE LOADING ERROR::PLAYER::textures/heart_icon.png";
+    if(!this->texture.loadFromFile("../../GitHub/Undertale_Muffet_Game/textures/player_sprite.png")) {
+        std::cout << "TEXTURE LOADING ERROR::PLAYER::textures/player_sprite.png";
     }
 }
 
@@ -27,7 +27,7 @@ void Player::initTexture() {
  */ 
 void Player::initSprite() {
     this->sprite.setTexture(this->texture);
-    this->sprite.scale(0.022f,0.022f);
+    this->sprite.scale(1.5f,1.5f);
 }
 
 

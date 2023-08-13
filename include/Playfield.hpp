@@ -32,5 +32,5 @@ class Playfield {
         void setLevelPositions(const float& x, const float& y);
 
         // Public Functions
-        void render(sf::RenderTarget* target);
+        void render(sf::RenderTarget& target);
 };

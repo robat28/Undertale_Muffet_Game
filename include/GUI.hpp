@@ -44,5 +44,5 @@ class GUI {
 
         // Public Functions
         void updateSprite(sf::Time& deltaTime);
-        void render(sf::RenderTarget* target);
+        void render(sf::RenderTarget& target);
 };

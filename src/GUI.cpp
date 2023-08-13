@@ -6,16 +6,7 @@
 
 
 /**
- *  @brief Initializes the Sprite by loading the texture first.
- */
-void GUI::initSprite() {
-    this->loadSpriteSheetTexture();
-    this->sprite.setTexture(spritesheetTexture);
-    this->sprite.scale(2.5f, 2.5f);
-}
-
-/**
- *  @brief Initializes all Variables for the Animation.
+ *  @brief Initializes all Variables of the Animation.
  *  @remark The Frames of the sprite sheet has to be set horizontaly.
  *  @remark The single Frame should be a square.
  *  @example 200px x 200px for one frame.
@@ -28,6 +19,14 @@ void GUI::initAnimationVariables() {
     this->currentFrame = 0;
 }
 
+/**
+ *  @brief Initializes the Sprite by loading the texture first.
+ */
+void GUI::initSprite() {
+    this->loadSpriteSheetTexture();
+    this->sprite.setTexture(spritesheetTexture);
+    this->sprite.scale(2.5f, 2.5f);
+}
 
 /**
  *  @brief Loads the Texture from the file and handles it if it can't. 
@@ -94,6 +93,6 @@ void GUI::updateSprite(sf::Time& deltaTime) {
  *  @brief Draws the current Frame of the Animation.
  *  @param target The window
  */
-void GUI::render(sf::RenderTarget* target) {
-    target->draw(this->sprite);
+void GUI::render(sf::RenderTarget& target) {
+    target.draw(this->sprite);
 }

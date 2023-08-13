@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Enemy.hpp"
 #include "Player.hpp"
 #include "Playfield.hpp"
 
@@ -28,6 +29,9 @@ class Game {
 
         float buttonCooldown;
         float buttonCooldownMax;
+
+        // Enemies
+        Enemy* enemy;
 
         // Private Functions
         void initVariables();

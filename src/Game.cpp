@@ -76,13 +76,13 @@ Game::Game() {
     this->playfield = new Playfield();
     this->gui = new GUI();
     this->player = new Player();
+    this->enemy = new Enemy();
 
     this->initVariables();
     this->initWindow();
     this->initPlayfield();
     this->initPlayer();
     this->initAnimation();
-
 }
 
 /**
@@ -93,6 +93,7 @@ Game::~Game() {
     delete this->player;
     delete this->playfield;
     delete this->gui;
+    delete this->enemy;
 }
 
 /**
@@ -245,9 +246,10 @@ void Game::updateDeltaTime() {
 void Game::render() {
     this->window->clear();
 
-    this->playfield->render(this->window);
+    this->playfield->render(*this->window);
+    this->gui->render(*this->window);
+    this->enemy->render(*this->window);
     this->player->render(*this->window);
-    this->gui->render(this->window);
 
     this->window->display();
 }
