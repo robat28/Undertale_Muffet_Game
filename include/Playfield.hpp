@@ -28,8 +28,8 @@ class Playfield {
         const float getWidth() const;
 
         // Setter
-        void setPosition(const float x, const float y);
-        void setLevelPositions(const float x, const float y);
+        void setPosition(const float& x, const float& y);
+        void setLevelPositions(const float& x, const float& y);
 
         // Public Functions
         void render(sf::RenderTarget* target);

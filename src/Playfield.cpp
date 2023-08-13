@@ -79,7 +79,7 @@ const float Playfield::getWidth() const {
  *  @param x const float
  *  @param y const float
  */
-void Playfield::setPosition(const float x, const float y) {
+void Playfield::setPosition(const float& x, const float& y) {
     this->playfield.setPosition(x,y);
 }
 
@@ -88,7 +88,7 @@ void Playfield::setPosition(const float x, const float y) {
  *  @param x const float
  *  @param y const float
  */
-void Playfield::setLevelPositions(const float x, const float y) {
+void Playfield::setLevelPositions(const float& x, const float& y) {
     this->levels[0].setPosition(x + 15.f, y - this->playfield.getGlobalBounds().height / 4);
     this->levels[1].setPosition(x + 15.f, y);
     this->levels[2].setPosition(x + 15.f, y + (this->playfield.getGlobalBounds().height / 4));

@@ -15,7 +15,7 @@ enum LEVEL{
 
 class Player {
     private:
-#       
+
         // Player Variables
         float movementSpeed;
         LEVEL currentLevel;
@@ -41,13 +41,13 @@ class Player {
         const sf::FloatRect getBounds() const;
         const float getHeight() const;
         const float getWidth() const;
-        LEVEL getCurrentLevel();
+        const LEVEL getCurrentLevel();
 
         // Setter
         void setNewLevel(LEVEL newLevel);
-        void setPosition(const float x, const float y);
+        void setPosition(const float& x, const float& y);
 
         // Public Functions
-        void move(const float x, const float y);
+        void move(const float& x, const float& y);
         void render(sf::RenderTarget& target);
 };

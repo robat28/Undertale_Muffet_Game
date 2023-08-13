@@ -79,7 +79,7 @@ const float Player::getWidth() const {
  *  @brief Getter for the Level of the player. 
  *  @return LEVEL 
  */
- LEVEL Player::getCurrentLevel() {
+const LEVEL Player::getCurrentLevel() {
     return this->currentLevel;
  }
 
@@ -96,7 +96,7 @@ void Player::setNewLevel(LEVEL newLevel) {
  *  @param x const float
  *  @param y const float
  */
-void Player::setPosition(const float x, const float y) {
+void Player::setPosition(const float& x, const float& y) {
     this->sprite.setPosition(x,y);
 }
 
@@ -106,7 +106,7 @@ void Player::setPosition(const float x, const float y) {
  *  @param x const float
  *  @param y const float
  */
-void Player::move(const float x, const float y) {
+void Player::move(const float& x, const float& y) {
     this->sprite.move(this->movementSpeed * x, this->movementSpeed * y);
 }
 

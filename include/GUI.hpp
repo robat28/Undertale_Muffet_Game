@@ -39,10 +39,10 @@ class GUI {
         ~GUI();
 
         // Setter
-        void setFrameRect(const int currentFrame);
-        void setSpritePosition(const float x, const float y);
+        void setSpritePosition(const float& x, const float& y);
+        void setFrameRect(const int& currentFrame);
 
         // Public Functions
-        void updateSprite(sf::Time deltaTime);
+        void updateSprite(sf::Time& deltaTime);
         void render(sf::RenderTarget* target);
 };

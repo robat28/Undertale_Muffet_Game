@@ -40,6 +40,11 @@ void GUI::loadSpriteSheetTexture() {
 
 
 /**
+ *  Public Functions
+ */
+
+
+/**
  *  @brief Construct a new GUI object.
  */
 GUI::GUI() {
@@ -58,7 +63,7 @@ GUI::~GUI() {
  * @param x const float
  * @param y const float
  */
-void GUI::setSpritePosition(const float x, const float y) {
+void GUI::setSpritePosition(const float& x, const float& y) {
     this->sprite.setPosition(x - ((this->sprite.getGlobalBounds().width / numFrames) / 2), y - this->sprite.getGlobalBounds().height);
 }
 
@@ -66,7 +71,7 @@ void GUI::setSpritePosition(const float x, const float y) {
  * @brief Sets the new current frame as texture.
  * @param currentFrame 
  */
-void GUI::setFrameRect(const int currentFrame) {
+void GUI::setFrameRect(const int& currentFrame) {
     this->frameRect.left = currentFrame * this->frameLength;
     this->sprite.setTextureRect(this->frameRect);
 }
@@ -75,7 +80,7 @@ void GUI::setFrameRect(const int currentFrame) {
  *  @brief Updates the Animation frame.
  *  @param deltaTime 
  */
-void GUI::updateSprite(sf::Time deltaTime) {
+void GUI::updateSprite(sf::Time& deltaTime) {
     this->totalTime += deltaTime;
 
     if(this->totalTime >= this->frameDuration) {
@@ -90,5 +95,5 @@ void GUI::updateSprite(sf::Time deltaTime) {
  *  @param target The window
  */
 void GUI::render(sf::RenderTarget* target) {
-    target->draw(sprite);
+    target->draw(this->sprite);
 }
