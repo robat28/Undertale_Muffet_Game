@@ -33,7 +33,7 @@ void GUI::initSprite() {
  */
 void GUI::loadSpriteSheetTexture() {
     if (!this->spritesheetTexture.loadFromFile("../../GitHub/Undertale_Muffet_Game/textures/muffet_spriteSheet.png")) {
-        std::cout << "TEXTURE LOADING ERROR::GUI::muffet_spriteSheet.png";
+        std::cout << "TEXTURE LOADING ERROR::GUI::muffet_spriteSheet.png" << '\n';
     }
 }
 

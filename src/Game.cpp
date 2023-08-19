@@ -9,13 +9,15 @@
  *  @brief Initializes all Variables of the Game class with a default value.
  */
 void Game::initVariables() {
-    this->window = nullptr;
+    srand(time(NULL));
     this->playfieldCenterX = 0.f;
     this->playfieldCenterY = 0.f;
     this->playfieldPosX = 0.f;
     this->playfieldPosY = 0.f;
     this->buttonCooldownMax = 5.f;
     this->buttonCooldown = this->buttonCooldownMax;
+    this->spawnTimerMax = 25.f;
+    this->spawnTimer = 0.f;
 }
 
 /**
@@ -76,10 +78,10 @@ Game::Game() {
     this->playfield = new Playfield();
     this->gui = new GUI();
     this->player = new Player();
-    this->enemy = new Enemy();
+    
+    this->initWindow();
 
     this->initVariables();
-    this->initWindow();
     this->initPlayfield();
     this->initPlayer();
     this->initAnimation();
@@ -93,7 +95,6 @@ Game::~Game() {
     delete this->player;
     delete this->playfield;
     delete this->gui;
-    delete this->enemy;
 }
 
 /**
@@ -138,6 +139,48 @@ void Game::pollEvents() {
 }
 
 /**
+ * @brief 
+ * 
+ */
+void Game::spawnEnemies() {
+    this->randomPosition = rand() % 6 + 1;
+    this->spawnPosY = this->window->getSize().y / 1.4f;
+        if((this->randomPosition % 2) == 1) {
+            this->spawnPosX = (this->playfield->getBounds().left) - (this->playfield->getBounds().width / 4);
+            switch(this->randomPosition) {
+                case 1:
+                    this->spawnPosY -= this->playfield->getBounds().height / 4 ;
+                    break;
+                case 3:
+                    break;
+                case 5:
+                     this->spawnPosY += this->playfield->getBounds().height / 4;
+                     break;
+            }
+        }
+        else {
+            this->spawnPosX = (this->playfield->getBounds().left) + (this->playfield->getBounds().width) + (this->playfield->getBounds().width / 4);
+            switch(this->randomPosition) {
+                case 2:
+                    this->spawnPosY -= this->playfield->getBounds().height / 4;
+                    break;
+                case 4:
+                    break;
+                case 6:
+                     this->spawnPosY += this->playfield->getBounds().height / 4;
+                     break;
+            }
+        }
+    this->enemies.push_back(new Enemy(this->spawnPosX, this->spawnPosY, randomPosition));
+}
+
+
+void Game::moveEnemy() {
+
+}
+
+
+/**
  *  @brief The update function of the main method. Executes all update function of the game to update every frame.
  */
 void Game::update() {
@@ -145,6 +188,7 @@ void Game::update() {
     this->updateDeltaTime();
     this->updateInput();
     this->updateButtonCooldown();
+    this->upadteEnemies();
 }
 
 /**
@@ -236,6 +280,19 @@ void Game::updateDeltaTime() {
 }
 
 /**
+ *  @brief 
+ * 
+ */
+void Game::upadteEnemies() {
+    this->spawnTimer += 0.5f;
+    if(this->spawnTimer >= this->spawnTimerMax) {
+        this->spawnTimer = 0.f;
+        this->spawnEnemies();
+    }
+
+}
+
+/**
  *  @brief The render function of the main method. Draws every object every frame after it got updated to simulate movement.
  *  @remark The order of the function is important.
  *          1. window->clear();
@@ -248,8 +305,13 @@ void Game::render() {
 
     this->playfield->render(*this->window);
     this->gui->render(*this->window);
-    this->enemy->render(*this->window);
+
+    for(auto enemy : this->enemies) {
+        enemy->render(*this->window);
+    }
+
     this->player->render(*this->window);
 
     this->window->display();
+
 }

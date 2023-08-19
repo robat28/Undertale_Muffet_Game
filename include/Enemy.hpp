@@ -12,6 +12,7 @@ class Enemy{
 
         // Enemy Variables
         float movementspeed;
+        int spawnPosition;
 
         // Texture of Enemies
         sf::Texture texture;
@@ -26,11 +27,18 @@ class Enemy{
     public:
 
         // Constructor
-        Enemy();
+        Enemy(float x, float y, const int spawnPosition);
 
         // Destructor
         ~Enemy();
 
+        // Getter
+        const sf::FloatRect getBounds() const;
+
+        // Setter
+        void setPosition(const float x, const float y);
+
         // Public Functions
+        void update();
         void render(sf::RenderTarget& target);
 };

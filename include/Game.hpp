@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Enemy.hpp"
+#include "Spawner.hpp"
 #include "Player.hpp"
 #include "Playfield.hpp"
 
@@ -31,7 +31,13 @@ class Game {
         float buttonCooldownMax;
 
         // Enemies
+        std::vector<Enemy*> enemies;
         Enemy* enemy;
+        int randomPosition;
+        float spawnPosX;
+        float spawnPosY;
+        float spawnTimer;
+        float spawnTimerMax;
 
         // Private Functions
         void initVariables();
@@ -48,10 +54,12 @@ class Game {
         // Destructor
         ~Game();
 
+        // Public Functions
         const bool running() const;
         const bool canPressButton();
-
         void pollEvents();
+        void spawnEnemies();
+        void moveEnemy();
 
         // Update Functions
         void update();
@@ -59,6 +67,7 @@ class Game {
         void updateCollisonPlayfield();
         void updateButtonCooldown();
         void updateDeltaTime();
+        void upadteEnemies();
 
         void render();
 };

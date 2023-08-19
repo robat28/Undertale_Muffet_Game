@@ -18,7 +18,7 @@ void Player::initPlayer() {
  */
 void Player::initTexture() {
     if(!this->texture.loadFromFile("../../GitHub/Undertale_Muffet_Game/textures/player_sprite.png")) {
-        std::cout << "TEXTURE LOADING ERROR::PLAYER::textures/player_sprite.png";
+        std::cout << "TEXTURE LOADING ERROR::PLAYER::textures/player_sprite.png" << '\n';
     }
 }
 
