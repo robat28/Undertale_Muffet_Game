@@ -10,11 +10,6 @@ void Spawner::initVariables() {
 }
 
 
-
-
-
-
-
 /**
  *  Public Functions
  */

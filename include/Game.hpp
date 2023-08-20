@@ -33,6 +33,7 @@ class Game {
         // Enemies
         std::vector<Enemy*> enemies;
         Enemy* enemy;
+
         int randomPosition;
         float spawnPosX;
         float spawnPosY;
@@ -57,6 +58,8 @@ class Game {
         // Public Functions
         const bool running() const;
         const bool canPressButton();
+        bool borderReachedOdd(Enemy& enemy) const;
+        bool borderReachedEven(Enemy& enemy) const;
         void pollEvents();
         void spawnEnemies();
         void moveEnemy();
