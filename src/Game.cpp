@@ -14,9 +14,9 @@ void Game::initVariables() {
     this->playfieldCenterY = 0.f;
     this->playfieldPosX = 0.f;
     this->playfieldPosY = 0.f;
-    this->buttonCooldownMax = 5.f;
+    this->buttonCooldownMax = 5.5f;
     this->buttonCooldown = this->buttonCooldownMax;
-    this->spawnTimerMax = 20.f;
+    this->spawnTimerMax = 15.f;
     this->spawnTimer = 0.f;
 }
 
@@ -81,7 +81,6 @@ Game::Game() {
     this->enemy = new Enemy();
     
     this->initWindow();
-
     this->initVariables();
     this->initPlayfield();
     this->initPlayer();
@@ -124,7 +123,6 @@ const bool Game::canPressButton() {
  */
 void Game::pollEvents() {
     while(this->window->pollEvent(this->evnt)) {
-
         switch(this->evnt.type) {
             case sf::Event::Closed: 
                 this->window->close();
@@ -220,8 +218,6 @@ void Game::moveEnemy() {
         }
     }
 }
-
-
 
 /**
  *  @brief The update function of the main method. Executes all update function of the game to update every frame.

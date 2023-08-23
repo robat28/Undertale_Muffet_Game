@@ -11,7 +11,7 @@
  */
 void Enemy::initVariables() {
     this->spriteSize = 30.f;
-    this->movementSpeed = 6.f;
+    this->movementSpeed = 7.f;
 }
 
 /**
@@ -59,7 +59,6 @@ Enemy::Enemy(float x, float y, const int spawnPosition) {
  *  @brief Destroy the Enemy object.
  */
 Enemy::~Enemy() {
-    std::cout << "DELETED ENEMY" << '\n';
 }
 
 /**
