@@ -6,6 +6,7 @@
 
 class Game {    
     private:
+        std::string dataDir;
 
         // Window and Display
         sf::RenderWindow* window;
@@ -50,7 +51,7 @@ class Game {
     public:
 
         // Constructor
-        Game();
+        Game(std::string dataDir);
 
         // Destructor
         ~Game();

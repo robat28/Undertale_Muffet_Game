@@ -11,6 +11,8 @@
 class GUI {
     private:
 
+        std::string dataDir;
+
         // Animation Variables
         int numFrames;
         int frameLength;
@@ -33,7 +35,7 @@ class GUI {
     public:
 
         // Constructor
-        GUI();
+        GUI(std::string dataDir);
 
         // Destructor
         ~GUI();

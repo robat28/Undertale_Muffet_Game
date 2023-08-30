@@ -32,7 +32,7 @@ void GUI::initSprite() {
  *  @brief Loads the Texture from the file and handles it if it can't. 
  */
 void GUI::loadSpriteSheetTexture() {
-    if (!this->spritesheetTexture.loadFromFile("../../GitHub/Undertale_Muffet_Game/textures/muffet_spriteSheet.png")) {
+    if (!this->spritesheetTexture.loadFromFile(this->dataDir + "textures/muffet_spriteSheet.png")) {
         std::cout << "TEXTURE LOADING ERROR::GUI::muffet_spriteSheet.png" << '\n';
     }
 }
@@ -46,7 +46,8 @@ void GUI::loadSpriteSheetTexture() {
 /**
  *  @brief Construct a new GUI object.
  */
-GUI::GUI() {
+GUI::GUI(std::string dataDir) {
+    this->dataDir = dataDir;
     this->initSprite();
     this->initAnimationVariables();
 }
