@@ -9,6 +9,7 @@
 
 class Enemy{
     private:
+        std::string dataDir;
 
         // Enemy Variables
         float movementSpeed;
@@ -28,8 +29,8 @@ class Enemy{
     public:
 
         // Constructor
-        Enemy();
-        Enemy(float x, float y, const int spawnPosition);
+        Enemy(std::string dataDir);
+        Enemy(float x, float y, const int spawnPosition, std::string dataDir);
 
         // Destructor
         ~Enemy();

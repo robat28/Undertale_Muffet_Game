@@ -78,8 +78,8 @@ Game::Game(std::string dataDir) {
     this->dataDir = dataDir;
     this->playfield = new Playfield();
     this->gui = new GUI(this->dataDir);
-    this->player = new Player();
-    this->enemy = new Enemy();
+    this->player = new Player(this->dataDir);
+    this->enemy = new Enemy(this->dataDir);
     
     this->initWindow();
 
@@ -192,7 +192,7 @@ void Game::spawnEnemies() {
                      break;
             }
         }
-    Enemy* newEnemy = new Enemy(this->spawnPosX, this->spawnPosY, randomPosition);
+    Enemy* newEnemy = new Enemy(this->spawnPosX, this->spawnPosY, randomPosition, this->dataDir);
     this->enemies.push_back(newEnemy);
 }
 
