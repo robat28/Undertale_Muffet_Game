@@ -139,87 +139,6 @@ void Game::pollEvents() {
     }
 }
 
-bool Game::borderReachedOdd(Enemy& movingEnemy) const {
-    if(movingEnemy.getBounds().left >= (this->playfield->getBounds().left) + (this->playfield->getBounds().width) + (this->playfield->getBounds().width / 4)) {
-            return true;
-    } else {
-        return false;
-    }
-}
-
-bool Game::borderReachedEven(Enemy& movingEnemy) const {
-     if(movingEnemy.getBounds().left <= (this->playfield->getBounds().left) - (this->playfield->getBounds().width / 4) - this->enemy->getSize()) {
-            return true;
-    } else {
-        return false;
-    }
-}   
-
-/**
- * @brief 
- * 
- */
-void Game::spawnEnemies() {
-    this->randomPosition = rand() % 6 + 1;
-    this->spawnPosY = this->window->getSize().y / 1.4f;
-        if((this->randomPosition % 2) == 1) {
-            this->spawnPosX = (this->playfield->getBounds().left) - (this->playfield->getBounds().width / 4) - this->enemy->getSize();
-            switch(this->randomPosition) {
-                case 1:
-                    this->spawnPosY = this->spawnPosY - (this->playfield->getBounds().height / 4) - (this->enemy->getSize() / 2);
-                    break;
-                case 3:
-                    this->spawnPosY = this->spawnPosY - this->enemy->getSize() / 2;
-                    break;
-                case 5:
-                     this->spawnPosY = this->spawnPosY + (this->playfield->getBounds().height / 4) - (this->enemy->getSize() / 2);
-                     break;
-            }
-        }
-        else {
-            this->spawnPosX = (this->playfield->getBounds().left) + (this->playfield->getBounds().width) + (this->playfield->getBounds().width / 4);
-            switch(this->randomPosition) {
-                case 2:
-                    this->spawnPosY = this->spawnPosY - (this->playfield->getBounds().height / 4) - (this->enemy->getSize() / 2);
-                    break;
-                case 4:
-                    this->spawnPosY = this->spawnPosY - this->enemy->getSize() / 2;
-                    break;
-                case 6:
-                     this->spawnPosY = this->spawnPosY + (this->playfield->getBounds().height / 4) - (this->enemy->getSize() / 2);
-                     break;
-            }
-        }
-    Enemy* newEnemy = new Enemy(this->spawnPosX, this->spawnPosY, randomPosition, this->dataDir);
-    this->enemies.push_back(newEnemy);
-}
-
-/**
- *  @brief 
- * 
- */
-void Game::moveEnemy() { 
-    for(auto* movingEnemy : this->enemies) {
-        // Moving Right
-        if((movingEnemy->getSpawnPoint() % 2) == 1) {
-            if(this->borderReachedOdd(*movingEnemy)) {
-                this->enemies.erase(this->enemies.begin());
-                delete movingEnemy;
-            } else {
-                movingEnemy->move(1.f, 0.f);
-            }
-        } else {
-        // Moving Left
-            if(this->borderReachedEven(*movingEnemy)) {
-                this->enemies.erase(this->enemies.begin());
-                delete movingEnemy;
-            } else {
-                movingEnemy->move(-1.f, 0.f);
-            }
-        }
-    }
-}
-
 /**
  *  @brief The update function of the main method. Executes all update function of the game to update every frame.
  */
@@ -319,18 +238,6 @@ void Game::updateDeltaTime() {
     this->gui->updateSprite(deltaTime);
 }
 
-/**
- *  @brief 
- * 
- */
-void Game::upadteEnemies() {
-    this->spawnTimer += 0.5f;
-    if(this->spawnTimer >= this->spawnTimerMax) {
-        this->spawnTimer = 0.f;
-        this->spawnEnemies();
-    }
-    this->moveEnemy();
-}
 
 /**
  *  @brief The render function of the main method. Draws every object every frame after it got updated to simulate movement.
@@ -353,5 +260,95 @@ void Game::render() {
     this->player->render(*this->window);
 
     this->window->display();
-
 }
+
+
+
+
+
+
+// SPAWNER FUNCTOINS 
+
+void Game::spawnEnemies() {
+    this->randomPosition = rand() % 6 + 1;
+    this->spawnPosY = this->window->getSize().y / 1.4f;
+        if((this->randomPosition % 2) == 1) {
+            this->spawnPosX = (this->playfield->getBounds().left) - (this->playfield->getBounds().width / 4) - this->enemy->getSize();
+            switch(this->randomPosition) {
+                case 1:
+                    this->spawnPosY = this->spawnPosY - (this->playfield->getBounds().height / 4) - (this->enemy->getSize() / 2);
+                    break;
+                case 3:
+                    this->spawnPosY = this->spawnPosY - this->enemy->getSize() / 2;
+                    break;
+                case 5:
+                     this->spawnPosY = this->spawnPosY + (this->playfield->getBounds().height / 4) - (this->enemy->getSize() / 2);
+                     break;
+            }
+        }
+        else {
+            this->spawnPosX = (this->playfield->getBounds().left) + (this->playfield->getBounds().width) + (this->playfield->getBounds().width / 4);
+            switch(this->randomPosition) {
+                case 2:
+                    this->spawnPosY = this->spawnPosY - (this->playfield->getBounds().height / 4) - (this->enemy->getSize() / 2);
+                    break;
+                case 4:
+                    this->spawnPosY = this->spawnPosY - this->enemy->getSize() / 2;
+                    break;
+                case 6:
+                     this->spawnPosY = this->spawnPosY + (this->playfield->getBounds().height / 4) - (this->enemy->getSize() / 2);
+                     break;
+            }
+        }
+    Enemy* newEnemy = new Enemy(this->spawnPosX, this->spawnPosY, randomPosition, this->dataDir);
+    this->enemies.push_back(newEnemy);
+}
+
+bool Game::borderReachedOdd(Enemy& movingEnemy) const {
+    if(movingEnemy.getBounds().left >= (this->playfield->getBounds().left) + (this->playfield->getBounds().width) + (this->playfield->getBounds().width / 4)) {
+            return true;
+    } else {
+        return false;
+    }
+}
+
+bool Game::borderReachedEven(Enemy& movingEnemy) const {
+     if(movingEnemy.getBounds().left <= (this->playfield->getBounds().left) - (this->playfield->getBounds().width / 4) - this->enemy->getSize()) {
+            return true;
+    } else {
+        return false;
+    }
+}   
+
+void Game::moveEnemy() { 
+    for(auto* movingEnemy : this->enemies) {
+        // Moving Right
+        if((movingEnemy->getSpawnPoint() % 2) == 1) {
+            if(this->borderReachedOdd(*movingEnemy)) {
+                this->enemies.erase(this->enemies.begin());
+                delete movingEnemy;
+            } else {
+                movingEnemy->move(1.f, 0.f);
+            }
+        } else {
+        // Moving Left
+            if(this->borderReachedEven(*movingEnemy)) {
+                this->enemies.erase(this->enemies.begin());
+                delete movingEnemy;
+            } else {
+                movingEnemy->move(-1.f, 0.f);
+            }
+        }
+    }
+}
+
+void Game::upadteEnemies() {
+    this->spawnTimer += 0.5f;
+    if(this->spawnTimer >= this->spawnTimerMax) {
+        this->spawnTimer = 0.f;
+        this->spawnEnemies();
+    }
+    this->moveEnemy();
+}
+
+// SPAWNER FUNCTOINS 

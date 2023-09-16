@@ -10,7 +10,6 @@
 
 class GUI {
     private:
-
         std::string dataDir;
 
         // Animation Variables

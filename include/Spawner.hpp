@@ -2,7 +2,7 @@
 
 #include "Enemy.hpp"
 #include "vector"
-#include <ctime>s
+#include <ctime>
 
 class Spawner {
 
