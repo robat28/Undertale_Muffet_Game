@@ -17,7 +17,7 @@ void Player::initPlayer() {
  *  @brief Loads the Texture from the file and handles it if it can't.
  */
 void Player::initTexture() {
-    if(!this->texture.loadFromFile("../../GitHub/Undertale_Muffet_Game/textures/player_sprite.png")) {
+    if(!this->texture.loadFromFile(this->dataDir + "/textures/player_sprite.png")) {
         std::cout << "TEXTURE LOADING ERROR::PLAYER::textures/player_sprite.png" << '\n';
     }
 }
@@ -39,7 +39,8 @@ void Player::initSprite() {
 /**
  *  @brief Construct a new Player object.
  */
-Player::Player() {
+Player::Player(std::string dataDir) {
+    this->dataDir = dataDir;
     this->initPlayer();
     this->initTexture();
     this->initSprite();

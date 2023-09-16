@@ -74,11 +74,12 @@ void Game::initPlayer() {
  *  @brief Construct a new Game object that initializes all objects needed to build the game.
  *  @remark The Order of the init functions is important, else you can get segmentation fault.
  */
-Game::Game() {
+Game::Game(std::string dataDir) {
+    this->dataDir = dataDir;
     this->playfield = new Playfield();
-    this->gui = new GUI();
-    this->player = new Player();
-    this->enemy = new Enemy();
+    this->gui = new GUI(this->dataDir);
+    this->player = new Player(this->dataDir);
+    this->enemy = new Enemy(this->dataDir);
     
     this->initWindow();
     this->initVariables();
@@ -189,7 +190,7 @@ void Game::spawnEnemies() {
                      break;
             }
         }
-    Enemy* newEnemy = new Enemy(this->spawnPosX, this->spawnPosY, randomPosition);
+    Enemy* newEnemy = new Enemy(this->spawnPosX, this->spawnPosY, randomPosition, this->dataDir);
     this->enemies.push_back(newEnemy);
 }
 

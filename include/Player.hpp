@@ -15,6 +15,7 @@ enum LEVEL{
 
 class Player {
     private:
+        std::string dataDir;
 
         // Player Variables
         float movementSpeed;
@@ -32,7 +33,7 @@ class Player {
     public:
 
         // Constructor
-        Player();
+        Player(std::string dataDir);
 
         // Destructor
         ~Player();

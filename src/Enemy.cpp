@@ -27,7 +27,7 @@ void Enemy::initSprite() {
  *  @brief Loads the Texture from the file and handles it if it can't.
  */
 void Enemy::loadEnemyTexture() {
-    if(!texture.loadFromFile("../../GitHub/Undertale_Muffet_Game/textures/spiderEnemy_sprite.png")) {
+    if(!texture.loadFromFile(this->dataDir + "/textures/spiderEnemy_sprite.png")) {
         std::cout << "TEXTURE LOADING ERROR::ENEMY::textures/spiderEnemy_sprite.png" << '\n';
     }
 }
@@ -40,7 +40,8 @@ void Enemy::loadEnemyTexture() {
 /**
  *  @brief Construct a new Enemy object.
  */
-Enemy::Enemy() {
+Enemy::Enemy(std::string dataDir) {
+    this->dataDir = dataDir;
     this->initVariables();
 }
 
@@ -48,7 +49,8 @@ Enemy::Enemy() {
 /**
  *  @brief Construct a new Enemy object.
  */
-Enemy::Enemy(float x, float y, const int spawnPosition) {
+Enemy::Enemy(float x, float y, const int spawnPosition, std::string dataDir) {
+    this->dataDir = dataDir;
     this->initSprite();
     this->initVariables();
     this->sprite.setPosition(x,y);
