@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Enemy.hpp"
+#include "Playfield.hpp"
 #include "vector"
 #include <ctime>
 
@@ -9,6 +10,9 @@ class Spawner {
     private:
 
         // Private Variables
+        int randomPosition;
+        float spawnPosX;
+        float spawnPosY;
 
         // Private Functions
         void initVariables();
@@ -22,16 +26,11 @@ class Spawner {
         // Destructor
         ~Spawner();
 
-        // Public Variables
+        // Enemies
         std::vector<Enemy*> enemies;
-
-        // Getter
-
-        // Setter
+        Enemy* enemy;
 
         // Public Functions
-        void spawnEnemy();
-        void upadteEnemies();
-        void render(sf::RenderTarget& target);
+        void spawnEnemiesRandom(sf::RenderTarget* window, Playfield* playfield, std::string& dataDir);
 
 };

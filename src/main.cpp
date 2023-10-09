@@ -1,6 +1,7 @@
 #include "Game.hpp"
 
 int main(int argc, char** argv) {
+    
     std::string dataDir = argv[0];
     dataDir.erase(dataDir.rfind("/"));
     dataDir.append("/../");

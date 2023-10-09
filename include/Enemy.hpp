@@ -29,7 +29,7 @@ class Enemy{
     public:
 
         // Constructor
-        Enemy(std::string dataDir);
+        Enemy();
         Enemy(float x, float y, const int spawnPosition, std::string dataDir);
 
         // Destructor

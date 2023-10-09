@@ -40,8 +40,7 @@ void Enemy::loadEnemyTexture() {
 /**
  *  @brief Construct a new Enemy object.
  */
-Enemy::Enemy(std::string dataDir) {
-    this->dataDir = dataDir;
+Enemy::Enemy() {
     this->initVariables();
 }
 

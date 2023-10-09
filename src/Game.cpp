@@ -18,6 +18,8 @@ void Game::initVariables() {
     this->buttonCooldown = this->buttonCooldownMax;
     this->spawnTimerMax = 15.f;
     this->spawnTimer = 0.f;
+    this->iFramesMax = 30.f;
+    this->iFrames = iFramesMax;
 }
 
 /**
@@ -43,8 +45,8 @@ void Game::initPlayfield() {
 
     this->playfieldPosX = playfieldCenterX - (this->playfield->getWidth() / 2.f - 5.f);
     this->playfieldPosY = playfieldCenterY - (this->playfield->getHeight() / 2.f - 5.f);
-    this->playfield->setPosition(playfieldPosX, playfieldPosY);
 
+    this->playfield->setPosition(playfieldPosX, playfieldPosY);
     this->playfield->setLevelPositions(this->playfield->getBounds().left, playfieldCenterY);
 }
 
@@ -79,7 +81,7 @@ Game::Game(std::string dataDir) {
     this->playfield = new Playfield();
     this->gui = new GUI(this->dataDir);
     this->player = new Player(this->dataDir);
-    this->enemy = new Enemy(this->dataDir);
+    this->spawner = new Spawner();
     
     this->initWindow();
     this->initVariables();
@@ -96,7 +98,6 @@ Game::~Game() {
     delete this->player;
     delete this->playfield;
     delete this->gui;
-    delete this->enemy;
 }
 
 /**
@@ -202,6 +203,7 @@ void Game::updateInput() {
     }
     // Collision check
     this->updateCollisonPlayfield();
+    this->updateCollisionEnemy();
 }
 
 /**
@@ -216,8 +218,30 @@ void Game::updateCollisonPlayfield() {
     }
     //Right
     else if(this->player->getBounds().left + this->player->getBounds().width > this->playfield->getBounds().left + this->playfield->getBounds().width - 5) {
-        this->player->setPosition((this->playfield->getBounds().left) + (this->playfield->getBounds().width) - (this->player->getBounds().width) - 5, this->player->getBounds().top);
+        this->player->setPosition((this->playfield->getBounds().left) + (this->playfield->getBounds().width) - (this->player->getBounds().width) - 5, 
+        this->player->getBounds().top);
     }
+}
+
+/**
+ * 
+ * 
+ * 
+ */
+void Game::updateCollisionEnemy() {
+    if(this->iFrames < this->iFramesMax) {
+        this->iFrames += 1;
+    }
+    if(this->iFrames == this->iFramesMax) {
+        for(Enemy* enemy : this->spawner->enemies) {
+            if(this->player->getBounds().intersects(enemy->getBounds())) {
+                this->iFrames = 0.f;
+                std::cout << "Hit" << "\n";
+            }
+        }
+    }
+    
+    
 }
 
 /** 
@@ -253,7 +277,7 @@ void Game::render() {
     this->playfield->render(*this->window);
     this->gui->render(*this->window);
 
-    for(auto enemy : this->enemies) {
+    for(auto enemy : this->spawner->enemies) {
         enemy->render(*this->window);
     }
 
@@ -264,45 +288,7 @@ void Game::render() {
 
 
 
-
-
-
 // SPAWNER FUNCTOINS 
-
-void Game::spawnEnemies() {
-    this->randomPosition = rand() % 6 + 1;
-    this->spawnPosY = this->window->getSize().y / 1.4f;
-        if((this->randomPosition % 2) == 1) {
-            this->spawnPosX = (this->playfield->getBounds().left) - (this->playfield->getBounds().width / 4) - this->enemy->getSize();
-            switch(this->randomPosition) {
-                case 1:
-                    this->spawnPosY = this->spawnPosY - (this->playfield->getBounds().height / 4) - (this->enemy->getSize() / 2);
-                    break;
-                case 3:
-                    this->spawnPosY = this->spawnPosY - this->enemy->getSize() / 2;
-                    break;
-                case 5:
-                     this->spawnPosY = this->spawnPosY + (this->playfield->getBounds().height / 4) - (this->enemy->getSize() / 2);
-                     break;
-            }
-        }
-        else {
-            this->spawnPosX = (this->playfield->getBounds().left) + (this->playfield->getBounds().width) + (this->playfield->getBounds().width / 4);
-            switch(this->randomPosition) {
-                case 2:
-                    this->spawnPosY = this->spawnPosY - (this->playfield->getBounds().height / 4) - (this->enemy->getSize() / 2);
-                    break;
-                case 4:
-                    this->spawnPosY = this->spawnPosY - this->enemy->getSize() / 2;
-                    break;
-                case 6:
-                     this->spawnPosY = this->spawnPosY + (this->playfield->getBounds().height / 4) - (this->enemy->getSize() / 2);
-                     break;
-            }
-        }
-    Enemy* newEnemy = new Enemy(this->spawnPosX, this->spawnPosY, randomPosition, this->dataDir);
-    this->enemies.push_back(newEnemy);
-}
 
 bool Game::borderReachedOdd(Enemy& movingEnemy) const {
     if(movingEnemy.getBounds().left >= (this->playfield->getBounds().left) + (this->playfield->getBounds().width) + (this->playfield->getBounds().width / 4)) {
@@ -313,7 +299,7 @@ bool Game::borderReachedOdd(Enemy& movingEnemy) const {
 }
 
 bool Game::borderReachedEven(Enemy& movingEnemy) const {
-     if(movingEnemy.getBounds().left <= (this->playfield->getBounds().left) - (this->playfield->getBounds().width / 4) - this->enemy->getSize()) {
+     if(movingEnemy.getBounds().left <= (this->playfield->getBounds().left) - (this->playfield->getBounds().width / 4) - this->spawner->enemy->getSize()) {
             return true;
     } else {
         return false;
@@ -321,11 +307,11 @@ bool Game::borderReachedEven(Enemy& movingEnemy) const {
 }   
 
 void Game::moveEnemy() { 
-    for(auto* movingEnemy : this->enemies) {
+    for(auto* movingEnemy : this->spawner->enemies) {
         // Moving Right
         if((movingEnemy->getSpawnPoint() % 2) == 1) {
             if(this->borderReachedOdd(*movingEnemy)) {
-                this->enemies.erase(this->enemies.begin());
+                this->spawner->enemies.erase(this->spawner->enemies.begin());
                 delete movingEnemy;
             } else {
                 movingEnemy->move(1.f, 0.f);
@@ -333,7 +319,7 @@ void Game::moveEnemy() {
         } else {
         // Moving Left
             if(this->borderReachedEven(*movingEnemy)) {
-                this->enemies.erase(this->enemies.begin());
+                this->spawner->enemies.erase(this->spawner->enemies.begin());
                 delete movingEnemy;
             } else {
                 movingEnemy->move(-1.f, 0.f);
@@ -346,7 +332,7 @@ void Game::upadteEnemies() {
     this->spawnTimer += 0.5f;
     if(this->spawnTimer >= this->spawnTimerMax) {
         this->spawnTimer = 0.f;
-        this->spawnEnemies();
+        this->spawner->spawnEnemiesRandom(this->window, this->playfield, this->dataDir);
     }
     this->moveEnemy();
 }

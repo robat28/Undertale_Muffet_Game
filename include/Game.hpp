@@ -22,24 +22,25 @@ class Game {
         sf::Clock clock;
         sf::Time deltaTime;
 
-        // Private Variables
+        // Enemy Spawner
+        Spawner* spawner;
+
+        // Playfield Variables
         float playfieldCenterX;
         float playfieldCenterY;
         float playfieldPosX;
         float playfieldPosY;
 
+        // Button Variables
         float buttonCooldown;
         float buttonCooldownMax;
 
-        // Enemies
-        std::vector<Enemy*> enemies;
-        Enemy* enemy;
-
-        int randomPosition;
-        float spawnPosX;
-        float spawnPosY;
+        // 
         float spawnTimer;
         float spawnTimerMax;
+
+        float iFrames;
+        float iFramesMax;
 
         // Private Functions
         void initVariables();
@@ -62,13 +63,13 @@ class Game {
         bool borderReachedOdd(Enemy& enemy) const;
         bool borderReachedEven(Enemy& enemy) const;
         void pollEvents();
-        void spawnEnemies();
         void moveEnemy();
 
         // Update Functions
         void update();
         void updateInput();
         void updateCollisonPlayfield();
+        void updateCollisionEnemy();
         void updateButtonCooldown();
         void updateDeltaTime();
         void upadteEnemies();
