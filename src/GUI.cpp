@@ -13,10 +13,10 @@
  */
 void GUI::initAnimationVariables() {
     this->frameLength = this->sprite.getTexture()->getSize().y;
-    this->numFrames = this->sprite.getTexture()->getSize().x / frameLength ;
+    this->numFrames = this->sprite.getTexture()->getSize().x / frameLength;
     this->frameDuration = sf::seconds(0.03f);
     this->frameRect = sf::IntRect(0,0,frameLength, frameLength);
-    this->currentFrame = 0;
+    this->currentFrame = 0.f;
 }
 
 /**
@@ -25,7 +25,13 @@ void GUI::initAnimationVariables() {
 void GUI::initSprite() {
     this->loadSpriteSheetTexture();
     this->sprite.setTexture(spritesheetTexture);
-    this->sprite.scale(2.5f, 2.5f);
+    this->sprite.scale(3.f, 3.f);
+}
+
+void GUI::initSounds() {
+    this->loadSounds();
+    this->hitSound.setBuffer(hitBuffer);
+    this->hitSound.setVolume(15.f);
 }
 
 /**
@@ -37,6 +43,23 @@ void GUI::loadSpriteSheetTexture() {
     }
 }
 
+/**
+ *  @brief 
+ */
+void GUI::loadSounds() {
+    if(!this->hitBuffer.loadFromFile(this->dataDir + "sounds/damaged.wav")) {
+        std::cout << "SOUND LOADING ERROR::GUI::damaged.wav" << '\n';
+    }
+}
+
+void GUI::loadMusic() {
+    if(!this->music.openFromFile(this->dataDir + "sounds/spider_dance_ost.wav")) {
+        std::cout << "MUSIC LOADING ERROR::GUI::spider_dance_ost.wav" << '\n';
+    }
+    this->music.setLoop(true);
+    this->music.setVolume(15.f);
+    this->music.play();
+}
 
 /**
  *  Public Functions
@@ -49,7 +72,9 @@ void GUI::loadSpriteSheetTexture() {
 GUI::GUI(std::string dataDir) {
     this->dataDir = dataDir;
     this->initSprite();
+    this->initSounds();
     this->initAnimationVariables();
+    this->loadMusic();
 }
 
 /**
@@ -58,13 +83,26 @@ GUI::GUI(std::string dataDir) {
 GUI::~GUI() {
 }
 
+
+void GUI::playHitSound() {
+    this->hitSound.play();
+}
+
 /**
  * @brief Sets the position of the sprite centered above the playfield. 
  * @param x const float
  * @param y const float
  */
 void GUI::setSpritePosition(const float& x, const float& y) {
-    this->sprite.setPosition(x - ((this->sprite.getGlobalBounds().width / numFrames) / 2), y - this->sprite.getGlobalBounds().height);
+    this->sprite.setPosition(x, y);
+}
+
+const float GUI::getSpriteWidth() const {
+    return this->sprite.getGlobalBounds().width / numFrames;
+}
+
+const float GUI::getSpriteHeight() const {
+    return this->sprite.getGlobalBounds().height;
 }
 
 /**

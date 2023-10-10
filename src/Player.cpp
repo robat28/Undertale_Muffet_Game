@@ -10,6 +10,8 @@
  */
 void Player::initPlayer() {
     this->movementSpeed = 4.f;
+    this->hpMax = 20.f;
+    this->hp = this->hpMax;
     this->currentLevel = MIDDLE;
 }
 
@@ -85,6 +87,22 @@ const LEVEL Player::getCurrentLevel() {
  }
 
 /**
+ *  @brief Getter for the Health Points of the player. 
+ *  @return const float 
+ */
+ const float Player::getHp() {
+    return this->hp;
+ }
+
+ /**
+ *  @brief Getter for the maximum Health Points of the player. 
+ *  @return const float 
+ */
+ const float Player::getHpMax() {
+    return this->hpMax;
+ }
+
+/**
  *  @brief Sets new Level of the player.
  *  @param newLevel 
  */
@@ -99,6 +117,22 @@ void Player::setNewLevel(LEVEL newLevel) {
  */
 void Player::setPosition(const float& x, const float& y) {
     this->sprite.setPosition(x,y);
+}
+
+/**
+ * @brief 
+ * 
+ * @param r 
+ * @param g 
+ * @param b 
+ * @param transp 
+ */
+void Player::setColor(const float r, const float g, const float b, const float transp) {
+    this->sprite.setColor(sf::Color(r, g, b, transp));
+}
+
+void Player::takeDamage(const float& damage) {
+    this->hp -= damage;
 }
 
 /**

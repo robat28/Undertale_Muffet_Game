@@ -14,12 +14,19 @@ void Game::initVariables() {
     this->playfieldCenterY = 0.f;
     this->playfieldPosX = 0.f;
     this->playfieldPosY = 0.f;
+    this->spritePosX = 0.f;
+    this->spritePosY = 0.f;
+    this->playerStartPosX = 0.f;
+    this->playerStartPosY = 0.f;
     this->buttonCooldownMax = 5.5f;
     this->buttonCooldown = this->buttonCooldownMax;
     this->spawnTimerMax = 15.f;
     this->spawnTimer = 0.f;
-    this->iFramesMax = 30.f;
+    this->iFramesMax = 60.f;
     this->iFrames = iFramesMax;
+    this->enemyDamage = 4.f;
+    this->impactFrames = 0.f;
+
 }
 
 /**
@@ -55,15 +62,18 @@ void Game::initPlayfield() {
  *  @remark Dividend of setSpritePosition().y is a wild guess but it looks good.
  */
 void Game::initAnimation() {
-    this->gui->setSpritePosition(this->window->getSize().x / 2, this->window->getSize().y / 1.8);
+    this->spritePosX = this->window->getSize().x / 2.f - this->gui->getSpriteWidth() / 2;
+    this->spritePosY = this->window->getSize().y / 1.75f - this->gui->getSpriteHeight();
+    this->gui->setSpritePosition(this->spritePosX, this->spritePosY);
 }
 
 /**
  *  @brief Sets the spawn position of the player in the middle of the Playfield on the second level.
  */
 void Game::initPlayer() {
-    this->player->setPosition(this->window->getSize().x / 2.f - this->player->getWidth() / 2.f, 
-                              this->playfield->getBounds().top + this->playfield->getHeight() / 2 - this->player->getHeight() / 2.f);
+    this->playerStartPosX = this->window->getSize().x / 2.f - this->player->getWidth() / 2.f;
+    this->playerStartPosY = this->playfield->getBounds().top + this->playfield->getHeight() / 2 - this->player->getHeight() / 2.f;
+    this->player->setPosition(this->playerStartPosX, this->playerStartPosY);
 }
 
 
@@ -137,6 +147,12 @@ void Game::pollEvents() {
             default:
                 break;
         }
+        /*
+        if(this->player->getHp() <= 0.f) {
+            this->window->close();
+        }
+        */
+        
     }
 }
 
@@ -225,22 +241,41 @@ void Game::updateCollisonPlayfield() {
 
 /**
  * 
- * 
+ *  iFrames in int for modulo
  * 
  */
 void Game::updateCollisionEnemy() {
-    if(this->iFrames < this->iFramesMax) {
+    // Visual Iframes
+    if(this->iFramesMax > this->iFrames)
         this->iFrames += 1;
-    }
-    if(this->iFrames == this->iFramesMax) {
+        if(this->iFrames % 10 == 0) {
+            this->player->setColor(255, 255, 255 ,255);
+        } 
+        else if(this->iFrames % 5 == 0) {
+            this->player->setColor(255, 255, 255 ,150);
+        }
+        // Shaking Screen
+        if(this->iFrames < 20) {
+            if(this->iFrames % 8 == 0) {
+                this->resetScreen();
+            } 
+            else if(this->iFrames % 4 == 0) {
+                this->shakeScreen();
+            }
+        }
+
+    if(this->iFrames >= this->iFramesMax) {
         for(Enemy* enemy : this->spawner->enemies) {
             if(this->player->getBounds().intersects(enemy->getBounds())) {
                 this->iFrames = 0.f;
-                std::cout << "Hit" << "\n";
+                this->player->takeDamage(this->enemyDamage);
+                std::cout << this->player->getHp() << "HP left" << "\n";
+                this->gui->playHitSound();
+
             }
         }
     }
-    
+
     
 }
 
@@ -286,6 +321,40 @@ void Game::render() {
     this->window->display();
 }
 
+/**
+ *  @brief 
+ * 
+ */
+void Game::shakeScreen() {
+    if(this->impactFrames == 0.f) {
+        this->impactFrames = 2.f;
+    }
+    this->playfield->setPosition(playfieldPosX - this->impactFrames, playfieldPosY - this->impactFrames);
+    this->playfield->setLevelPositions(this->playfield->getBounds().left - this->impactFrames, playfieldCenterY - this->impactFrames);
+    this->player->setPosition(this->player->getBounds().getPosition().x - this->impactFrames, this->player->getBounds().getPosition().y - this->impactFrames);
+    this->gui->setSpritePosition(this->spritePosX - 2.f, this->spritePosY - 2.f);
+
+    for(Enemy* enemy : this->spawner->enemies) {
+        enemy->setPosition(enemy->getBounds().getPosition().x - this->impactFrames, enemy->getBounds().getPosition().y - this->impactFrames);
+    }
+    this->impactFrames -= 1.f;
+
+}
+
+/**
+ *  @brief 
+ * 
+ */
+void Game::resetScreen() {
+    this->playfield->setPosition(playfieldPosX, playfieldPosY);
+    this->playfield->setLevelPositions(this->playfield->getBounds().left, playfieldCenterY);
+    this->player->setPosition(this->player->getBounds().getPosition().x + this->impactFrames, this->player->getBounds().getPosition().y + this->impactFrames);
+    this->gui->setSpritePosition(this->spritePosX, this->spritePosY);
+
+    for(Enemy* enemy : this->spawner->enemies) {
+        enemy->setPosition(enemy->getBounds().getPosition().x + this->impactFrames, enemy->getBounds().getPosition().y + this->impactFrames);
+    }
+}
 
 
 // SPAWNER FUNCTOINS 

@@ -2,6 +2,7 @@
 
 int main(int argc, char** argv) {
     
+    // Find the folder
     std::string dataDir = argv[0];
     dataDir.erase(dataDir.rfind("/"));
     dataDir.append("/../");

@@ -24,6 +24,7 @@ class Game {
 
         // Enemy Spawner
         Spawner* spawner;
+        float enemyDamage;
 
         // Playfield Variables
         float playfieldCenterX;
@@ -35,12 +36,21 @@ class Game {
         float buttonCooldown;
         float buttonCooldownMax;
 
+        // Animation
+        float spritePosX;
+        float spritePosY;
+
         // 
         float spawnTimer;
         float spawnTimerMax;
 
-        float iFrames;
-        float iFramesMax;
+        int iFrames;
+        int iFramesMax;
+
+        float impactFrames;
+
+        float playerStartPosX;
+        float playerStartPosY;
 
         // Private Functions
         void initVariables();
@@ -64,6 +74,8 @@ class Game {
         bool borderReachedEven(Enemy& enemy) const;
         void pollEvents();
         void moveEnemy();
+        void shakeScreen();
+        void resetScreen();
 
         // Update Functions
         void update();

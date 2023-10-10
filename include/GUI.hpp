@@ -25,11 +25,22 @@ class GUI {
 
         // Timer
         sf::Time totalTime;
+
+
+        // Sounds
+        sf::SoundBuffer hitBuffer;
+        sf::Sound hitSound;
+        sf::Music music;
         
         // Private Functions
         void initAnimationVariables();
+
         void initSprite();
         void loadSpriteSheetTexture();
+
+        void initSounds();
+        void loadSounds();
+        void loadMusic();
 
     public:
 
@@ -39,11 +50,19 @@ class GUI {
         // Destructor
         ~GUI();
 
+        // Getter
+        const float getSpriteWidth() const;
+        const float getSpriteHeight() const;
+        sf::Sound getHitSound();
+
         // Setter
         void setSpritePosition(const float& x, const float& y);
+        void setNewSpritePosition(const float& x, const float& y);
         void setFrameRect(const int& currentFrame);
 
         // Public Functions
+        void playHitSound();
+        void playMusic();
         void updateSprite(sf::Time& deltaTime);
         void render(sf::RenderTarget& target);
 };
