@@ -27,6 +27,7 @@ void Game::initVariables() {
     this->enemyDamage = 4.f;
     this->impactFrames = 0.f;
 
+
 }
 
 /**
@@ -61,10 +62,12 @@ void Game::initPlayfield() {
  *  @brief Sets the position of the Muffet animation right above the palyfield.
  *  @remark Dividend of setSpritePosition().y is a wild guess but it looks good.
  */
-void Game::initAnimation() {
+void Game::initGUI() {
     this->spritePosX = this->window->getSize().x / 2.f - this->gui->getSpriteWidth() / 2;
     this->spritePosY = this->window->getSize().y / 1.75f - this->gui->getSpriteHeight();
     this->gui->setSpritePosition(this->spritePosX, this->spritePosY);
+
+    this->gui->setHPBarPosition(this->playfieldPosX + this->playfield->getWidth() / 4.f, this->playerStartPosY + this->playfield->getHeight() / 2.f + 25.f);
 }
 
 /**
@@ -97,7 +100,7 @@ Game::Game(std::string dataDir) {
     this->initVariables();
     this->initPlayfield();
     this->initPlayer();
-    this->initAnimation();
+    this->initGUI();
 }
 
 /**
@@ -248,10 +251,11 @@ void Game::updateCollisionEnemy() {
     // Visual Iframes
     if(this->iFramesMax > this->iFrames)
         this->iFrames += 1;
-        if(this->iFrames % 10 == 0) {
+
+        if((this->iFramesMax - 5  > this->iFrames) && this->iFrames % 10 == 0) {
             this->player->setColor(255, 255, 255 ,255);
         } 
-        else if(this->iFrames % 5 == 0) {
+        else if((this->iFramesMax - 5  > this->iFrames) && this->iFrames % 5 == 0) {
             this->player->setColor(255, 255, 255 ,150);
         }
         // Shaking Screen
@@ -269,14 +273,12 @@ void Game::updateCollisionEnemy() {
             if(this->player->getBounds().intersects(enemy->getBounds())) {
                 this->iFrames = 0.f;
                 this->player->takeDamage(this->enemyDamage);
-                std::cout << this->player->getHp() << "HP left" << "\n";
+                this->gui->setSize(sf::Vector2f(35.f * this->player->getHp() / this->player->getHpMax(), 30.f));
+                this->gui->setHpString(this->player->getHp());
                 this->gui->playHitSound();
-
             }
         }
     }
-
-    
 }
 
 /** 
@@ -337,8 +339,6 @@ void Game::shakeScreen() {
     for(Enemy* enemy : this->spawner->enemies) {
         enemy->setPosition(enemy->getBounds().getPosition().x - this->impactFrames, enemy->getBounds().getPosition().y - this->impactFrames);
     }
-    this->impactFrames -= 1.f;
-
 }
 
 /**
@@ -354,6 +354,9 @@ void Game::resetScreen() {
     for(Enemy* enemy : this->spawner->enemies) {
         enemy->setPosition(enemy->getBounds().getPosition().x + this->impactFrames, enemy->getBounds().getPosition().y + this->impactFrames);
     }
+
+    this->impactFrames -= 1.f;
+
 }
 
 

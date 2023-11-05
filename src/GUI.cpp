@@ -34,6 +34,26 @@ void GUI::initSounds() {
     this->hitSound.setVolume(15.f);
 }
 
+void GUI::initHealthBar() {
+    this->healthBarRemaining.setSize(sf::Vector2f(35.f, 30.f));
+    this->healthBarLost.setSize(sf::Vector2f(35.f, 30.f));
+
+    this->healthBarRemaining.setFillColor(sf::Color(255, 255, 0));
+    this->healthBarLost.setFillColor(sf::Color(255, 0, 0));
+}
+
+void GUI::initHealthText() {
+    this->loadFont();
+    this->healthText.setFont(this->font);
+    this->healthText.scale(0.7f, 0.7f);
+    this->healthText.setString("");
+    this->setHpString(20);
+}
+
+void GUI::initHUD() {
+
+}
+
 /**
  *  @brief Loads the Texture from the file and handles it if it can't. 
  */
@@ -61,6 +81,12 @@ void GUI::loadMusic() {
     this->music.play();
 }
 
+void GUI::loadFont() {
+    if(!this->font.loadFromFile(this->dataDir + "fonts/ingame-hud-font.ttf")) {
+        std::cout << "FONT LOADING ERROR::GUI::fonts/ingame-hud-font.ttf" << '\n';
+    }
+}
+
 /**
  *  Public Functions
  */
@@ -74,6 +100,8 @@ GUI::GUI(std::string dataDir) {
     this->initSprite();
     this->initSounds();
     this->initAnimationVariables();
+    this->initHealthBar();
+    this->initHealthText();
     this->loadMusic();
 }
 
@@ -97,6 +125,12 @@ void GUI::setSpritePosition(const float& x, const float& y) {
     this->sprite.setPosition(x, y);
 }
 
+void GUI::setHPBarPosition(const float& x, const float& y) {
+    this->healthBarRemaining.setPosition(x, y);
+    this->healthBarLost.setPosition(x, y);
+    this->healthText.setPosition(x + 60.f, y + 5.f);
+}
+
 const float GUI::getSpriteWidth() const {
     return this->sprite.getGlobalBounds().width / numFrames;
 }
@@ -113,6 +147,19 @@ void GUI::setFrameRect(const int& currentFrame) {
     this->frameRect.left = currentFrame * this->frameLength;
     this->sprite.setTextureRect(this->frameRect);
 }
+
+void GUI::setSize(sf::Vector2f size) {
+    this->healthBarRemaining.setSize(size);
+}
+
+void GUI::setHpString(const int& currentHp) {
+    if(currentHp >= 10) {
+        this->healthText.setString(std::to_string(currentHp) + " / 20");
+    } else {
+        this->healthText.setString("0" + std::to_string(currentHp) + " / 20");
+    }
+}
+
 
 /**
  *  @brief Updates the Animation frame.
@@ -134,4 +181,7 @@ void GUI::updateSprite(sf::Time& deltaTime) {
  */
 void GUI::render(sf::RenderTarget& target) {
     target.draw(this->sprite);
+    target.draw(this->healthBarLost);
+    target.draw(this->healthBarRemaining);
+    target.draw(this->healthText);
 }

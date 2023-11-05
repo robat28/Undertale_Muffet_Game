@@ -1,12 +1,6 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/Audio.hpp>
-#include <SFML/Network.hpp>
-#include <iostream>
-#include <vector>
+#include "Player.hpp"
 
 class GUI {
     private:
@@ -26,6 +20,12 @@ class GUI {
         // Timer
         sf::Time totalTime;
 
+        // HP-Bar
+        sf::Font font;
+        sf::Text healthText;
+        sf::Text playerName;
+        sf::RectangleShape healthBarRemaining;
+        sf::RectangleShape healthBarLost;
 
         // Sounds
         sf::SoundBuffer hitBuffer;
@@ -41,6 +41,13 @@ class GUI {
         void initSounds();
         void loadSounds();
         void loadMusic();
+
+        void loadFont();
+        void initHUD();
+        void initHealthText();
+        void initPlayerName();
+
+        void initHealthBar();
 
     public:
 
@@ -59,6 +66,9 @@ class GUI {
         void setSpritePosition(const float& x, const float& y);
         void setNewSpritePosition(const float& x, const float& y);
         void setFrameRect(const int& currentFrame);
+        void setHPBarPosition(const float& x, const float& y);
+        void setSize(sf::Vector2f size);
+        void setHpString(const int& currentHp);
 
         // Public Functions
         void playHitSound();

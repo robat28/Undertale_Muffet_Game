@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Spawner.hpp"
-#include "Player.hpp"
 #include "Playfield.hpp"
 
 class Game {    
@@ -56,7 +55,7 @@ class Game {
         void initVariables();
         void initWindow();
         void initPlayfield();
-        void initAnimation();
+        void initGUI();
         void initPlayer();
 
     public:

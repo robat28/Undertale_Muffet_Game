@@ -132,7 +132,8 @@ void Player::setColor(const float r, const float g, const float b, const float t
 }
 
 void Player::takeDamage(const float& damage) {
-    this->hp -= damage;
+    if(this->hp > 0) 
+        this->hp -= damage;
 }
 
 /**
