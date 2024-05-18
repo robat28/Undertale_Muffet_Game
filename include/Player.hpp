@@ -26,6 +26,8 @@ class Player {
 
         // Texture of Player
         sf::Sprite sprite;
+        sf::Sprite defeatSprite;
+        sf::Texture defeatTexture;
         sf::Texture texture;
 
         // Private Functions
@@ -53,6 +55,9 @@ class Player {
         void setNewLevel(LEVEL newLevel);
         void setPosition(const float& x, const float& y);
         void setColor(const float r, const float g, const float b, const float transp);
+        void setTexture();
+        void setDefeatTexture();
+        void setHP(const int &health);
 
         // Public Functions
         void move(const float& x, const float& y);

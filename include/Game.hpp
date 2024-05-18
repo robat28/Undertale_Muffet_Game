@@ -1,21 +1,23 @@
 #pragma once
 
+#include "cScreen.hpp"
+
 #include "Spawner.hpp"
 #include "Playfield.hpp"
 
-class Game {    
+class Game : public cScreen {    
     private:
+
         std::string dataDir;
 
-        // Window and Display
+        // Window and Displays
         sf::RenderWindow* window;
         sf::Event evnt;
-        sf::VideoMode vMode;
+        bool running;
 
         // Render objects
         GUI* gui;
         Playfield* playfield;
-        Player* player;
 
         // Update Time 
         sf::Clock clock;
@@ -51,6 +53,12 @@ class Game {
         float playerStartPosX;
         float playerStartPosY;
 
+        // Game Over Variables
+        int gameOverTimer;
+        int defeatSpriteCounter;
+
+        bool gameOver;
+
         // Private Functions
         void initVariables();
         void initWindow();
@@ -58,23 +66,31 @@ class Game {
         void initGUI();
         void initPlayer();
 
+
     public:
 
+        virtual int Run();
+
+        Player* player;
+
         // Constructor
-        Game(std::string dataDir);
+        Game(std::string dataDir, sf::RenderWindow *window);
 
         // Destructor
         ~Game();
 
         // Public Functions
-        const bool running() const;
         const bool canPressButton();
         bool borderReachedOdd(Enemy& enemy) const;
         bool borderReachedEven(Enemy& enemy) const;
-        void pollEvents();
+        int pollEvents();
         void moveEnemy();
         void shakeScreen();
         void resetScreen();
+        void restartGame();
+
+        void gameOverScreen();
+        void killScreen();
 
         // Update Functions
         void update();
@@ -86,4 +102,6 @@ class Game {
         void upadteEnemies();
 
         void render();
+
+
 };

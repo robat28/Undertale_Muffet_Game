@@ -47,8 +47,7 @@ Playfield::Playfield() {
 /**
  *  @brief Destroy the Playfield object.
  */
-Playfield::~Playfield() {
-}
+Playfield::~Playfield() {}
 
 /**
  *  @brief Getter for the Bounds of the Playfield.

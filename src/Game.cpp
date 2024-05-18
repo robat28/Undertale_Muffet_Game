@@ -1,4 +1,5 @@
 #include "Game.hpp"
+#include <math.h>
 
 /**
  *  Private Functions
@@ -26,20 +27,10 @@ void Game::initVariables() {
     this->iFrames = iFramesMax;
     this->enemyDamage = 4.f;
     this->impactFrames = 0.f;
-
-
+    this->defeatSpriteCounter = 0;
+    this->gameOverTimer = 0;
+    this->gameOver = false;
 }
-
-/**
- *  @brief Initializes and sets all Properties of the window.
- *  @remark FramerateLimit is at 60 Frames, so the game appears same on most devices.
- */
-void Game::initWindow() {
-    this->vMode.width = 1000;
-    this->vMode.height = 750;
-    this->window = new sf::RenderWindow(this->vMode, "Undertale Muffet Minigame", sf::Style::Titlebar | sf::Style::Close);
-    this->window->setFramerateLimit(60);
-} 
 
 /**
  *  @brief Calculate the right Position for the Playfield and also sets the postion of the Playfield and the Position of
@@ -68,6 +59,8 @@ void Game::initGUI() {
     this->gui->setSpritePosition(this->spritePosX, this->spritePosY);
 
     this->gui->setHPBarPosition(this->playfieldPosX + this->playfield->getWidth() / 4.f, this->playerStartPosY + this->playfield->getHeight() / 2.f + 25.f);
+
+    this->gui->setGameOverTextPosition(this->window->getSize().x / 2, this->window->getSize().y / 5);
 }
 
 /**
@@ -89,14 +82,14 @@ void Game::initPlayer() {
  *  @brief Construct a new Game object that initializes all objects needed to build the game.
  *  @remark The Order of the init functions is important, else you can get segmentation fault.
  */
-Game::Game(std::string dataDir) {
+Game::Game(std::string dataDir, sf::RenderWindow *window) {
     this->dataDir = dataDir;
+    this->window = window;
     this->playfield = new Playfield();
     this->gui = new GUI(this->dataDir);
     this->player = new Player(this->dataDir);
     this->spawner = new Spawner();
     
-    this->initWindow();
     this->initVariables();
     this->initPlayfield();
     this->initPlayer();
@@ -107,18 +100,38 @@ Game::Game(std::string dataDir) {
  *  @brief Destroy the Game:: Game object
  */
 Game::~Game() {
-    delete this->window;
-    delete this->player;
     delete this->playfield;
     delete this->gui;
+    delete this->player;
+    delete this->spawner;
 }
 
-/**
- *  @brief Replaces the isOpen() method.
- *  @return true: While the window is not Closed.
- */
-const bool Game::running() const {
-    return this->window->isOpen();
+
+int Game::Run() {
+    running = true;
+
+    while(running) {
+
+        while(this->window->pollEvent(this->evnt)) {
+            if (this->evnt.type == sf::Event::Closed) {
+                return (-1);
+            }
+            if (this->evnt.type == sf::Event::KeyPressed) {
+                switch (this->evnt.key.code) {
+                case sf::Keyboard::Escape: 
+                    return (0);
+                default:
+                    break;
+                }
+            
+            }
+        }
+
+        this->update();
+        this->render();
+    }
+
+    return (-1);
 }
 
 /**
@@ -136,34 +149,44 @@ const bool Game::canPressButton() {
 /**
  *  @brief Handles some main actions like closing window, etc.
  */
-void Game::pollEvents() {
+int Game::pollEvents() {
     while(this->window->pollEvent(this->evnt)) {
-        switch(this->evnt.type) {
-            case sf::Event::Closed: 
-                this->window->close();
-                break; 
-            case sf::Event::KeyPressed:
-                if(evnt.key.code == sf::Keyboard::Escape) {
-                    this->window->close();
-                }
-                break;    
+        if (this->evnt.type == sf::Event::Closed) {
+            return (-1);
+        }
+        if (this->evnt.type == sf::Event::KeyPressed) {
+            switch (this->evnt.key.code) {
+            case sf::Keyboard::Escape: 
+                return (0);
             default:
                 break;
-        }
-        /*
-        if(this->player->getHp() <= 0.f) {
-            this->window->close();
-        }
-        */
+            }
         
+        }
     }
+    return (-1);    
+}
+
+/**
+ * @brief 
+ * 
+ */
+void Game::restartGame() {
+    this->player->setHP(20);
+    this->player->setTexture();
+    // Stop Music and Start Theme
+    this->player->setColor(255, 255, 255 ,255);
+
+    for(auto enemy : this->spawner->enemies) {
+        delete enemy;
+    }
+
 }
 
 /**
  *  @brief The update function of the main method. Executes all update function of the game to update every frame.
  */
 void Game::update() {
-    this->pollEvents();
     this->updateDeltaTime();
     this->updateInput();
     this->updateButtonCooldown();
@@ -176,59 +199,62 @@ void Game::update() {
  *  @remark Can only press UP and DOWN if canPressButton is true (cooldown is up). 
  */
 void Game::updateInput() {
-    //Moving LEFT
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-        this->player->move(-1.f, 0.f);
-    } 
-    // Moving RIGHT
-    else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-        this->player->move(1.f, 0.f);
-    }
-    // Moving UP
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::W) && this->canPressButton()) {
-        switch(this->player->getCurrentLevel()) {
-            case TOP: 
-                break;
-            case MIDDLE: 
-                this->player->setNewLevel(TOP);
-                this->player->setPosition(this->player->getBounds().left, playfieldCenterY - (this->playfield->getBounds().height / 4) - 
-                                         (this->player->getHeight() / 2));
-                break;
-            case BOTTOM:
-                this->player->setNewLevel(MIDDLE);
-                this->player->setPosition(this->player->getBounds().left, playfieldCenterY - (this->player->getHeight() / 2));
-                break;
-            default:
-                break;
+    if(this->player->getHp() > 0.f) {
+
+        //Moving LEFT
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+            this->player->move(-1.f, 0.f);
+        } 
+        // Moving RIGHT
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+            this->player->move(1.f, 0.f);
         }
-    }
-    // Moving DOWN
-    else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S) && this->canPressButton())  {
-        switch(this->player->getCurrentLevel()) {
-            case TOP: 
-                this->player->setNewLevel(MIDDLE);
-                this->player->setPosition(this->player->getBounds().left, playfieldCenterY - (this->player->getHeight() / 2));
-                break;
-            case MIDDLE: 
-                this->player->setNewLevel(BOTTOM);
-                this->player->setPosition(this->player->getBounds().left, (playfieldCenterY + this->playfield->getBounds().height / 4) - 
-                                         (this->player->getHeight() / 2));
-                break;
-            case BOTTOM:
-                break;
-            default:
-                break;
+        // Moving UP
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::W) && this->canPressButton()) {
+            switch(this->player->getCurrentLevel()) {
+                case TOP: 
+                    break;
+                case MIDDLE: 
+                    this->player->setNewLevel(TOP);
+                    this->player->setPosition(this->player->getBounds().left, playfieldCenterY - (this->playfield->getBounds().height / 4) - 
+                                            (this->player->getHeight() / 2));
+                    break;
+                case BOTTOM:
+                    this->player->setNewLevel(MIDDLE);
+                    this->player->setPosition(this->player->getBounds().left, playfieldCenterY - (this->player->getHeight() / 2));
+                    break;
+                default:
+                    break;
+            }
         }
+        // Moving DOWN
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S) && this->canPressButton())  {
+            switch(this->player->getCurrentLevel()) {
+                case TOP: 
+                    this->player->setNewLevel(MIDDLE);
+                    this->player->setPosition(this->player->getBounds().left, playfieldCenterY - (this->player->getHeight() / 2));
+                    break;
+                case MIDDLE: 
+                    this->player->setNewLevel(BOTTOM);
+                    this->player->setPosition(this->player->getBounds().left, (playfieldCenterY + this->playfield->getBounds().height / 4) - 
+                                            (this->player->getHeight() / 2));
+                    break;
+                case BOTTOM:
+                    break;
+                default:
+                    break;
+            }
+        }   
+        // Collision check
+        this->updateCollisonPlayfield();
+        this->updateCollisionEnemy();
     }
-    // Collision check
-    this->updateCollisonPlayfield();
-    this->updateCollisionEnemy();
 }
 
 /**
  *  @brief If the Player touches the Border on the left or right of the Playfield, the Players position gets set to his previous one, 
  *  so he can't move any further.
- *  @remark You have to subtract add or sub 5 pixel, because of the Border. 
+ *  @remark You have to subtract or add 5 pixel, because of the Border. 
  */
 void Game::updateCollisonPlayfield() {
     //Left
@@ -251,22 +277,24 @@ void Game::updateCollisionEnemy() {
     // Visual Iframes
     if(this->iFramesMax > this->iFrames)
         this->iFrames += 1;
-
-        if((this->iFramesMax - 5  > this->iFrames) && this->iFrames % 10 == 0) {
-            this->player->setColor(255, 255, 255 ,255);
-        } 
-        else if((this->iFramesMax - 5  > this->iFrames) && this->iFrames % 5 == 0) {
-            this->player->setColor(255, 255, 255 ,150);
-        }
-        // Shaking Screen
-        if(this->iFrames < 20) {
-            if(this->iFrames % 8 == 0) {
-                this->resetScreen();
+        if(this->player->getHp() > 0) {
+            if((this->iFramesMax - 5  > this->iFrames) && this->iFrames % 10 == 0) {
+                this->player->setColor(255, 255, 255 ,255);
             } 
-            else if(this->iFrames % 4 == 0) {
-                this->shakeScreen();
+            else if((this->iFramesMax - 5  > this->iFrames) && this->iFrames % 5 == 0) {
+                this->player->setColor(255, 255, 255 ,150);
+            }
+            // Shaking Screen
+            if(this->iFrames < 20) {
+                if(this->iFrames % 8 == 0) {
+                    this->resetScreen();
+                } 
+                else if(this->iFrames % 4 == 0) {
+                    this->shakeScreen();
+                }
             }
         }
+        
 
     if(this->iFrames >= this->iFramesMax) {
         for(Enemy* enemy : this->spawner->enemies) {
@@ -275,6 +303,10 @@ void Game::updateCollisionEnemy() {
                 this->player->takeDamage(this->enemyDamage);
                 this->gui->setSize(sf::Vector2f(35.f * this->player->getHp() / this->player->getHpMax(), 30.f));
                 this->gui->setHpString(this->player->getHp());
+
+                if(this->player->getHp() <= 0) 
+                    this->gameOver = true;
+
                 this->gui->playHitSound();
             }
         }
@@ -299,7 +331,6 @@ void Game::updateDeltaTime() {
     this->gui->updateSprite(deltaTime);
 }
 
-
 /**
  *  @brief The render function of the main method. Draws every object every frame after it got updated to simulate movement.
  *  @remark The order of the function is important.
@@ -311,15 +342,21 @@ void Game::updateDeltaTime() {
 void Game::render() {
     this->window->clear();
 
-    this->playfield->render(*this->window);
-    this->gui->render(*this->window);
-
-    for(auto enemy : this->spawner->enemies) {
-        enemy->render(*this->window);
+    if(!gameOver) {
+        this->playfield->render(*this->window);
+        this->gui->render(*this->window);
+        for(auto enemy : this->spawner->enemies) {
+            enemy->render(*this->window);
+        }
+        this->player->render(*this->window);
+    } else {
+        this->gui->stopMusic();
+        for(auto enemy : this->spawner->enemies) {
+            this->spawner->enemies.erase(this->spawner->enemies.begin());
+        }
+        this->player->render(*this->window);
+        this->killScreen();
     }
-
-    this->player->render(*this->window);
-
     this->window->display();
 }
 
@@ -410,3 +447,48 @@ void Game::upadteEnemies() {
 }
 
 // SPAWNER FUNCTOINS 
+
+// Game over functions
+
+void Game::gameOverScreen() {
+    this->gui->stopMusic();
+    this->pollEvents();
+    this->window->clear();
+
+    this->killScreen();
+    
+    this->player->render(*this->window);
+
+    this->window->display();
+}
+
+void Game::killScreen() {
+    if(this->gameOverTimer < 125) {
+        this->gameOverTimer += 1;
+    }
+    if(this->gameOverTimer == 30 && this->defeatSpriteCounter == 0) {
+        this->gameOverTimer = 0;
+        this->player->setDefeatTexture();
+        this->gui->playDefeatSound();
+        this->defeatSpriteCounter = 1;
+    } else if(this->gameOverTimer >= 80 && this->defeatSpriteCounter == 1) {
+        this->player->setColor(255,255,255,250 - this->gameOverTimer * 2);
+    }
+
+    if(this->gameOverTimer == 125 && this->defeatSpriteCounter == 1) {
+        this->gameOverTimer = 0;
+        this->defeatSpriteCounter = 2;
+    }
+
+    if(this->gameOverTimer == 30 && this->defeatSpriteCounter == 2) {
+        this->gui->playGameOverSound();
+    }
+
+    if(this->defeatSpriteCounter == 2) {
+        this->gui->setGameOverVisibility(this->gameOverTimer);
+        this->gui->renderGameOver(*this->window);
+    }
+}
+
+
+

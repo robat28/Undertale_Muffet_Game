@@ -30,8 +30,14 @@ void GUI::initSprite() {
 
 void GUI::initSounds() {
     this->loadSounds();
-    this->hitSound.setBuffer(hitBuffer);
+    this->hitSound.setBuffer(this->hitBuffer);
     this->hitSound.setVolume(15.f);
+
+    this->defeatSound.setBuffer(this->defeatSoundBuffer);
+    this->defeatSound.setVolume(15.f);
+
+    this->gameOverTheme.setBuffer(this->gameOverThemeBuffer);
+    this->gameOverTheme.setVolume(15.f);
 }
 
 void GUI::initHealthBar() {
@@ -43,15 +49,22 @@ void GUI::initHealthBar() {
 }
 
 void GUI::initHealthText() {
-    this->loadFont();
     this->healthText.setFont(this->font);
     this->healthText.scale(0.7f, 0.7f);
     this->healthText.setString("");
     this->setHpString(20);
 }
 
-void GUI::initHUD() {
+void GUI::initGameOverText() {
+    this->gameOverTextTop.setFont(this->font);
+    this->gameOverTextTop.setString("Game");
+    this->gameOverTextTop.setCharacterSize(120);
+    this->gameOverTextTop.setOrigin(this->gameOverTextTop.getLocalBounds().width / 2, this->gameOverTextTop.getLocalBounds().height / 2);
 
+    this->gameOverTextBottom.setFont(this->font);
+    this->gameOverTextBottom.setString("Over");
+    this->gameOverTextBottom.setCharacterSize(120);
+    this->gameOverTextBottom.setOrigin(this->gameOverTextBottom.getLocalBounds().width / 2, this->gameOverTextBottom.getLocalBounds().height / 2);
 }
 
 /**
@@ -70,15 +83,21 @@ void GUI::loadSounds() {
     if(!this->hitBuffer.loadFromFile(this->dataDir + "sounds/damaged.wav")) {
         std::cout << "SOUND LOADING ERROR::GUI::damaged.wav" << '\n';
     }
+    if(!this->defeatSoundBuffer.loadFromFile(this->dataDir + "sounds/Undertale Death Sound Effect.wav")) {
+        std::cout << "SOUND LOADING ERROR::GUI::damaged.wav" << '\n';
+    }
+     if(!this->gameOverThemeBuffer.loadFromFile(this->dataDir + "sounds/game_over_theme.wav")) {
+        std::cout << "SOUND LOADING ERROR::GUI::game_over_theme.wav" << '\n';
+    }
 }
 
 void GUI::loadMusic() {
-    if(!this->music.openFromFile(this->dataDir + "sounds/spider_dance_ost.wav")) {
+    if(!this->ingameOST.openFromFile(this->dataDir + "sounds/spider_dance_ost.wav")) {
         std::cout << "MUSIC LOADING ERROR::GUI::spider_dance_ost.wav" << '\n';
     }
-    this->music.setLoop(true);
-    this->music.setVolume(15.f);
-    this->music.play();
+    this->ingameOST.setLoop(true);
+    this->ingameOST.setVolume(15.f);
+    this->ingameOST.play();
 }
 
 void GUI::loadFont() {
@@ -97,12 +116,14 @@ void GUI::loadFont() {
  */
 GUI::GUI(std::string dataDir) {
     this->dataDir = dataDir;
+    this->loadFont();
     this->initSprite();
     this->initSounds();
     this->initAnimationVariables();
     this->initHealthBar();
     this->initHealthText();
     this->loadMusic();
+    this->initGameOverText();
 }
 
 /**
@@ -160,6 +181,29 @@ void GUI::setHpString(const int& currentHp) {
     }
 }
 
+void GUI::setGameOverVisibility(const int& visibility) {
+    if(visibility*2 < 255) {
+        this->gameOverTextTop.setFillColor(sf::Color(255, 255, 255, visibility * 2));
+        this->gameOverTextBottom.setFillColor(sf::Color(255, 255, 255, visibility * 2));
+    }
+}
+
+void GUI::setGameOverTextPosition(const int& x, const int& y) {
+    this->gameOverTextTop.setPosition(x, y);
+    this->gameOverTextBottom.setPosition(x , y + this->gameOverTextTop.getGlobalBounds().height + 10.f);
+}
+
+void GUI::stopMusic() {
+    this->ingameOST.stop();
+}
+
+void GUI::playDefeatSound() {
+    this->defeatSound.play();
+}
+
+void GUI::playGameOverSound() {
+    this->gameOverTheme.play();
+}
 
 /**
  *  @brief Updates the Animation frame.
@@ -184,4 +228,9 @@ void GUI::render(sf::RenderTarget& target) {
     target.draw(this->healthBarLost);
     target.draw(this->healthBarRemaining);
     target.draw(this->healthText);
+}
+
+void GUI::renderGameOver(sf::RenderTarget& target) {
+    target.draw(this->gameOverTextTop);
+    target.draw(this->gameOverTextBottom);
 }

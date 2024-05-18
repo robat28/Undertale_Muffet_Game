@@ -10,7 +10,7 @@
  */
 void Player::initPlayer() {
     this->movementSpeed = 4.f;
-    this->hpMax = 20.f;
+    this->hpMax = 4.f;
     this->hp = this->hpMax;
     this->currentLevel = MIDDLE;
 }
@@ -22,6 +22,10 @@ void Player::initTexture() {
     if(!this->texture.loadFromFile(this->dataDir + "/textures/player_sprite.png")) {
         std::cout << "TEXTURE LOADING ERROR::PLAYER::textures/player_sprite.png" << '\n';
     }
+
+    if(!this->defeatTexture.loadFromFile(this->dataDir + "/textures/defeated_player_sprite.png")) {
+        std::cout << "TEXTURE LOADING ERROR::PLAYER::defeated_player_sprite.png" << '\n';
+    }
 }
 
 /**
@@ -30,6 +34,9 @@ void Player::initTexture() {
 void Player::initSprite() {
     this->sprite.setTexture(this->texture);
     this->sprite.scale(1.5f,1.5f);
+    this->defeatSprite.setTexture(this->defeatTexture);
+    this->defeatSprite.scale(1.4f,1.4f);
+    
 }
 
 
@@ -129,6 +136,19 @@ void Player::setPosition(const float& x, const float& y) {
  */
 void Player::setColor(const float r, const float g, const float b, const float transp) {
     this->sprite.setColor(sf::Color(r, g, b, transp));
+}
+
+void Player::setTexture() {
+    this->sprite.setTexture(this->texture);
+}
+
+void Player::setDefeatTexture() {
+    this->defeatSprite.setPosition(this->sprite.getPosition());
+    this->sprite = this->defeatSprite;
+}
+
+void Player::setHP(const int &health) {
+    this->hp = health;
 }
 
 void Player::takeDamage(const float& damage) {
