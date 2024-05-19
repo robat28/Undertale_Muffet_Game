@@ -5,18 +5,23 @@
  */
 
 void Menu::initMenu() {
-    this->loadFont();
+    this->loadFont(); 
     this->text1.setString("Play");
-    this->text2.setString("Quit");
-    this->text3.setString("Scores");
     this->text1.setFont(font);
+    this->text1.setCharacterSize(40);
+    this->text1.setOrigin(this->text1.getGlobalBounds().getSize().x / 2, this->text1.getGlobalBounds().getSize().y / 2);
+    this->text1.setPosition(sf::Vector2f(this->window->getSize().x / 2, this->window->getSize().y * 0.4f));
+
+    this->text2.setString("Quit");
     this->text2.setFont(font);
+    this->text2.setCharacterSize(40);
+    this->text2.setOrigin(this->text2.getGlobalBounds().getSize().x / 2, this->text2.getGlobalBounds().getSize().y / 2);
+    this->text2.setPosition(sf::Vector2f(this->window->getSize().x / 2, this->window->getSize().y * 0.6f));
+
+    this->text3.setString("Scores");
     this->text3.setFont(font);
-    this->text1.setCharacterSize(20);
-    this->text2.setCharacterSize(20);
     this->text3.setCharacterSize(20);
-    this->text1.setPosition(sf::Vector2f(this->window->getSize().x / 2, this->window->getSize().y / 4));
-    this->text2.setPosition(sf::Vector2f(this->window->getSize().x / 2, this->window->getSize().y / 2));
+    this->text3.setOrigin(this->text3.getGlobalBounds().getSize().x / 2, this->text3.getGlobalBounds().getSize().y / 2);
     this->text3.setPosition(sf::Vector2f(this->window->getSize().x / 2, this->window->getSize().y * 0.9f));
 }
 

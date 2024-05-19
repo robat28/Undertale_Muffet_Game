@@ -1,5 +1,6 @@
 #include "Menu.hpp"
 #include "Game.hpp"
+#include "DefeatMenu.hpp"
 
 int main(int argc, char** argv) {
     
@@ -20,8 +21,9 @@ int main(int argc, char** argv) {
     window->setFramerateLimit(60);
     //this->window->setIcon()
 
-    Game game(dataDir, window);
     Menu menu(dataDir, window);
+    Game game(dataDir, window);
+    DefeatMenu defMenu(dataDir, window);
     
     // Applications variables and screen preparation
     std::vector<cScreen*> screens;
@@ -29,6 +31,7 @@ int main(int argc, char** argv) {
 
     screens.push_back(&menu);
     screens.push_back(&game);
+    screens.push_back(&defMenu);
 
 
     while(screen >= 0) {

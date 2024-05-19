@@ -37,12 +37,6 @@ class GUI {
         sf::Sound gameOverTheme;
 
         sf::Music ingameOST;
-
-
-        // Game Over Screen
-        sf::Text gameOverTextTop;
-        sf::Text gameOverTextBottom;
-        sf::Text gameOverMessage;
         
         // Private Functions
         void initAnimationVariables();
@@ -58,8 +52,6 @@ class GUI {
         void initHUD();
         void initHealthText();
         void initPlayerName();
-        void initGameOverText();
-
         void initHealthBar();
 
 
@@ -84,8 +76,6 @@ class GUI {
         void setHPBarPosition(const float& x, const float& y);
         void setSize(sf::Vector2f size);
         void setHpString(const int& currentHp);
-        void setGameOverVisibility(const int& visibility);
-        void setGameOverTextPosition(const int& x, const int& y);
 
         // Public Functions
         void playHitSound();
@@ -99,5 +89,4 @@ class GUI {
 
         void updateSprite(sf::Time& deltaTime);
         void render(sf::RenderTarget& target);
-        void renderGameOver(sf::RenderTarget& target);
 };

@@ -30,6 +30,7 @@ void Game::initVariables() {
     this->defeatSpriteCounter = 0;
     this->gameOverTimer = 0;
     this->gameOver = false;
+    this->switchToDFScreen = false;
 }
 
 /**
@@ -60,7 +61,6 @@ void Game::initGUI() {
 
     this->gui->setHPBarPosition(this->playfieldPosX + this->playfield->getWidth() / 4.f, this->playerStartPosY + this->playfield->getHeight() / 2.f + 25.f);
 
-    this->gui->setGameOverTextPosition(this->window->getSize().x / 2, this->window->getSize().y / 5);
 }
 
 /**
@@ -109,6 +109,7 @@ Game::~Game() {
 
 int Game::Run() {
     running = true;
+    this->gui->playMusic();
 
     while(running) {
 
@@ -119,7 +120,7 @@ int Game::Run() {
             if (this->evnt.type == sf::Event::KeyPressed) {
                 switch (this->evnt.key.code) {
                 case sf::Keyboard::Escape: 
-                    return (0);
+                    return (-1);
                 default:
                     break;
                 }
@@ -127,6 +128,10 @@ int Game::Run() {
             }
         }
 
+        if(this->switchToDFScreen) {
+            return (2);
+        }
+        
         this->update();
         this->render();
     }
@@ -146,42 +151,6 @@ const bool Game::canPressButton() {
     return false;
 }
 
-/**
- *  @brief Handles some main actions like closing window, etc.
- */
-int Game::pollEvents() {
-    while(this->window->pollEvent(this->evnt)) {
-        if (this->evnt.type == sf::Event::Closed) {
-            return (-1);
-        }
-        if (this->evnt.type == sf::Event::KeyPressed) {
-            switch (this->evnt.key.code) {
-            case sf::Keyboard::Escape: 
-                return (0);
-            default:
-                break;
-            }
-        
-        }
-    }
-    return (-1);    
-}
-
-/**
- * @brief 
- * 
- */
-void Game::restartGame() {
-    this->player->setHP(20);
-    this->player->setTexture();
-    // Stop Music and Start Theme
-    this->player->setColor(255, 255, 255 ,255);
-
-    for(auto enemy : this->spawner->enemies) {
-        delete enemy;
-    }
-
-}
 
 /**
  *  @brief The update function of the main method. Executes all update function of the game to update every frame.
@@ -452,7 +421,6 @@ void Game::upadteEnemies() {
 
 void Game::gameOverScreen() {
     this->gui->stopMusic();
-    this->pollEvents();
     this->window->clear();
 
     this->killScreen();
@@ -482,12 +450,15 @@ void Game::killScreen() {
 
     if(this->gameOverTimer == 30 && this->defeatSpriteCounter == 2) {
         this->gui->playGameOverSound();
+        this->switchToDFScreen = true;
     }
 
+    /*
     if(this->defeatSpriteCounter == 2) {
         this->gui->setGameOverVisibility(this->gameOverTimer);
         this->gui->renderGameOver(*this->window);
     }
+    */
 }
 
 

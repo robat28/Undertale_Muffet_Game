@@ -55,18 +55,6 @@ void GUI::initHealthText() {
     this->setHpString(20);
 }
 
-void GUI::initGameOverText() {
-    this->gameOverTextTop.setFont(this->font);
-    this->gameOverTextTop.setString("Game");
-    this->gameOverTextTop.setCharacterSize(120);
-    this->gameOverTextTop.setOrigin(this->gameOverTextTop.getLocalBounds().width / 2, this->gameOverTextTop.getLocalBounds().height / 2);
-
-    this->gameOverTextBottom.setFont(this->font);
-    this->gameOverTextBottom.setString("Over");
-    this->gameOverTextBottom.setCharacterSize(120);
-    this->gameOverTextBottom.setOrigin(this->gameOverTextBottom.getLocalBounds().width / 2, this->gameOverTextBottom.getLocalBounds().height / 2);
-}
-
 /**
  *  @brief Loads the Texture from the file and handles it if it can't. 
  */
@@ -97,7 +85,6 @@ void GUI::loadMusic() {
     }
     this->ingameOST.setLoop(true);
     this->ingameOST.setVolume(15.f);
-    this->ingameOST.play();
 }
 
 void GUI::loadFont() {
@@ -123,7 +110,6 @@ GUI::GUI(std::string dataDir) {
     this->initHealthBar();
     this->initHealthText();
     this->loadMusic();
-    this->initGameOverText();
 }
 
 /**
@@ -181,16 +167,8 @@ void GUI::setHpString(const int& currentHp) {
     }
 }
 
-void GUI::setGameOverVisibility(const int& visibility) {
-    if(visibility*2 < 255) {
-        this->gameOverTextTop.setFillColor(sf::Color(255, 255, 255, visibility * 2));
-        this->gameOverTextBottom.setFillColor(sf::Color(255, 255, 255, visibility * 2));
-    }
-}
-
-void GUI::setGameOverTextPosition(const int& x, const int& y) {
-    this->gameOverTextTop.setPosition(x, y);
-    this->gameOverTextBottom.setPosition(x , y + this->gameOverTextTop.getGlobalBounds().height + 10.f);
+void GUI::playMusic() {
+    this->ingameOST.play();
 }
 
 void GUI::stopMusic() {
@@ -230,7 +208,3 @@ void GUI::render(sf::RenderTarget& target) {
     target.draw(this->healthText);
 }
 
-void GUI::renderGameOver(sf::RenderTarget& target) {
-    target.draw(this->gameOverTextTop);
-    target.draw(this->gameOverTextBottom);
-}

@@ -58,6 +58,7 @@ class Game : public cScreen {
         int defeatSpriteCounter;
 
         bool gameOver;
+        bool switchToDFScreen;
 
         // Private Functions
         void initVariables();
@@ -83,11 +84,9 @@ class Game : public cScreen {
         const bool canPressButton();
         bool borderReachedOdd(Enemy& enemy) const;
         bool borderReachedEven(Enemy& enemy) const;
-        int pollEvents();
         void moveEnemy();
         void shakeScreen();
         void resetScreen();
-        void restartGame();
 
         void gameOverScreen();
         void killScreen();
