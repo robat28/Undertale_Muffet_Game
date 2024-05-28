@@ -4,7 +4,9 @@
 
 int main(int argc, char** argv) {
     
-    // Find the directory of files
+    /**
+     *  @brief Find the directory of files
+     */
     std::string dataDir = argv[0];
     dataDir.erase(dataDir.rfind("/"));
     dataDir.append("/../");
@@ -19,20 +21,21 @@ int main(int argc, char** argv) {
 
     sf::RenderWindow* window = new sf::RenderWindow(vMode, title, sf::Style::Titlebar | sf::Style::Close);
     window->setFramerateLimit(60);
-    //this->window->setIcon()
+    //TODO this->window->setIcon()
 
+    
+    /**
+     * @brief Applications variables and screen preparation
+     */
     Menu menu(dataDir, window);
     Game game(dataDir, window);
     DefeatMenu defMenu(dataDir, window);
-    
-    // Applications variables and screen preparation
     std::vector<cScreen*> screens;
     int screen = 0;
 
     screens.push_back(&menu);
     screens.push_back(&game);
     screens.push_back(&defMenu);
-
 
     while(screen >= 0) {
         screen = screens[screen]->Run();

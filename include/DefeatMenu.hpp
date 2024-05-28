@@ -14,6 +14,7 @@ class DefeatMenu : public cScreen {
         sf::Text text1;
         sf::Text text2;
         sf::Font font;
+        int selected;
 
         // Game Over Screen
         sf::Text gameOverTextTop;
@@ -26,6 +27,9 @@ class DefeatMenu : public cScreen {
         void setGameOverTextPosition(const int& x, const int& y);
 
         void render(sf::RenderTarget& window);
+
+        void updateTextStyles();
+
 
     public:
         DefeatMenu(std::string dataDir, sf::RenderWindow* window);

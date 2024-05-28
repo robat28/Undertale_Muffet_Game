@@ -6,6 +6,7 @@
 
 void Menu::initMenu() {
     this->loadFont(); 
+
     this->text1.setString("Play");
     this->text1.setFont(font);
     this->text1.setCharacterSize(40);
@@ -23,6 +24,8 @@ void Menu::initMenu() {
     this->text3.setCharacterSize(20);
     this->text3.setOrigin(this->text3.getGlobalBounds().getSize().x / 2, this->text3.getGlobalBounds().getSize().y / 2);
     this->text3.setPosition(sf::Vector2f(this->window->getSize().x / 2, this->window->getSize().y * 0.9f));
+
+    this->selected = 0;
 }
 
 void Menu::loadFont() {
