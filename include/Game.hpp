@@ -90,6 +90,7 @@ class Game : public cScreen {
 
         void gameOverScreen();
         void killScreen();
+        void restartGame();
 
         // Update Functions
         void update();

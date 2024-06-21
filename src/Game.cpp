@@ -461,5 +461,9 @@ void Game::killScreen() {
     */
 }
 
+void Game::restartGame() {
+    
+}
+
 
 

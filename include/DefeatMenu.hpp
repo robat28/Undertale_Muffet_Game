@@ -3,6 +3,8 @@
 #include "cScreen.hpp"
 #include "SFML/Graphics.hpp"
 #include <iostream>
+
+#include "Game.hpp"
 #include "GUI.hpp"
 
 class DefeatMenu : public cScreen {
