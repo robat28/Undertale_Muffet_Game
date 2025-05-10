@@ -51,9 +51,9 @@ void Player::initSprite() {
 Player::Player(std::string dataDir) {
     this->dataDir = dataDir;
 
-    this->initPlayer();
     this->initTexture();
     this->initSprite();
+    this->initPlayer();
 }
 
 /**

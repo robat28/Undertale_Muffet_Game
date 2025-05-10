@@ -107,7 +107,6 @@ void GUI::loadFont() {
  */
 GUI::GUI(std::string dataDir) {
     this->dataDir = dataDir;
-    //this->loadFont();
     this->initSprite();
     this->initSounds();
     this->initAnimationVariables();

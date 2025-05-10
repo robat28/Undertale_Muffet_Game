@@ -90,7 +90,11 @@ Game::Game(std::string dataDir, sf::RenderWindow *window) {
     this->player = new Player(this->dataDir);
     this->spawner = new Spawner();
 
+    this->initVariables();
+    this->initPlayfield();
     this->initPlayer();
+    this->initGUI();
+    
 }
 
 /**
@@ -105,14 +109,8 @@ Game::~Game() {
 
 
 int Game::Run() {
-    this->player->resetPlayerVariables();
     this->player->setPosition(this->playerStartPosX, this->playerStartPosY);
-
-    // TODO !!!!!!!!!!!!!!!!!!!!!
-    this->initVariables();
-    this->initPlayfield();
-    this->initGUI();
-
+   
     running = true;
     this->gui->playMusic();
 

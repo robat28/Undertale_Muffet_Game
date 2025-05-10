@@ -5,6 +5,8 @@
  */
 
 void DefeatMenu::initGameOverText() {
+    this->loadFont(); 
+
     this->gameOverTextTop = std::make_unique<sf::Text>(this->font);
     this->gameOverTextTop->setString("Game");
     this->gameOverTextTop->setCharacterSize(120);
@@ -68,7 +70,6 @@ DefeatMenu::DefeatMenu(std::string dataDir, sf::RenderWindow* window) {
 int DefeatMenu::Run() {
     this->running = true;
 
-    this->loadFont(); 
     this->initGameOverText();
     this->setGameOverTextPosition(this->window->getSize().x / 2, this->window->getSize().y / 5);
     this->gui->playGameOverSound();

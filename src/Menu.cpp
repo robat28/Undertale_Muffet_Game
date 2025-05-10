@@ -10,7 +10,7 @@ void Menu::initMenu() {
     this->text1 = std::make_unique<sf::Text>(this->font);
     this->text1->setString("Play");
     this->text1->setCharacterSize(40);
-    this->text1->setOrigin({this->text1->getGlobalBounds().getCenter()});
+    this->text1->setOrigin({this->text1->getGlobalBounds().size.x / 2, this->text1->getGlobalBounds().size.y / 2});
     this->text1->setPosition({static_cast<float>(this->window->getSize().x) / 2, this->window->getSize().y * 0.4f});
 
     this->text2 = std::make_unique<sf::Text>(this->font);

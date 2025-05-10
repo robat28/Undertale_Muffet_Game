@@ -50,8 +50,8 @@ Enemy::Enemy() {
  */
 Enemy::Enemy(float x, float y, const int spawnPosition, std::string dataDir) {
     this->dataDir = dataDir;
-    this->initSprite();
     this->initVariables();
+    this->initSprite();
     this->sprite->setPosition({x,y});
     this->spawnPosition = spawnPosition;
 }
