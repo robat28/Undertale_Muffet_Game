@@ -5,6 +5,10 @@
 #include "Spawner.hpp"
 #include "Playfield.hpp"
 
+#include <math.h>
+#include <optional>
+#include <variant>
+
 class Game : public cScreen {    
     private:
 
@@ -12,7 +16,6 @@ class Game : public cScreen {
 
         // Window and Displays
         sf::RenderWindow* window;
-        sf::Event evnt;
         bool running;
 
         // Render objects

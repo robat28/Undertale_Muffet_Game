@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
      *  @brief Initializes and sets all Properties of the window.
      *  @remark FramerateLimit is at 60 Frames, so the game appears same on most devices.
      */
-    sf::VideoMode vMode = sf::VideoMode(1000, 750);
+    sf::VideoMode vMode = sf::VideoMode({1000, 750});
     std::string title = "Undertale Muffet Minigame";
 
     sf::RenderWindow* window = new sf::RenderWindow(vMode, title, sf::Style::Titlebar | sf::Style::Close);

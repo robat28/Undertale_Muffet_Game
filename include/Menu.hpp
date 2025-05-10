@@ -3,7 +3,7 @@
 #include <iostream>
 #include "cScreen.hpp"
 
-#include "SFML/Graphics.hpp"
+#include <SFML/Graphics.hpp>
 
 class Menu : public cScreen{
     private:
@@ -11,12 +11,11 @@ class Menu : public cScreen{
         std::string dataDir;
         sf::RenderWindow* window;
 
-        sf::Event evnt;
         bool running;
         sf::Font font;
-        sf::Text text1;
-        sf::Text text2;
-        sf::Text text3;
+        std::unique_ptr<sf::Text> text1;
+        std::unique_ptr<sf::Text> text2;
+        std::unique_ptr<sf::Text> text3;
         int selected;
 
         void initMenu();

@@ -9,6 +9,7 @@
  *  @brief Initializes all variables of the player.
  */
 void Player::initPlayer() {
+    this->setColor(255,255,255,250);
     this->movementSpeed = 4.f;
     this->hpMax = 4.f;
     this->hp = this->hpMax;
@@ -19,11 +20,11 @@ void Player::initPlayer() {
  *  @brief Loads the Texture from the file and handles it if it can't.
  */
 void Player::initTexture() {
-    if(!this->texture.loadFromFile(this->dataDir + "/textures/player_sprite.png")) {
+    if(!this->texture.loadFromFile(this->dataDir + "/textures/player_sprite.png", false)) {
         std::cout << "TEXTURE LOADING ERROR::PLAYER::textures/player_sprite.png" << '\n';
     }
 
-    if(!this->defeatTexture.loadFromFile(this->dataDir + "/textures/defeated_player_sprite.png")) {
+    if(!this->defeatTexture.loadFromFile(this->dataDir + "/textures/defeated_player_sprite.png", false)) {
         std::cout << "TEXTURE LOADING ERROR::PLAYER::defeated_player_sprite.png" << '\n';
     }
 }
@@ -32,11 +33,10 @@ void Player::initTexture() {
  *  @brief Sets the texture to the sprite and scales it to the right size.
  */ 
 void Player::initSprite() {
-    this->sprite.setTexture(this->texture);
-    this->sprite.scale(1.5f,1.5f);
-    this->defeatSprite.setTexture(this->defeatTexture);
-    this->defeatSprite.scale(1.4f,1.4f);
-    
+    this->sprite = std::make_unique<sf::Sprite>(this->texture);
+    this->sprite->scale({1.5f,1.5f});
+    this->defeatSprite = std::make_unique<sf::Sprite>(this->defeatTexture);
+    this->defeatSprite->scale({1.4f,1.4f});
 }
 
 
@@ -50,6 +50,7 @@ void Player::initSprite() {
  */
 Player::Player(std::string dataDir) {
     this->dataDir = dataDir;
+
     this->initPlayer();
     this->initTexture();
     this->initSprite();
@@ -66,7 +67,7 @@ Player::~Player() {
  *  @return const sf::FloatRect
  */
 const sf::FloatRect Player::getBounds() const {
-    return this->sprite.getGlobalBounds();
+    return this->sprite->getGlobalBounds();
 }
 
 /**
@@ -74,7 +75,7 @@ const sf::FloatRect Player::getBounds() const {
  *  @return const float 
  */
 const float Player::getHeight() const {
-    return this->getBounds().height;
+    return this->getBounds().size.y;
 }
 
 /**
@@ -82,7 +83,7 @@ const float Player::getHeight() const {
  *  @return const float 
  */
 const float Player::getWidth() const {
-    return this->getBounds().width;
+    return this->getBounds().size.x;
 }
 
 /**
@@ -123,7 +124,7 @@ void Player::setNewLevel(LEVEL newLevel) {
  *  @param y const float
  */
 void Player::setPosition(const float& x, const float& y) {
-    this->sprite.setPosition(x,y);
+    this->sprite->setPosition({x,y});
 }
 
 /**
@@ -135,16 +136,16 @@ void Player::setPosition(const float& x, const float& y) {
  * @param transp 
  */
 void Player::setColor(const float r, const float g, const float b, const float transp) {
-    this->sprite.setColor(sf::Color(r, g, b, transp));
+    this->sprite->setColor(sf::Color(r, g, b, transp));
 }
 
 void Player::setTexture() {
-    this->sprite.setTexture(this->texture);
+    this->sprite->setTexture(this->texture);
 }
 
 void Player::setDefeatTexture() {
-    this->defeatSprite.setPosition(this->sprite.getPosition());
-    this->sprite = this->defeatSprite;
+    this->defeatSprite->setPosition(this->sprite->getPosition());
+    this->sprite = std::move(this->defeatSprite);
 }
 
 void Player::setHP(const int &health) {
@@ -163,7 +164,12 @@ void Player::takeDamage(const float& damage) {
  *  @param y const float
  */
 void Player::move(const float& x, const float& y) {
-    this->sprite.move(this->movementSpeed * x, this->movementSpeed * y);
+    this->sprite->move({this->movementSpeed * x, this->movementSpeed * y});
+}
+
+void Player::resetPlayerVariables() {
+    this->initPlayer();
+    this->setTexture();
 }
 
 /**
@@ -171,6 +177,6 @@ void Player::move(const float& x, const float& y) {
  *  @param target The window
  */
 void Player::render(sf::RenderTarget& target) {
-    target.draw(this->sprite);
+    target.draw(*this->sprite);
 }
 

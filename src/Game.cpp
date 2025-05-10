@@ -1,5 +1,4 @@
 #include "Game.hpp"
-#include <math.h>
 
 /**
  *  Private Functions
@@ -47,7 +46,7 @@ void Game::initPlayfield() {
     this->playfieldPosY = playfieldCenterY - (this->playfield->getHeight() / 2.f - 5.f);
 
     this->playfield->setPosition(playfieldPosX, playfieldPosY);
-    this->playfield->setLevelPositions(this->playfield->getBounds().left, playfieldCenterY);
+    this->playfield->setLevelPositions(this->playfield->getBounds().position.x, playfieldCenterY);
 }
 
 /**
@@ -68,7 +67,7 @@ void Game::initGUI() {
  */
 void Game::initPlayer() {
     this->playerStartPosX = this->window->getSize().x / 2.f - this->player->getWidth() / 2.f;
-    this->playerStartPosY = this->playfield->getBounds().top + this->playfield->getHeight() / 2 - this->player->getHeight() / 2.f;
+    this->playerStartPosY = this->playfield->getBounds().position.y + this->playfield->getHeight() / 2 - this->player->getHeight() / 2.f;
     this->player->setPosition(this->playerStartPosX, this->playerStartPosY);
 }
 
@@ -85,15 +84,13 @@ void Game::initPlayer() {
 Game::Game(std::string dataDir, sf::RenderWindow *window) {
     this->dataDir = dataDir;
     this->window = window;
+
     this->playfield = new Playfield();
     this->gui = new GUI(this->dataDir);
     this->player = new Player(this->dataDir);
     this->spawner = new Spawner();
-    
-    this->initVariables();
-    this->initPlayfield();
+
     this->initPlayer();
-    this->initGUI();
 }
 
 /**
@@ -108,21 +105,29 @@ Game::~Game() {
 
 
 int Game::Run() {
+    this->player->resetPlayerVariables();
+    this->player->setPosition(this->playerStartPosX, this->playerStartPosY);
+
+    // TODO !!!!!!!!!!!!!!!!!!!!!
+    this->initVariables();
+    this->initPlayfield();
+    this->initGUI();
+
     running = true;
     this->gui->playMusic();
 
     while(running) {
 
-        while(this->window->pollEvent(this->evnt)) {
-            if (this->evnt.type == sf::Event::Closed) {
+        while(const std::optional evnt = window->pollEvent()) {
+            if (evnt->is<sf::Event::Closed>()) {
                 return (-1);
             }
-            if (this->evnt.type == sf::Event::KeyPressed) {
-                switch (this->evnt.key.code) {
-                case sf::Keyboard::Escape: 
-                    return (-1);
-                default:
-                    break;
+            if (const auto* keyPressed = evnt->getIf<sf::Event::KeyPressed>()) {
+                switch (keyPressed->scancode) {
+                    case sf::Keyboard::Scancode::Escape:
+                        return (-1);
+                    default:
+                        break;
                 }
             
             }
@@ -170,42 +175,42 @@ void Game::update() {
 void Game::updateInput() {
     if(this->player->getHp() > 0.f) {
 
-        //Moving LEFT
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+        // Moving LEFT
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::A)) {
             this->player->move(-1.f, 0.f);
         } 
         // Moving RIGHT
-        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::D)) {
             this->player->move(1.f, 0.f);
         }
         // Moving UP
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::W) && this->canPressButton()) {
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::W) && this->canPressButton()) {
             switch(this->player->getCurrentLevel()) {
                 case TOP: 
                     break;
                 case MIDDLE: 
                     this->player->setNewLevel(TOP);
-                    this->player->setPosition(this->player->getBounds().left, playfieldCenterY - (this->playfield->getBounds().height / 4) - 
+                    this->player->setPosition(this->player->getBounds().position.x, playfieldCenterY - (this->playfield->getBounds().size.y / 4) - 
                                             (this->player->getHeight() / 2));
                     break;
                 case BOTTOM:
                     this->player->setNewLevel(MIDDLE);
-                    this->player->setPosition(this->player->getBounds().left, playfieldCenterY - (this->player->getHeight() / 2));
+                    this->player->setPosition(this->player->getBounds().position.x, playfieldCenterY - (this->player->getHeight() / 2));
                     break;
                 default:
                     break;
             }
         }
         // Moving DOWN
-        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S) && this->canPressButton())  {
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::S) && this->canPressButton())  {
             switch(this->player->getCurrentLevel()) {
                 case TOP: 
                     this->player->setNewLevel(MIDDLE);
-                    this->player->setPosition(this->player->getBounds().left, playfieldCenterY - (this->player->getHeight() / 2));
+                    this->player->setPosition(this->player->getBounds().position.x, playfieldCenterY - (this->player->getHeight() / 2));
                     break;
                 case MIDDLE: 
                     this->player->setNewLevel(BOTTOM);
-                    this->player->setPosition(this->player->getBounds().left, (playfieldCenterY + this->playfield->getBounds().height / 4) - 
+                    this->player->setPosition(this->player->getBounds().position.x, (playfieldCenterY + this->playfield->getBounds().size.y / 4) - 
                                             (this->player->getHeight() / 2));
                     break;
                 case BOTTOM:
@@ -221,19 +226,19 @@ void Game::updateInput() {
 }
 
 /**
- *  @brief If the Player touches the Border on the left or right of the Playfield, the Players position gets set to his previous one, 
+ *  @brief If the Player touches the Border on the position.x or right of the Playfield, the Players position gets set to his previous one, 
  *  so he can't move any further.
  *  @remark You have to subtract or add 5 pixel, because of the Border. 
  */
 void Game::updateCollisonPlayfield() {
     //Left
-    if(this->player->getBounds().left < this->playfield->getBounds().left + 5) {
-        this->player->setPosition(this->playfield->getBounds().left + 5, this->player->getBounds().top);
+    if(this->player->getBounds().position.x < this->playfield->getBounds().position.x + 5) {
+        this->player->setPosition(this->playfield->getBounds().position.x + 5, this->player->getBounds().position.y);
     }
     //Right
-    else if(this->player->getBounds().left + this->player->getBounds().width > this->playfield->getBounds().left + this->playfield->getBounds().width - 5) {
-        this->player->setPosition((this->playfield->getBounds().left) + (this->playfield->getBounds().width) - (this->player->getBounds().width) - 5, 
-        this->player->getBounds().top);
+    else if(this->player->getBounds().position.x + this->player->getBounds().size.x > this->playfield->getBounds().position.x + this->playfield->getBounds().size.x - 5) {
+        this->player->setPosition((this->playfield->getBounds().position.x) + (this->playfield->getBounds().size.x) - (this->player->getBounds().size.x) - 5, 
+        this->player->getBounds().position.y);
     }
 }
 
@@ -267,7 +272,7 @@ void Game::updateCollisionEnemy() {
 
     if(this->iFrames >= this->iFramesMax) {
         for(Enemy* enemy : this->spawner->enemies) {
-            if(this->player->getBounds().intersects(enemy->getBounds())) {
+            if(this->player->getBounds().findIntersection(enemy->getBounds())) {
                 this->iFrames = 0.f;
                 this->player->takeDamage(this->enemyDamage);
                 this->gui->setSize(sf::Vector2f(35.f * this->player->getHp() / this->player->getHpMax(), 30.f));
@@ -338,12 +343,12 @@ void Game::shakeScreen() {
         this->impactFrames = 2.f;
     }
     this->playfield->setPosition(playfieldPosX - this->impactFrames, playfieldPosY - this->impactFrames);
-    this->playfield->setLevelPositions(this->playfield->getBounds().left - this->impactFrames, playfieldCenterY - this->impactFrames);
-    this->player->setPosition(this->player->getBounds().getPosition().x - this->impactFrames, this->player->getBounds().getPosition().y - this->impactFrames);
+    this->playfield->setLevelPositions(this->playfield->getBounds().position.x - this->impactFrames, playfieldCenterY - this->impactFrames);
+    this->player->setPosition(this->player->getBounds().position.x - this->impactFrames, this->player->getBounds().position.y - this->impactFrames);
     this->gui->setSpritePosition(this->spritePosX - 2.f, this->spritePosY - 2.f);
 
     for(Enemy* enemy : this->spawner->enemies) {
-        enemy->setPosition(enemy->getBounds().getPosition().x - this->impactFrames, enemy->getBounds().getPosition().y - this->impactFrames);
+        enemy->setPosition(enemy->getBounds().position.x - this->impactFrames, enemy->getBounds().position.y - this->impactFrames);
     }
 }
 
@@ -353,12 +358,12 @@ void Game::shakeScreen() {
  */
 void Game::resetScreen() {
     this->playfield->setPosition(playfieldPosX, playfieldPosY);
-    this->playfield->setLevelPositions(this->playfield->getBounds().left, playfieldCenterY);
-    this->player->setPosition(this->player->getBounds().getPosition().x + this->impactFrames, this->player->getBounds().getPosition().y + this->impactFrames);
+    this->playfield->setLevelPositions(this->playfield->getBounds().position.x, playfieldCenterY);
+    this->player->setPosition(this->player->getBounds().position.x + this->impactFrames, this->player->getBounds().position.y + this->impactFrames);
     this->gui->setSpritePosition(this->spritePosX, this->spritePosY);
 
     for(Enemy* enemy : this->spawner->enemies) {
-        enemy->setPosition(enemy->getBounds().getPosition().x + this->impactFrames, enemy->getBounds().getPosition().y + this->impactFrames);
+        enemy->setPosition(enemy->getBounds().position.x + this->impactFrames, enemy->getBounds().position.y + this->impactFrames);
     }
 
     this->impactFrames -= 1.f;
@@ -369,7 +374,7 @@ void Game::resetScreen() {
 // SPAWNER FUNCTOINS 
 
 bool Game::borderReachedOdd(Enemy& movingEnemy) const {
-    if(movingEnemy.getBounds().left >= (this->playfield->getBounds().left) + (this->playfield->getBounds().width) + (this->playfield->getBounds().width / 4)) {
+    if(movingEnemy.getBounds().position.x >= (this->playfield->getBounds().position.x) + (this->playfield->getBounds().size.x) + (this->playfield->getBounds().size.x / 4)) {
             return true;
     } else {
         return false;
@@ -377,7 +382,7 @@ bool Game::borderReachedOdd(Enemy& movingEnemy) const {
 }
 
 bool Game::borderReachedEven(Enemy& movingEnemy) const {
-     if(movingEnemy.getBounds().left <= (this->playfield->getBounds().left) - (this->playfield->getBounds().width / 4) - this->spawner->enemy->getSize()) {
+     if(movingEnemy.getBounds().position.x <= (this->playfield->getBounds().position.x) - (this->playfield->getBounds().size.x / 4) - this->spawner->enemy->getSize()) {
             return true;
     } else {
         return false;
@@ -415,20 +420,9 @@ void Game::upadteEnemies() {
     this->moveEnemy();
 }
 
-// SPAWNER FUNCTOINS 
 
 // Game over functions
 
-void Game::gameOverScreen() {
-    this->gui->stopMusic();
-    this->window->clear();
-
-    this->killScreen();
-    
-    this->player->render(*this->window);
-
-    this->window->display();
-}
 
 void Game::killScreen() {
     if(this->gameOverTimer < 125) {
@@ -449,7 +443,6 @@ void Game::killScreen() {
     }
 
     if(this->gameOverTimer == 30 && this->defeatSpriteCounter == 2) {
-        this->gui->playGameOverSound();
         this->switchToDFScreen = true;
     }
 
@@ -461,8 +454,14 @@ void Game::killScreen() {
     */
 }
 
+/**
+ * @brief Resets the game by setting all variables to deafult values so the game can be played from the beginning.
+ */
 void Game::restartGame() {
-    
+    this->initVariables();
+    this->initPlayfield();
+    this->initPlayer();
+    this->initGUI();
 }
 
 

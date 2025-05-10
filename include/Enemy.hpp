@@ -18,7 +18,7 @@ class Enemy{
 
         // Texture of Enemies
         sf::Texture texture;
-        sf::Sprite sprite;
+        std::unique_ptr<sf::Sprite> sprite;
 
         // Private Functions
         void initVariables();

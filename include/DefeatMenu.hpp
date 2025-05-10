@@ -11,16 +11,16 @@ class DefeatMenu : public cScreen {
     private:
         std::string dataDir;
         bool running;
-        sf::Event evnt;
         sf::RenderWindow* window;
-        sf::Text text1;
-        sf::Text text2;
+        std::unique_ptr<sf::Text> text1;
+        std::unique_ptr<sf::Text> text2;
         sf::Font font;
         int selected;
+        GUI* gui;
 
         // Game Over Screen
-        sf::Text gameOverTextTop;
-        sf::Text gameOverTextBottom;
+        std::unique_ptr<sf::Text> gameOverTextTop;
+        std::unique_ptr<sf::Text> gameOverTextBottom;
 
         void initGameOverText();
         void loadFont();

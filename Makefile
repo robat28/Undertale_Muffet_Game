@@ -5,12 +5,14 @@ CXX = clang++
 SRC = src/main.cpp src/Game.cpp src/Player.cpp src/Enemy.cpp src/Playfield.cpp src/GUI.cpp src/Spawner.cpp src/Menu.cpp src/DefeatMenu.cpp
 
 # All links to sfml files
+#LFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
+
 LFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
-FLAGS = -o bin/main -I./include/ -std=c++17
+FLAGS = -o bin/main -I./include -stdlib=libc++ -std=c++17
 
 main: SRC bin
-	$(CXX) $(SRC) $(LFLAGS) $(FLAGS) 
+	$(CXX) $(FLAGS) $(SRC) $(LFLAGS) 
 
 bin: 
 	mkdir -p bin

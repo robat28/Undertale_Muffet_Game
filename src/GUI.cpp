@@ -12,10 +12,10 @@
  *  @example 200px x 200px for one frame.
  */
 void GUI::initAnimationVariables() {
-    this->frameLength = this->sprite.getTexture()->getSize().y;
-    this->numFrames = this->sprite.getTexture()->getSize().x / frameLength;
+    this->frameLength = this->sprite->getTexture().getSize().y;
+    this->numFrames = this->sprite->getTexture().getSize().x / frameLength;
     this->frameDuration = sf::seconds(0.03f);
-    this->frameRect = sf::IntRect(0,0,frameLength, frameLength);
+    this->frameRect = sf::IntRect({0,0},{frameLength, frameLength});
     this->currentFrame = 0.f;
 }
 
@@ -24,20 +24,20 @@ void GUI::initAnimationVariables() {
  */
 void GUI::initSprite() {
     this->loadSpriteSheetTexture();
-    this->sprite.setTexture(spritesheetTexture);
-    this->sprite.scale(3.f, 3.f);
+    sprite = std::make_unique<sf::Sprite>(this->spritesheetTexture);
+    this->sprite->scale({3.f, 3.f});
 }
 
 void GUI::initSounds() {
     this->loadSounds();
-    this->hitSound.setBuffer(this->hitBuffer);
-    this->hitSound.setVolume(15.f);
+    this->hitSound = std::make_unique<sf::Sound>(this->hitBuffer);
+    this->hitSound->setVolume(15.f);
 
-    this->defeatSound.setBuffer(this->defeatSoundBuffer);
-    this->defeatSound.setVolume(15.f);
+    defeatSound = std::make_unique<sf::Sound>(this->defeatBuffer);
+    this->defeatSound->setVolume(15.f);
 
-    this->gameOverTheme.setBuffer(this->gameOverThemeBuffer);
-    this->gameOverTheme.setVolume(15.f);
+    this->gameOverTheme = std::make_unique<sf::Sound>(this->gameOverBuffer);
+    this->gameOverTheme->setVolume(15.f);
 }
 
 void GUI::initHealthBar() {
@@ -49,9 +49,10 @@ void GUI::initHealthBar() {
 }
 
 void GUI::initHealthText() {
-    this->healthText.setFont(this->font);
-    this->healthText.scale(0.7f, 0.7f);
-    this->healthText.setString("");
+    this->loadFont();
+    healthText = std::make_unique<sf::Text>(this->font);
+    this->healthText->scale({0.7f, 0.7f});
+    this->healthText->setString("");
     this->setHpString(20);
 }
 
@@ -66,29 +67,31 @@ void GUI::loadSpriteSheetTexture() {
 
 /**
  *  @brief 
- */
+*/
 void GUI::loadSounds() {
     if(!this->hitBuffer.loadFromFile(this->dataDir + "sounds/damaged.wav")) {
         std::cout << "SOUND LOADING ERROR::GUI::damaged.wav" << '\n';
     }
-    if(!this->defeatSoundBuffer.loadFromFile(this->dataDir + "sounds/Undertale Death Sound Effect.wav")) {
+    if(!this->defeatBuffer.loadFromFile(this->dataDir + "sounds/Undertale Death Sound Effect.wav")) {
         std::cout << "SOUND LOADING ERROR::GUI::damaged.wav" << '\n';
     }
-     if(!this->gameOverThemeBuffer.loadFromFile(this->dataDir + "sounds/game_over_theme.wav")) {
+     if(!this->gameOverBuffer.loadFromFile(this->dataDir + "sounds/game_over_theme.wav")) {
         std::cout << "SOUND LOADING ERROR::GUI::game_over_theme.wav" << '\n';
     }
 }
+
 
 void GUI::loadMusic() {
     if(!this->ingameOST.openFromFile(this->dataDir + "sounds/spider_dance_ost.wav")) {
         std::cout << "MUSIC LOADING ERROR::GUI::spider_dance_ost.wav" << '\n';
     }
-    this->ingameOST.setLoop(true);
+    this->ingameOST.setLooping(true);
     this->ingameOST.setVolume(15.f);
 }
 
+
 void GUI::loadFont() {
-    if(!this->font.loadFromFile(this->dataDir + "fonts/ingame-hud-font.ttf")) {
+    if(!this->font.openFromFile(this->dataDir + "fonts/ingame-hud-font.ttf")) {
         std::cout << "FONT LOADING ERROR::GUI::fonts/ingame-hud-font.ttf" << '\n';
     }
 }
@@ -104,7 +107,7 @@ void GUI::loadFont() {
  */
 GUI::GUI(std::string dataDir) {
     this->dataDir = dataDir;
-    this->loadFont();
+    //this->loadFont();
     this->initSprite();
     this->initSounds();
     this->initAnimationVariables();
@@ -121,7 +124,7 @@ GUI::~GUI() {
 
 
 void GUI::playHitSound() {
-    this->hitSound.play();
+    this->hitSound->play();
 }
 
 /**
@@ -130,21 +133,21 @@ void GUI::playHitSound() {
  * @param y const float
  */
 void GUI::setSpritePosition(const float& x, const float& y) {
-    this->sprite.setPosition(x, y);
+    this->sprite->setPosition({x, y});
 }
 
 void GUI::setHPBarPosition(const float& x, const float& y) {
-    this->healthBarRemaining.setPosition(x, y);
-    this->healthBarLost.setPosition(x, y);
-    this->healthText.setPosition(x + 60.f, y + 5.f);
+    this->healthBarRemaining.setPosition({x, y});
+    this->healthBarLost.setPosition({x, y});
+    this->healthText->setPosition({x + 60.f, y + 5.f});
 }
 
 const float GUI::getSpriteWidth() const {
-    return this->sprite.getGlobalBounds().width / numFrames;
+    return this->sprite->getGlobalBounds().size.x / numFrames;
 }
 
 const float GUI::getSpriteHeight() const {
-    return this->sprite.getGlobalBounds().height;
+    return this->sprite->getGlobalBounds().size.y;
 }
 
 /**
@@ -152,8 +155,8 @@ const float GUI::getSpriteHeight() const {
  * @param currentFrame 
  */
 void GUI::setFrameRect(const int& currentFrame) {
-    this->frameRect.left = currentFrame * this->frameLength;
-    this->sprite.setTextureRect(this->frameRect);
+    this->frameRect.position.x = currentFrame * this->frameLength;
+    this->sprite->setTextureRect(this->frameRect);
 }
 
 void GUI::setSize(sf::Vector2f size) {
@@ -162,9 +165,9 @@ void GUI::setSize(sf::Vector2f size) {
 
 void GUI::setHpString(const int& currentHp) {
     if(currentHp >= 10) {
-        this->healthText.setString(std::to_string(currentHp) + " / 20");
+        this->healthText->setString(std::to_string(currentHp) + " / 20");
     } else {
-        this->healthText.setString("0" + std::to_string(currentHp) + " / 20");
+        this->healthText->setString("0" + std::to_string(currentHp) + " / 20");
     }
 }
 
@@ -177,11 +180,15 @@ void GUI::stopMusic() {
 }
 
 void GUI::playDefeatSound() {
-    this->defeatSound.play();
+    this->defeatSound->play();
 }
 
 void GUI::playGameOverSound() {
-    this->gameOverTheme.play();
+    this->gameOverTheme->play();
+}
+
+void GUI::stopGameOverSound() {
+    this->gameOverTheme->stop();
 }
 
 /**
@@ -203,9 +210,9 @@ void GUI::updateSprite(sf::Time& deltaTime) {
  *  @param target The window
  */
 void GUI::render(sf::RenderTarget& target) {
-    target.draw(this->sprite);
+    target.draw(*this->sprite);
     target.draw(this->healthBarLost);
     target.draw(this->healthBarRemaining);
-    target.draw(this->healthText);
+    target.draw(*this->healthText);
 }
 

@@ -19,8 +19,8 @@ void Enemy::initVariables() {
  */
 void Enemy::initSprite() {
     this->loadEnemyTexture();
-    this->sprite.setTexture(this->texture);
-    this->sprite.scale(1.875f, 1.875f);
+    this->sprite = std::make_unique<sf::Sprite>(this->texture);
+    this->sprite->scale({1.875f, 1.875f});
 }
 
 /**
@@ -52,7 +52,7 @@ Enemy::Enemy(float x, float y, const int spawnPosition, std::string dataDir) {
     this->dataDir = dataDir;
     this->initSprite();
     this->initVariables();
-    this->sprite.setPosition(x,y);
+    this->sprite->setPosition({x,y});
     this->spawnPosition = spawnPosition;
 }
 
@@ -68,7 +68,7 @@ Enemy::~Enemy() {
  * @return const sf::FloatRect 
  */
 const sf::FloatRect Enemy::getBounds() const {
-    return this->sprite.getGlobalBounds();
+    return this->sprite->getGlobalBounds();
 }
 
 /**
@@ -94,7 +94,7 @@ const int Enemy::getSpawnPoint() const{
  * @param y const float
  */
 void Enemy::setPosition(const float x, const float y) {
-    this->sprite.setPosition(x,y);
+    this->sprite->setPosition({x,y});
 }
 
 /**
@@ -104,7 +104,7 @@ void Enemy::setPosition(const float x, const float y) {
  * @param y 
  */
 void Enemy::move(const float& x, const float& y) {
-    this->sprite.move(this->movementSpeed * x, this->movementSpeed * y);
+    this->sprite->move({this->movementSpeed * x, this->movementSpeed * y});
 }
 
 /**
@@ -120,5 +120,5 @@ void Enemy::update() {
  *  @param target The window
  */
 void Enemy::render(sf::RenderTarget& target) {
-    target.draw(this->sprite);
+    target.draw(*this->sprite);
 }

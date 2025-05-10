@@ -15,26 +15,25 @@ class GUI {
 
         // Texture of Animation
         sf::Texture spritesheetTexture;
-        sf::Sprite sprite;
+        std::unique_ptr<sf::Sprite> sprite;
 
         // Timer
         sf::Time totalTime;
 
         // HP-Bar
         sf::Font font;
-        sf::Text healthText;
-        sf::Text playerName;
+        std::unique_ptr<sf::Text> healthText;
+        std::unique_ptr<sf::Text> playerName;
         sf::RectangleShape healthBarRemaining;
         sf::RectangleShape healthBarLost;
 
         // Sounds
-        sf::SoundBuffer hitBuffer;
-        sf::SoundBuffer defeatSoundBuffer;
-        sf::SoundBuffer gameOverThemeBuffer;
-
-        sf::Sound hitSound;
-        sf::Sound defeatSound;
-        sf::Sound gameOverTheme;
+        sf::SoundBuffer hitBuffer; 
+        sf::SoundBuffer defeatBuffer;
+        sf::SoundBuffer gameOverBuffer;
+        std::unique_ptr<sf::Sound> hitSound;
+        std::unique_ptr<sf::Sound> defeatSound;
+        std::unique_ptr<sf::Sound> gameOverTheme;
 
         sf::Music ingameOST;
         
@@ -82,6 +81,7 @@ class GUI {
         void playMusic();
         void playDefeatSound();
         void playGameOverSound();
+        void stopGameOverSound();
         void stopMusic();
 
         void showGameOver();

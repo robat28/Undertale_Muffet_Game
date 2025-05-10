@@ -7,6 +7,7 @@
 #include <SFML/Network.hpp>
 #include <iostream>
 #include <vector>
+#include <optional>
 
 enum LEVEL{
     TOP, 
@@ -25,10 +26,11 @@ class Player {
         LEVEL currentLevel;
 
         // Texture of Player
-        sf::Sprite sprite;
-        sf::Sprite defeatSprite;
         sf::Texture defeatTexture;
         sf::Texture texture;
+        std::unique_ptr<sf::Sprite> sprite;
+        std::unique_ptr<sf::Sprite> defeatSprite;
+        
 
         // Private Functions
         void initPlayer();
@@ -62,6 +64,8 @@ class Player {
         // Public Functions
         void move(const float& x, const float& y);
         void takeDamage(const float& damage);
+        void resetPlayerVariables();
         void render(sf::RenderTarget& target);
+
 
 };
