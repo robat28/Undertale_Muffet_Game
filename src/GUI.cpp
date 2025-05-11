@@ -25,6 +25,13 @@ void GUI::initAnimationVariables() {
 void GUI::initSprite() {
     this->loadSpriteSheetTexture();
     sprite = std::make_unique<sf::Sprite>(this->spritesheetTexture);
+
+     // Compute frameRect & numFrames, etc.
+    this->initAnimationVariables();
+
+    // 1) Clip to the very first frame
+    this->sprite->setTextureRect(this->frameRect);
+
     this->sprite->scale({3.f, 3.f});
 }
 
@@ -109,7 +116,6 @@ GUI::GUI(std::string dataDir) {
     this->dataDir = dataDir;
     this->initSprite();
     this->initSounds();
-    this->initAnimationVariables();
     this->initHealthBar();
     this->initHealthText();
     this->loadMusic();
@@ -142,7 +148,7 @@ void GUI::setHPBarPosition(const float& x, const float& y) {
 }
 
 const float GUI::getSpriteWidth() const {
-    return this->sprite->getGlobalBounds().size.x / numFrames;
+    return this->sprite->getGlobalBounds().size.x;
 }
 
 const float GUI::getSpriteHeight() const {
@@ -200,7 +206,7 @@ void GUI::updateSprite(sf::Time& deltaTime) {
     if(this->totalTime >= this->frameDuration) {
         this->totalTime -= this->frameDuration;
         this->currentFrame = (this->currentFrame + 1) % this->numFrames;
-        setFrameRect(this->currentFrame);
+        this->setFrameRect(this->currentFrame);
     }
 }
 

@@ -11,7 +11,7 @@
 void Player::initPlayer() {
     this->setColor(255,255,255,250);
     this->movementSpeed = 4.f;
-    this->hpMax = 4.f;
+    this->hpMax = 20.f;
     this->hp = this->hpMax;
     this->currentLevel = MIDDLE;
 }

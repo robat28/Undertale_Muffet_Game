@@ -1,5 +1,5 @@
 #include "Menu.hpp"
-#include "Game.hpp"
+#include "GameScreen.hpp"
 #include "DefeatMenu.hpp"
 
 int main(int argc, char** argv) {
@@ -28,13 +28,13 @@ int main(int argc, char** argv) {
      * @brief Applications variables and screen preparation
      */
     Menu menu(dataDir, window);
-    Game game(dataDir, window);
+    GameScreen gamescreen(dataDir, window);
     DefeatMenu defMenu(dataDir, window);
     std::vector<cScreen*> screens;
     int screen = 0;
 
     screens.push_back(&menu);
-    screens.push_back(&game);
+    screens.push_back(&gamescreen);
     screens.push_back(&defMenu);
 
     while(screen >= 0) {

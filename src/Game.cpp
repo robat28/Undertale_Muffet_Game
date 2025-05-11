@@ -54,8 +54,9 @@ void Game::initPlayfield() {
  *  @remark Dividend of setSpritePosition().y is a wild guess but it looks good.
  */
 void Game::initGUI() {
-    this->spritePosX = this->window->getSize().x / 2.f - this->gui->getSpriteWidth() / 2;
-    this->spritePosY = this->window->getSize().y / 1.75f - this->gui->getSpriteHeight();
+    sf::Vector2 wind = this->window->getSize();
+    this->spritePosX = wind.x / 2.f - this->gui->getSpriteWidth() / 2.f;
+    this->spritePosY = wind.y / 1.75f - this->gui->getSpriteHeight();
     this->gui->setSpritePosition(this->spritePosX, this->spritePosY);
 
     this->gui->setHPBarPosition(this->playfieldPosX + this->playfield->getWidth() / 4.f, this->playerStartPosY + this->playfield->getHeight() / 2.f + 25.f);
@@ -94,13 +95,20 @@ Game::Game(std::string dataDir, sf::RenderWindow *window) {
     this->initPlayfield();
     this->initPlayer();
     this->initGUI();
-    
+
 }
 
 /**
  *  @brief Destroy the Game:: Game object
  */
 Game::~Game() {
+    for(Enemy* enemy : this->spawner->enemies) {
+            // clear heap
+            delete enemy;
+    }
+    // clear vector
+    this->spawner->enemies.clear();
+
     delete this->playfield;
     delete this->gui;
     delete this->player;
@@ -109,8 +117,6 @@ Game::~Game() {
 
 
 int Game::Run() {
-    this->player->setPosition(this->playerStartPosX, this->playerStartPosY);
-   
     running = true;
     this->gui->playMusic();
 
@@ -142,6 +148,8 @@ int Game::Run() {
     return (-1);
 }
 
+
+
 /**
  *  @brief If buttonCooldown >= buttonCooldownMax, it sets buttonCooldown back to 0.f and returns true. 
  *  @return true: If cooldown is up and the button is ready to press. 
@@ -152,6 +160,10 @@ const bool Game::canPressButton() {
         return true;
     }
     return false;
+}
+
+const bool Game::getSwitchToDFScreen() {
+    return this->switchToDFScreen;
 }
 
 
@@ -266,7 +278,6 @@ void Game::updateCollisionEnemy() {
                 }
             }
         }
-        
 
     if(this->iFrames >= this->iFramesMax) {
         for(Enemy* enemy : this->spawner->enemies) {
@@ -323,9 +334,7 @@ void Game::render() {
         this->player->render(*this->window);
     } else {
         this->gui->stopMusic();
-        for(auto enemy : this->spawner->enemies) {
-            this->spawner->enemies.erase(this->spawner->enemies.begin());
-        }
+        
         this->player->render(*this->window);
         this->killScreen();
     }
@@ -421,7 +430,6 @@ void Game::upadteEnemies() {
 
 // Game over functions
 
-
 void Game::killScreen() {
     if(this->gameOverTimer < 125) {
         this->gameOverTimer += 1;
@@ -443,23 +451,6 @@ void Game::killScreen() {
     if(this->gameOverTimer == 30 && this->defeatSpriteCounter == 2) {
         this->switchToDFScreen = true;
     }
-
-    /*
-    if(this->defeatSpriteCounter == 2) {
-        this->gui->setGameOverVisibility(this->gameOverTimer);
-        this->gui->renderGameOver(*this->window);
-    }
-    */
-}
-
-/**
- * @brief Resets the game by setting all variables to deafult values so the game can be played from the beginning.
- */
-void Game::restartGame() {
-    this->initVariables();
-    this->initPlayfield();
-    this->initPlayer();
-    this->initGUI();
 }
 
 

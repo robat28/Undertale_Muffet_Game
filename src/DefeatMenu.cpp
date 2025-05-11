@@ -68,6 +68,9 @@ DefeatMenu::DefeatMenu(std::string dataDir, sf::RenderWindow* window) {
 }
 
 int DefeatMenu::Run() {
+    this->window->clear();
+    this->window->display();
+    
     this->running = true;
 
     this->initGameOverText();

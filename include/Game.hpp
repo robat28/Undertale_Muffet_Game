@@ -1,7 +1,5 @@
 #pragma once
 
-#include "cScreen.hpp"
-
 #include "Spawner.hpp"
 #include "Playfield.hpp"
 
@@ -9,7 +7,7 @@
 #include <optional>
 #include <variant>
 
-class Game : public cScreen {    
+class Game {    
     private:
 
         std::string dataDir;
@@ -21,6 +19,7 @@ class Game : public cScreen {
         // Render objects
         GUI* gui;
         Playfield* playfield;
+        Player* player;
 
         // Update Time 
         sf::Clock clock;
@@ -75,8 +74,6 @@ class Game : public cScreen {
 
         virtual int Run();
 
-        Player* player;
-
         // Constructor
         Game(std::string dataDir, sf::RenderWindow *window);
 
@@ -85,6 +82,7 @@ class Game : public cScreen {
 
         // Public Functions
         const bool canPressButton();
+        const bool getSwitchToDFScreen();
         bool borderReachedOdd(Enemy& enemy) const;
         bool borderReachedEven(Enemy& enemy) const;
         void moveEnemy();
@@ -94,6 +92,7 @@ class Game : public cScreen {
         void gameOverScreen();
         void killScreen();
         void restartGame();
+
 
         // Update Functions
         void update();
