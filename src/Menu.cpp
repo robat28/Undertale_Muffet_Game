@@ -4,89 +4,162 @@
  *  Private Functions
  */
 
-void Menu::initMenu() {
-    this->loadFont(); 
 
-    this->text1.setString("Play");
-    this->text1.setFont(font);
-    this->text1.setCharacterSize(40);
-    this->text1.setOrigin(this->text1.getGlobalBounds().getSize().x / 2, this->text1.getGlobalBounds().getSize().y / 2);
-    this->text1.setPosition(sf::Vector2f(this->window->getSize().x / 2, this->window->getSize().y * 0.4f));
-
-    this->text2.setString("Quit");
-    this->text2.setFont(font);
-    this->text2.setCharacterSize(40);
-    this->text2.setOrigin(this->text2.getGlobalBounds().getSize().x / 2, this->text2.getGlobalBounds().getSize().y / 2);
-    this->text2.setPosition(sf::Vector2f(this->window->getSize().x / 2, this->window->getSize().y * 0.6f));
-
-    this->text3.setString("Scores");
-    this->text3.setFont(font);
-    this->text3.setCharacterSize(20);
-    this->text3.setOrigin(this->text3.getGlobalBounds().getSize().x / 2, this->text3.getGlobalBounds().getSize().y / 2);
-    this->text3.setPosition(sf::Vector2f(this->window->getSize().x / 2, this->window->getSize().y * 0.9f));
-
-    this->selected = 0;
+/**
+ * @brief Initializes all variables of the menu.
+ */
+void Menu::initVariables() {
+    this->textSize = 40;
+    this->selected = PLAY;
+    this->iconDistanceToText = 65.f;
 }
 
+
+/**
+ * @brief Initializes the variables of the menu text.
+ */
+void Menu::initMenu() {
+    this->text_PLAY = std::make_unique<sf::Text>(this->font);
+    this->text_PLAY->setString("Play");
+    this->text_PLAY->setCharacterSize(this->textSize);
+    this->text_PLAY->setPosition(sf::Vector2f(this->window->getSize().x / 2 - this->text_PLAY->getGlobalBounds().size.x / 2, this->window->getSize().y * 0.4f));
+
+    this->text_QUIT = std::make_unique<sf::Text>(this->font);
+    this->text_QUIT->setString("Quit");
+    this->text_QUIT->setCharacterSize(this->textSize);
+    this->text_QUIT->setPosition(sf::Vector2f(this->window->getSize().x / 2 - this->text_QUIT->getGlobalBounds().size.x / 2, this->window->getSize().y * 0.6f));
+
+    this->text_SCORES = std::make_unique<sf::Text>(this->font);
+    this->text_SCORES->setString("Scores");
+    this->text_SCORES->setCharacterSize(this->textSize * 0.75f);
+    this->text_SCORES->setPosition(sf::Vector2f(this->window->getSize().x / 2 - this->text_SCORES->getGlobalBounds().size.x / 2, this->window->getSize().y * 0.9f));
+}
+
+
+/**
+ * @brief Initializes the variables of the selection icon.
+ */
+void Menu::initIcon() {
+    this->icon = std::make_unique<sf::Sprite>(this->texture);
+    this->icon->scale({0.035f, 0.035f});
+
+    this->icon->setOrigin({this->icon->getGlobalBounds().size.x / 2, this->icon->getGlobalBounds().size.y / 2});
+    this->icon->setPosition({this->text_PLAY->getPosition().x - this->text_PLAY->getGlobalBounds().size.x / 2, this->text_PLAY->getPosition().y - this->icon->getGlobalBounds().size.y / 2});
+}
+
+
+/**
+ * @brief Loads the font of the menu text. Returns error message if it can not find the directory.
+ */
 void Menu::loadFont() {
-    if (!this->font.loadFromFile(this->dataDir + "fonts/ingame-hud-font.ttf")) {
+    if (!this->font.openFromFile(this->dataDir + "fonts/ingame-hud-font.ttf")) {
         std::cout << "FONT LOADING ERROR::GUI::fonts/ingame-hud-font.ttf" << '\n';
     }
 }
 
-void Menu::updateTextStyles() {
-    this->text1.setStyle(sf::Text::Regular);
-    this->text2.setStyle(sf::Text::Regular);
-    this->text3.setStyle(sf::Text::Regular);
 
-    if (selected == 0) {
-        this->text1.setStyle(sf::Text::Underlined);
-    } else if (selected == 1) {
-        this->text2.setStyle(sf::Text::Underlined);
-    } else if (selected == 2) {
-        this->text3.setStyle(sf::Text::Underlined);
+/**
+ * @brief Loads the selection icon of the menu. Returns error message if it can not find the directory.
+ */
+void Menu::loadTexture() {
+    if (!this->texture.loadFromFile(this->dataDir + "textures/selection_icon.png")) {
+        std::cout << "FONT LOADING ERROR::GUI::textures/selection_icon.png" << '\n';
     }
 }
+
+
+/**
+ * @brief Changes the selected option of the menu.
+ */
+void Menu::updateSelection() {
+    if (selected == PLAY) {
+        this->icon->setPosition({this->text_PLAY->getPosition().x - this->iconDistanceToText, this->text_PLAY->getPosition().y + this->text_PLAY->getGlobalBounds().size.y / 2 - this->icon->getGlobalBounds().size.y / 2});
+    } else if (selected == QUIT) {
+        this->icon->setPosition({this->text_QUIT->getPosition().x - this->iconDistanceToText, this->text_QUIT->getPosition().y + this->text_QUIT->getGlobalBounds().size.y / 2 - this->icon->getGlobalBounds().size.y / 2});
+    } else if (selected == SCORES) {
+        this->icon->setPosition({this->text_SCORES->getPosition().x - this->iconDistanceToText, this->text_SCORES->getPosition().y + this->text_SCORES->getGlobalBounds().size.y / 2 - this->icon->getGlobalBounds().size.y / 2});
+    }
+}
+
+
+/**
+ * @brief Draws the objects on the screen.
+ */
+void Menu::render() {
+    // Clearing screen
+    this->window->clear();
+    // Drawing
+    this->window->draw(*this->text_PLAY);
+    this->window->draw(*this->text_QUIT);
+    this->window->draw(*this->text_SCORES);
+    this->window->draw(*this->icon);
+
+    this->window->display();
+}
+
 
 /**
  *  Public Functions
  */
 
+
+/**
+ * @brief Constructor of Menu.
+ */
 Menu::Menu(std::string dataDir, sf::RenderWindow *window) {
     this->dataDir = dataDir;
     this->window = window;
+
+    this->loadFont(); 
+    this->loadTexture();
+
+    this->initVariables();
+    this->initMenu();
+    this->initIcon();
 }
 
-int Menu::Run() {
-    this->running = true;
-    this->initMenu();
 
-    while (running) {
+/**
+ * @brief The cScreen main loop. Handles all events on the defeat menu. 
+ */
+int Menu::Run() {
+    this->selected = PLAY;
+
+    while (true) {
         // Verifying events
-        while (this->window->pollEvent(evnt)) {
+        while (const std::optional evnt = window->pollEvent()) {
             // Window closed
-            if (evnt.type == sf::Event::Closed) {
+            if (evnt->is<sf::Event::Closed>()) {
                 return (-1);
             }
             // Key pressed
-            if (evnt.type == sf::Event::KeyPressed) {
-                switch (evnt.key.code) {
-                    case sf::Keyboard::W:
-                        if(selected > 0)
-                            selected -= 1;
+            if (const auto* keyPressed = evnt->getIf<sf::Event::KeyPressed>()) {
+                switch (keyPressed->scancode) {
+                    // Close Programm (Escape)
+                    case sf::Keyboard::Scancode::Escape:
+                        return (-1);
+                    case sf::Keyboard::Scancode::W:
+                        if(this->selected == QUIT)
+                            this->selected =  PLAY;
+                        else if(this->selected == SCORES) {
+                            this->selected =  QUIT;
+                        } 
                         break;
-                    case sf::Keyboard::S:
-                        if(selected < 2)
-                        selected += 1;
+                    case sf::Keyboard::Scancode::S:
+                        if(this->selected == PLAY)
+                            this->selected =  QUIT;
+                        else if(this->selected == QUIT) {
+                            this->selected =  SCORES;
+                        } 
                         break;
-                    case sf::Keyboard::Return:
-                        if(selected == 0) {
+                    case sf::Keyboard::Scancode::Enter:
+                        if(this->selected == 0) {
                             // Start Game
                             return (1);
-                        } else if(selected == 1) {
+                        } else if(this->selected == 1) {
                             // Quit
                             return (-1);
-                        } else if(selected == 2) {
+                        } else if(this->selected == 2) {
                             // Scores TODO
                             //return (2);
                         }
@@ -97,19 +170,10 @@ int Menu::Run() {
             }
         }
 
-        this->updateTextStyles();
-   
-        // Clearing screen
-        this->window->clear();
-        // Drawing
-        this->window->draw(text1);
-        this->window->draw(text2);
-        this->window->draw(text3);
-
-        this->window->display();
+        this->updateSelection();
+        this->render();
     }
 
-    // Never reaching this point normally, but just in case, exit the
-    // application
+    // Never reaching this point normally, but just in case, exit the application
     return (-1);
 }

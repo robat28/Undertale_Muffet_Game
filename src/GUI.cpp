@@ -1,62 +1,87 @@
 #include "GUI.hpp"
 
+
 /**
  *  Private Functions
  */
 
 
 /**
- *  @brief Initializes all Variables of the Animation.
- *  @remark The Frames of the sprite sheet has to be set horizontaly.
- *  @remark The single Frame should be a square.
- *  @example 200px x 200px for one frame.
+ * @brief Initializes all variables of GUI.
  */
-void GUI::initAnimationVariables() {
-    this->frameLength = this->sprite.getTexture()->getSize().y;
-    this->numFrames = this->sprite.getTexture()->getSize().x / frameLength;
-    this->frameDuration = sf::seconds(0.03f);
-    this->frameRect = sf::IntRect(0,0,frameLength, frameLength);
+void GUI::initVariables() {
     this->currentFrame = 0.f;
+    this->frameDuration = sf::seconds(0.03f);
+    this->numFrames = this->sprite->getTexture().getSize().x / this->frameLength;
 }
+
 
 /**
- *  @brief Initializes the Sprite by loading the texture first.
+ * @brief Initializes the variables of the sprite.
+ * @remark The frames of the sprite sheet has to be set horizontaly.
+ * @remark The single frame should be a square, e.g. 200px x 200px for one frame.
  */
 void GUI::initSprite() {
-    this->loadSpriteSheetTexture();
-    this->sprite.setTexture(spritesheetTexture);
-    this->sprite.scale(3.f, 3.f);
+    this->sprite = std::make_unique<sf::Sprite>(this->spritesheetTexture);
+    this->frameLength = this->sprite->getTexture().getSize().y;
+    this->frameRect = sf::IntRect({0,0},{this->frameLength, this->frameLength});
+
+    // Clip to the very first frame
+    this->sprite->setTextureRect(this->frameRect);
+    this->sprite->scale({3.f, 3.f});
 }
 
+
+/**
+ * @brief Initializes the variables of the sounds, like the hitsound.
+ */
 void GUI::initSounds() {
-    this->loadSounds();
-    this->hitSound.setBuffer(this->hitBuffer);
-    this->hitSound.setVolume(15.f);
+    this->hitSound = std::make_unique<sf::Sound>(this->hitBuffer);
+    this->hitSound->setVolume(15.f);
 
-    this->defeatSound.setBuffer(this->defeatSoundBuffer);
-    this->defeatSound.setVolume(15.f);
+    this->defeatSound = std::make_unique<sf::Sound>(this->defeatBuffer);
+    this->defeatSound->setVolume(15.f);
 
-    this->gameOverTheme.setBuffer(this->gameOverThemeBuffer);
-    this->gameOverTheme.setVolume(15.f);
+    this->gameOverTheme = std::make_unique<sf::Sound>(this->gameOverBuffer);
+    this->gameOverTheme->setVolume(15.f);
 }
 
+
+/**
+ * @brief Initializes the variables of the numerical health view.
+ */
+void GUI::initHealthText() {
+    this->healthText = std::make_unique<sf::Text>(this->font);
+    this->healthText->scale({0.7f, 0.7f});
+    this->healthText->setString("");
+    this->setHpString(20);
+}
+
+
+/**
+ * @brief Initializes the variables of the graphical health view.
+ */ 
 void GUI::initHealthBar() {
     this->healthBarRemaining.setSize(sf::Vector2f(35.f, 30.f));
     this->healthBarLost.setSize(sf::Vector2f(35.f, 30.f));
 
     this->healthBarRemaining.setFillColor(sf::Color(255, 255, 0));
     this->healthBarLost.setFillColor(sf::Color(255, 0, 0));
-}
+}    
 
-void GUI::initHealthText() {
-    this->healthText.setFont(this->font);
-    this->healthText.scale(0.7f, 0.7f);
-    this->healthText.setString("");
-    this->setHpString(20);
-}
 
 /**
- *  @brief Loads the Texture from the file and handles it if it can't. 
+ * @brief Initializes the variables of the fixed player name.
+ */
+void GUI::initPlayerName() {
+    this->playerName = std::make_unique<sf::Text>(this->font);
+    this->playerName->scale({0.7f, 0.7f});
+    this->playerName->setString("FRISK");
+}
+
+
+/**
+ * @brief Loads the Texture from the file and handles it if it can't. 
  */
 void GUI::loadSpriteSheetTexture() {
     if (!this->spritesheetTexture.loadFromFile(this->dataDir + "textures/muffet_spriteSheet.png")) {
@@ -64,31 +89,40 @@ void GUI::loadSpriteSheetTexture() {
     }
 }
 
+
 /**
- *  @brief 
+ * @brief Loads the Sounds for hit, defeat and game over from the files and handles it if it can't. 
  */
 void GUI::loadSounds() {
     if(!this->hitBuffer.loadFromFile(this->dataDir + "sounds/damaged.wav")) {
         std::cout << "SOUND LOADING ERROR::GUI::damaged.wav" << '\n';
     }
-    if(!this->defeatSoundBuffer.loadFromFile(this->dataDir + "sounds/Undertale Death Sound Effect.wav")) {
-        std::cout << "SOUND LOADING ERROR::GUI::damaged.wav" << '\n';
+    if(!this->defeatBuffer.loadFromFile(this->dataDir + "sounds/death_sound.wav")) {
+        std::cout << "SOUND LOADING ERROR::GUI::death_sound.wav" << '\n';
     }
-     if(!this->gameOverThemeBuffer.loadFromFile(this->dataDir + "sounds/game_over_theme.wav")) {
+     if(!this->gameOverBuffer.loadFromFile(this->dataDir + "sounds/game_over_theme.wav")) {
         std::cout << "SOUND LOADING ERROR::GUI::game_over_theme.wav" << '\n';
     }
 }
 
+
+/**
+ * @brief Loads the music from the file and handles it if it can't. 
+ */
 void GUI::loadMusic() {
     if(!this->ingameOST.openFromFile(this->dataDir + "sounds/spider_dance_ost.wav")) {
         std::cout << "MUSIC LOADING ERROR::GUI::spider_dance_ost.wav" << '\n';
     }
-    this->ingameOST.setLoop(true);
+    this->ingameOST.setLooping(true);
     this->ingameOST.setVolume(15.f);
 }
 
+
+/**
+ * @brief Loads the font from the file and handles it if it can't.
+ */
 void GUI::loadFont() {
-    if(!this->font.loadFromFile(this->dataDir + "fonts/ingame-hud-font.ttf")) {
+    if(!this->font.openFromFile(this->dataDir + "fonts/ingame-hud-font.ttf")) {
         std::cout << "FONT LOADING ERROR::GUI::fonts/ingame-hud-font.ttf" << '\n';
     }
 }
@@ -100,93 +134,163 @@ void GUI::loadFont() {
 
 
 /**
- *  @brief Construct a new GUI object.
+ *  @brief Constructor of GUI.
  */
-GUI::GUI(std::string dataDir) {
+GUI::GUI(std::string dataDir, sf::RenderWindow* window) {
     this->dataDir = dataDir;
+    this->window = window;
+
+    // Loading
+    this->loadSpriteSheetTexture();
     this->loadFont();
+    this->loadSounds();
+    this->loadMusic();
+
+    // Init
     this->initSprite();
-    this->initSounds();
-    this->initAnimationVariables();
+    this->initVariables();
     this->initHealthBar();
     this->initHealthText();
-    this->loadMusic();
+    this->initPlayerName();
+    this->initSounds();
 }
+
 
 /**
- *  @brief Destroy the GUI object.
+ * @brief Getter for the width of the animation sprite.
  */
-GUI::~GUI() {
+const float GUI::getSpriteWidth() const {
+    return this->sprite->getGlobalBounds().size.x;
 }
 
 
-void GUI::playHitSound() {
-    this->hitSound.play();
+/**
+ * @brief Getter for the height of the animation sprite.
+ */
+const float GUI::getSpriteHeight() const {
+    return this->sprite->getGlobalBounds().size.y;
+}
+
+
+/**
+ * @brief Getter for the x size of the player name.
+ */
+const float GUI::getPlayerNameSizeX() const {
+    return this->playerName->getGlobalBounds().size.x;
+}
+
+
+/**
+ * @brief Getter for the y size of the player name.
+ */
+const float GUI::getPlayerNameSizeY() const {
+    return this->playerName->getGlobalBounds().size.y;
 }
 
 /**
  * @brief Sets the position of the sprite centered above the playfield. 
- * @param x const float
- * @param y const float
- */
+ */  
 void GUI::setSpritePosition(const float& x, const float& y) {
-    this->sprite.setPosition(x, y);
-}
+    this->sprite->setPosition({x, y});
+}        
 
-void GUI::setHPBarPosition(const float& x, const float& y) {
-    this->healthBarRemaining.setPosition(x, y);
-    this->healthBarLost.setPosition(x, y);
-    this->healthText.setPosition(x + 60.f, y + 5.f);
-}
-
-const float GUI::getSpriteWidth() const {
-    return this->sprite.getGlobalBounds().width / numFrames;
-}
-
-const float GUI::getSpriteHeight() const {
-    return this->sprite.getGlobalBounds().height;
-}
 
 /**
- * @brief Sets the new current frame as texture.
- * @param currentFrame 
+ * @brief Sets the position of the HP bar below the playfield. 
+ */  
+void GUI::setHPBarPosition(const float& x, const float& y) {
+    this->healthBarRemaining.setPosition({x, y});
+    this->healthBarLost.setPosition({x, y});
+    this->healthText->setPosition({x + 60.f, y + 5.f});
+}
+
+
+/**
+ * @brief Sets the position of the player name next to the HP bar.
+ */
+void GUI::setPlayerNamePosition(const float& x, const float& y) {
+    this->playerName->setPosition({x, y});
+}
+
+
+/**
+ * @brief Sets the new current frame from the sprite sheet as texture.
  */
 void GUI::setFrameRect(const int& currentFrame) {
-    this->frameRect.left = currentFrame * this->frameLength;
-    this->sprite.setTextureRect(this->frameRect);
-}
+    this->frameRect.position.x = currentFrame * this->frameLength;
+    this->sprite->setTextureRect(this->frameRect);
+}    
 
-void GUI::setSize(sf::Vector2f size) {
-    this->healthBarRemaining.setSize(size);
-}
 
+/**
+ * @brief Sets the new numerical HP.
+ */
 void GUI::setHpString(const int& currentHp) {
     if(currentHp >= 10) {
-        this->healthText.setString(std::to_string(currentHp) + " / 20");
+        this->healthText->setString(std::to_string(currentHp) + " / 20");
     } else {
-        this->healthText.setString("0" + std::to_string(currentHp) + " / 20");
+        this->healthText->setString("0" + std::to_string(currentHp) + " / 20");
     }
 }
 
+
+/**
+ * @brief Sets the size of the remaining HP bar.
+ */ 
+void GUI::setSizeHPRemaining(sf::Vector2f size) {
+    this->healthBarRemaining.setSize(size);
+}    
+
+
+/**
+ * @brief Starts playing the ingame OST while playing the game.
+ */
 void GUI::playMusic() {
     this->ingameOST.play();
 }
 
+
+/**
+ * @brief Stops the ingame OST playing. 
+ */
 void GUI::stopMusic() {
     this->ingameOST.stop();
 }
 
-void GUI::playDefeatSound() {
-    this->defeatSound.play();
+
+/**
+ * @brief Starts playing the game over sound after losing the game.
+ */
+void GUI::playGameOverSound() {
+    this->gameOverTheme->play();
 }
 
-void GUI::playGameOverSound() {
-    this->gameOverTheme.play();
+
+/**
+ * @brief Stops the game over sound.
+ */
+void GUI::stopGameOverSound() {
+    this->gameOverTheme->stop();
 }
 
 /**
- *  @brief Updates the Animation frame.
- *  @param deltaTime 
+ * @brief Plays the hit sound after player got hit.
+ */       
+void GUI::playHitSound() {
+    this->hitSound->play();
+}                            
+
+
+/**
+ * @brief Plays the defeat sound after player got hit.
+ */
+void GUI::playDefeatSound() {
+    this->defeatSound->play();
+}
+
+
+/**
+ * @brief Updates the current frame of the sprite sheet.
  */
 void GUI::updateSprite(sf::Time& deltaTime) {
     this->totalTime += deltaTime;
@@ -194,18 +298,19 @@ void GUI::updateSprite(sf::Time& deltaTime) {
     if(this->totalTime >= this->frameDuration) {
         this->totalTime -= this->frameDuration;
         this->currentFrame = (this->currentFrame + 1) % this->numFrames;
-        setFrameRect(this->currentFrame);
+        this->setFrameRect(this->currentFrame);
     }
 }
 
+
 /**
  *  @brief Draws the current Frame of the Animation.
- *  @param target The window
  */
-void GUI::render(sf::RenderTarget& target) {
-    target.draw(this->sprite);
-    target.draw(this->healthBarLost);
-    target.draw(this->healthBarRemaining);
-    target.draw(this->healthText);
+void GUI::render() {
+    this->window->draw(*this->sprite);
+    this->window->draw(this->healthBarLost);
+    this->window->draw(this->healthBarRemaining);
+    this->window->draw(*this->healthText);
+    this->window->draw(*this->playerName);
 }
 

@@ -1,92 +1,89 @@
-#pragma once
+#ifndef _GUI_
+#define _GUI_
 
-#include "Player.hpp"
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
+#include <iostream>
+
 
 class GUI {
     private:
         std::string dataDir;
 
+        // Window and Display
+        sf::RenderWindow* window;
+
+        // Time Variables
+        sf::Time totalTime;
+        sf::Time frameDuration;
+
         // Animation Variables
+        sf::IntRect frameRect;
         int numFrames;
         int frameLength;
-        sf::Time frameDuration;
-        sf::IntRect frameRect;
         int currentFrame;
 
-        // Texture of Animation
+        // Animation texture
         sf::Texture spritesheetTexture;
-        sf::Sprite sprite;
-
-        // Timer
-        sf::Time totalTime;
+        std::unique_ptr<sf::Sprite> sprite;
 
         // HP-Bar
         sf::Font font;
-        sf::Text healthText;
-        sf::Text playerName;
+        std::unique_ptr<sf::Text> healthText;
+        std::unique_ptr<sf::Text> playerName;
         sf::RectangleShape healthBarRemaining;
         sf::RectangleShape healthBarLost;
 
         // Sounds
-        sf::SoundBuffer hitBuffer;
-        sf::SoundBuffer defeatSoundBuffer;
-        sf::SoundBuffer gameOverThemeBuffer;
-
-        sf::Sound hitSound;
-        sf::Sound defeatSound;
-        sf::Sound gameOverTheme;
-
         sf::Music ingameOST;
+        sf::SoundBuffer hitBuffer; 
+        sf::SoundBuffer defeatBuffer;
+        sf::SoundBuffer gameOverBuffer;
+        std::unique_ptr<sf::Sound> hitSound;
+        std::unique_ptr<sf::Sound> defeatSound;
+        std::unique_ptr<sf::Sound> gameOverTheme;
         
         // Private Functions
-        void initAnimationVariables();
-
+        void initVariables();
         void initSprite();
-        void loadSpriteSheetTexture();
-
         void initSounds();
+        void initHealthText();
+        void initHealthBar();
+        void initPlayerName();
+        void loadSpriteSheetTexture();
         void loadSounds();
         void loadMusic();
-
         void loadFont();
-        void initHUD();
-        void initHealthText();
-        void initPlayerName();
-        void initHealthBar();
-
-
 
     public:
 
         // Constructor
-        GUI(std::string dataDir);
-
-        // Destructor
-        ~GUI();
+        GUI(std::string dataDir, sf::RenderWindow* window);
 
         // Getter
         const float getSpriteWidth() const;
         const float getSpriteHeight() const;
-        sf::Sound getHitSound();
+        const float getPlayerNameSizeX() const;
+        const float getPlayerNameSizeY() const;
 
         // Setter
         void setSpritePosition(const float& x, const float& y);
-        void setNewSpritePosition(const float& x, const float& y);
-        void setFrameRect(const int& currentFrame);
         void setHPBarPosition(const float& x, const float& y);
-        void setSize(sf::Vector2f size);
+        void setPlayerNamePosition(const float& x, const float& y);
+        void setFrameRect(const int& currentFrame);
         void setHpString(const int& currentHp);
+        void setSizeHPRemaining(sf::Vector2f size);
 
         // Public Functions
-        void playHitSound();
         void playMusic();
-        void playDefeatSound();
-        void playGameOverSound();
         void stopMusic();
-
-        void showGameOver();
-
+        void playGameOverSound();
+        void stopGameOverSound();
+        void playHitSound();
+        void playDefeatSound();
 
         void updateSprite(sf::Time& deltaTime);
-        void render(sf::RenderTarget& target);
+        void render();
 };
+
+#endif

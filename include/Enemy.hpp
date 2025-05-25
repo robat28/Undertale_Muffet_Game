@@ -1,39 +1,34 @@
-#pragma once
+#ifndef _ENEMY_
+#define _ENEMY_
 
 #include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/Audio.hpp>
-#include <SFML/Network.hpp>
 #include <iostream>
+
 
 class Enemy{
     private:
+
         std::string dataDir;
 
         // Enemy Variables
-        float movementSpeed;
         int spawnPosition;
+        float movementSpeed;
         float spriteSize;
 
         // Texture of Enemies
         sf::Texture texture;
-        sf::Sprite sprite;
+        std::unique_ptr<sf::Sprite> sprite;
 
         // Private Functions
         void initVariables();
         void initSprite();
-        void loadEnemyTexture();
-
+        void loadTexture();
 
     public:
 
         // Constructor
         Enemy();
         Enemy(float x, float y, const int spawnPosition, std::string dataDir);
-
-        // Destructor
-        ~Enemy();
 
         // Getter
         const sf::FloatRect getBounds() const;
@@ -45,6 +40,7 @@ class Enemy{
 
         // Public Functions
         void move(const float& x, const float& y);
-        void update();
         void render(sf::RenderTarget& target);
 };
+
+#endif 
