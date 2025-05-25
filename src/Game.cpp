@@ -369,7 +369,6 @@ bool Game::borderReachedEven(Enemy& movingEnemy) const {
 }   
 
 
-// TODO Add deletion for enemies inside.
 /**
  * @brief Handles all one-time actions after losing all HP.
  */
