@@ -7,26 +7,27 @@
 
 
 /**
- *  @brief Initializes all Variables of the Enemy
+ * @brief Initializes all Variables of the Enemy.
  */
 void Enemy::initVariables() {
     this->spriteSize = 30.f;
     this->movementSpeed = 7.f;
 }
 
+
 /**
- *  @brief Initializes the Sprite by loading the texture first.
+ * @brief Initializes the Sprite by loading the texture first.
  */
 void Enemy::initSprite() {
-    this->loadEnemyTexture();
     this->sprite = std::make_unique<sf::Sprite>(this->texture);
     this->sprite->scale({1.875f, 1.875f});
 }
 
+
 /**
- *  @brief Loads the Texture from the file and handles it if it can't.
+ * @brief Loads the font of the enemy. Returns error message if it can not find the directory.
  */
-void Enemy::loadEnemyTexture() {
+void Enemy::loadTexture() {
     if(!texture.loadFromFile(this->dataDir + "/textures/spiderEnemy_sprite.png")) {
         std::cout << "TEXTURE LOADING ERROR::ENEMY::textures/spiderEnemy_sprite.png" << '\n';
     }
@@ -37,8 +38,9 @@ void Enemy::loadEnemyTexture() {
  *  Public Functions
  */
 
+
 /**
- *  @brief Construct a new Enemy object.
+ * @brief Default Contructor for accessing the size in Spawner.cpp.
  */
 Enemy::Enemy() {
     this->initVariables();
@@ -46,78 +48,63 @@ Enemy::Enemy() {
 
 
 /**
- *  @brief Construct a new Enemy object.
+ * @brief Constructor of Enemy.
  */
 Enemy::Enemy(float x, float y, const int spawnPosition, std::string dataDir) {
     this->dataDir = dataDir;
+
+    this->loadTexture();
+
     this->initVariables();
     this->initSprite();
+    
     this->sprite->setPosition({x,y});
     this->spawnPosition = spawnPosition;
 }
 
-/**
- *  @brief Destroy the Enemy object.
- */
-Enemy::~Enemy() {
-}
 
 /**
- * @brief 
- * 
- * @return const sf::FloatRect 
+ * @brief Returns the bounds of the Enemy as a sf::FloatRect.
  */
 const sf::FloatRect Enemy::getBounds() const {
     return this->sprite->getGlobalBounds();
 }
 
+
 /**
- * @brief Get the Size object
- * 
- * @return const float 
+ * @brief Returns the size of the enemy.
  */
 const float Enemy::getSize() const {
     return this->spriteSize;
 }
 
+
 /**
- * @brief 
- * 
+ * @brief Returns the spawn position on the playfield.
  */
 const int Enemy::getSpawnPoint() const{
     return this->spawnPosition;
 }
 
+
 /**
- * @brief Set the position of the enemy at x / y.
- * @param x const float 
- * @param y const float
+ * @brief Set the position of the enemy at (x, y).
  */
 void Enemy::setPosition(const float x, const float y) {
     this->sprite->setPosition({x,y});
 }
 
+
 /**
- * @brief 
- * 
- * @param x 
- * @param y 
+ * @brief Method to reposition/"move" the enemy on the screen.
  */
 void Enemy::move(const float& x, const float& y) {
     this->sprite->move({this->movementSpeed * x, this->movementSpeed * y});
 }
 
-/**
- * @brief 
- * 
- */
-void Enemy::update() {
-
-}
 
 /**
  *  @brief Draws the Enemy.
- *  @param target The window
  */
 void Enemy::render(sf::RenderTarget& target) {
     target.draw(*this->sprite);

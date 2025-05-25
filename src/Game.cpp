@@ -1,70 +1,85 @@
 #include "Game.hpp"
 
+
 /**
  *  Private Functions
  */
 
 
 /**
- *  @brief Initializes all Variables of the Game class with a default value.
+ *  @brief Initializes all Variables of the Game class with default values.
  */
 void Game::initVariables() {
     srand(time(NULL));
+    // Window
+    this->windowSizeX = this->window->getSize().x;
+    this->windowSizeY = this->window->getSize().y;
+    // Playfield
     this->playfieldCenterX = 0.f;
     this->playfieldCenterY = 0.f;
     this->playfieldPosX = 0.f;
     this->playfieldPosY = 0.f;
+    this->borderThickness = this->playfield->getBorderThickness();
+    // Animation 
     this->spritePosX = 0.f;
     this->spritePosY = 0.f;
+    // Player
     this->playerStartPosX = 0.f;
     this->playerStartPosY = 0.f;
+    this->playerPositionX = 0.f;
+    // Cooldowns
     this->buttonCooldownMax = 5.5f;
     this->buttonCooldown = this->buttonCooldownMax;
-    this->spawnTimerMax = 15.f;
-    this->spawnTimer = 0.f;
     this->iFramesMax = 60.f;
     this->iFrames = iFramesMax;
-    this->enemyDamage = 4.f;
     this->impactFrames = 0.f;
-    this->defeatSpriteCounter = 0;
+    // Spawner
+    this->spawnTimerMax = 15.f;
+    this->spawnTimer = 0.f;
+    // Enemy
+    this->enemyDamage = 4.f;
+    std::vector<Enemy*> enemies = {};
+    // Deafeat Variables
+    this->defeatFlag = NORMAL;
     this->gameOverTimer = 0;
     this->gameOver = false;
     this->switchToDFScreen = false;
 }
 
+
 /**
- *  @brief Calculate the right Position for the Playfield and also sets the postion of the Playfield and the Position of
- *  the three layers of levels.
- *  @remark Dividend of playfieldCenterY is a wild guess but it looks good.
- *  @remark You have to subtract 5 pixel, because of the Border size. 
+ * @brief Calculate the right Position for the Playfield and also sets the postion of the Playfield and the Position of
+ * the three layers of levels.
  */
 void Game::initPlayfield() {
-    this->playfieldCenterX = this->window->getSize().x / 2.f;
-    this->playfieldCenterY = this->window->getSize().y / 1.4f;
+    this->playfieldCenterX = this->windowSizeX / 2.f;
+    this->playfieldCenterY = this->windowSizeY / 1.4f;
 
-    this->playfieldPosX = playfieldCenterX - (this->playfield->getWidth() / 2.f - 5.f);
-    this->playfieldPosY = playfieldCenterY - (this->playfield->getHeight() / 2.f - 5.f);
+    this->playfieldPosX = playfieldCenterX - (this->playfield->getWidth() / 2.f - this->borderThickness);
+    this->playfieldPosY = playfieldCenterY - (this->playfield->getHeight() / 2.f - this->borderThickness);
 
     this->playfield->setPosition(playfieldPosX, playfieldPosY);
     this->playfield->setLevelPositions(this->playfield->getBounds().position.x, playfieldCenterY);
 }
 
+
 /**
- *  @brief Sets the position of the Muffet animation right above the palyfield.
- *  @remark Dividend of setSpritePosition().y is a wild guess but it looks good.
+ * @brief Sets the position of the Muffet animation right above the palyfield.
+ * @remark Dividend of setSpritePosition().y is a wild guess but it looks good.
  */
 void Game::initGUI() {
-    sf::Vector2 wind = this->window->getSize();
-    this->spritePosX = wind.x / 2.f - this->gui->getSpriteWidth() / 2.f;
-    this->spritePosY = wind.y / 1.75f - this->gui->getSpriteHeight();
+    this->spritePosX = this->windowSizeX / 2.f - this->gui->getSpriteWidth() / 2.f;
+    this->spritePosY = this->windowSizeY / 1.75f - this->gui->getSpriteHeight();
     this->gui->setSpritePosition(this->spritePosX, this->spritePosY);
 
     this->gui->setHPBarPosition(this->playfieldPosX + this->playfield->getWidth() / 4.f, this->playerStartPosY + this->playfield->getHeight() / 2.f + 25.f);
 
+    this->gui->setPlayerNamePosition(this->playfieldPosX - this->gui->getPlayerNameSizeX() / 2, this->playerStartPosY + this->playfield->getHeight() / 2 + this->gui->getPlayerNameSizeY() * 1.4f);
 }
 
+
 /**
- *  @brief Sets the spawn position of the player in the middle of the Playfield on the second level.
+ * @brief Sets the spawn position of the player in the middle of the Playfield on the second level.
  */
 void Game::initPlayer() {
     this->playerStartPosX = this->window->getSize().x / 2.f - this->player->getWidth() / 2.f;
@@ -74,124 +89,44 @@ void Game::initPlayer() {
 
 
 /**
- *  Public Functions
+ * @brief Initializes all constant values after initialization of all objects.
  */
-
-
-/**
- *  @brief Construct a new Game object that initializes all objects needed to build the game.
- *  @remark The Order of the init functions is important, else you can get segmentation fault.
- */
-Game::Game(std::string dataDir, sf::RenderWindow *window) {
-    this->dataDir = dataDir;
-    this->window = window;
-
-    this->playfield = new Playfield();
-    this->gui = new GUI(this->dataDir);
-    this->player = new Player(this->dataDir);
-    this->spawner = new Spawner();
-
-    this->initVariables();
-    this->initPlayfield();
-    this->initPlayer();
-    this->initGUI();
-
-}
-
-/**
- *  @brief Destroy the Game:: Game object
- */
-Game::~Game() {
-    for(Enemy* enemy : this->spawner->enemies) {
-            // clear heap
-            delete enemy;
-    }
-    // clear vector
-    this->spawner->enemies.clear();
-
-    delete this->playfield;
-    delete this->gui;
-    delete this->player;
-    delete this->spawner;
-}
-
-
-int Game::Run() {
-    running = true;
-    this->gui->playMusic();
-
-    while(running) {
-
-        while(const std::optional evnt = window->pollEvent()) {
-            if (evnt->is<sf::Event::Closed>()) {
-                return (-1);
-            }
-            if (const auto* keyPressed = evnt->getIf<sf::Event::KeyPressed>()) {
-                switch (keyPressed->scancode) {
-                    case sf::Keyboard::Scancode::Escape:
-                        return (-1);
-                    default:
-                        break;
-                }
-            
-            }
-        }
-
-        if(this->switchToDFScreen) {
-            return (2);
-        }
-        
-        this->update();
-        this->render();
-    }
-
-    return (-1);
-}
-
-
-
-/**
- *  @brief If buttonCooldown >= buttonCooldownMax, it sets buttonCooldown back to 0.f and returns true. 
- *  @return true: If cooldown is up and the button is ready to press. 
- */
-const bool Game::canPressButton() {
-    if(this->buttonCooldown >=  this->buttonCooldownMax) {
-        this->buttonCooldown = 0.f;
-        return true;
-    }
-    return false;
-}
-
-const bool Game::getSwitchToDFScreen() {
-    return this->switchToDFScreen;
+void Game::initConst() {
+    // Playfield
+    this->leftPlayfieldBorder = this->playfield->getBounds().position.x + this->borderThickness;
+    this->rightPlayfieldBorder = this->playfield->getBounds().position.x + this->playfield->getBounds().size.x - this->borderThickness;
+    // Enemy
+    this->oddEnemyBorder = this->playfield->getBounds().position.x + 1.25 * this->playfield->getBounds().size.x;
+    this->evenEnemyBorder = this->playfield->getBounds().position.x - (this->playfield->getBounds().size.x / 4) - this->spawner->getEnemySize();
 }
 
 
 /**
- *  @brief The update function of the main method. Executes all update function of the game to update every frame.
+ * @brief Updates the frame of the Muffet animation. 
  */
-void Game::update() {
-    this->updateDeltaTime();
-    this->updateInput();
-    this->updateButtonCooldown();
-    this->upadteEnemies();
+void Game::updateDeltaTime() {
+    this->deltaTime = clock.restart();
+    this->gui->updateSprite(deltaTime);
 }
 
+
 /**
- *  @brief Handles the movement of the player in every Direction.
- *  @remark The first Value of move is a multiplier of the movementspeed, so you can go left and right.
- *  @remark Can only press UP and DOWN if canPressButton is true (cooldown is up). 
+ * @brief Handles the movement of the player in every direction.
+ * @remark Can only press UP and DOWN if canPressButton is true (cooldown is up). 
  */
 void Game::updateInput() {
+    // Get the players position
+    this->playerPositionX = this->player->getBounds().position.x;
+    
+    // Can move only if your alive
     if(this->player->getHp() > 0.f) {
-
         // Moving LEFT
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::A)) {
             this->player->move(-1.f, 0.f);
         } 
         // Moving RIGHT
         else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::D)) {
-            this->player->move(1.f, 0.f);
+                this->player->move(1.f, 0.f);
         }
         // Moving UP
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::W) && this->canPressButton()) {
@@ -200,12 +135,11 @@ void Game::updateInput() {
                     break;
                 case MIDDLE: 
                     this->player->setNewLevel(TOP);
-                    this->player->setPosition(this->player->getBounds().position.x, playfieldCenterY - (this->playfield->getBounds().size.y / 4) - 
-                                            (this->player->getHeight() / 2));
+                    this->player->setPosition(this->playerPositionX, playfieldCenterY - (this->playfield->getBounds().size.y / 4) - (this->player->getHeight() / 2));
                     break;
                 case BOTTOM:
                     this->player->setNewLevel(MIDDLE);
-                    this->player->setPosition(this->player->getBounds().position.x, playfieldCenterY - (this->player->getHeight() / 2));
+                    this->player->setPosition(this->playerPositionX, playfieldCenterY - (this->player->getHeight() / 2));
                     break;
                 default:
                     break;
@@ -216,12 +150,11 @@ void Game::updateInput() {
             switch(this->player->getCurrentLevel()) {
                 case TOP: 
                     this->player->setNewLevel(MIDDLE);
-                    this->player->setPosition(this->player->getBounds().position.x, playfieldCenterY - (this->player->getHeight() / 2));
+                    this->player->setPosition(this->playerPositionX, playfieldCenterY - (this->player->getHeight() / 2));
                     break;
                 case MIDDLE: 
                     this->player->setNewLevel(BOTTOM);
-                    this->player->setPosition(this->player->getBounds().position.x, (playfieldCenterY + this->playfield->getBounds().size.y / 4) - 
-                                            (this->player->getHeight() / 2));
+                    this->player->setPosition(this->playerPositionX, (playfieldCenterY + this->playfield->getBounds().size.y / 4) - (this->player->getHeight() / 2));
                     break;
                 case BOTTOM:
                     break;
@@ -229,42 +162,45 @@ void Game::updateInput() {
                     break;
             }
         }   
-        // Collision check
-        this->updateCollisonPlayfield();
-        this->updateCollisionEnemy();
     }
+
+    // Collision check
+    this->updateCollisionPlayfield(); 
+    this->updateCollisionEnemy();
 }
 
+
 /**
- *  @brief If the Player touches the Border on the position.x or right of the Playfield, the Players position gets set to his previous one, 
+ *  @brief If the Player touches the Border on the left or right of the Playfield, the Players position gets set to his previous one, 
  *  so he can't move any further.
- *  @remark You have to subtract or add 5 pixel, because of the Border. 
  */
-void Game::updateCollisonPlayfield() {
+void Game::updateCollisionPlayfield() {
     //Left
-    if(this->player->getBounds().position.x < this->playfield->getBounds().position.x + 5) {
-        this->player->setPosition(this->playfield->getBounds().position.x + 5, this->player->getBounds().position.y);
+    if(this->player->getBounds().position.x <= this->leftPlayfieldBorder) {
+        this->player->setPosition(this->playfield->getBounds().position.x + this->borderThickness, this->player->getBounds().position.y);
     }
     //Right
-    else if(this->player->getBounds().position.x + this->player->getBounds().size.x > this->playfield->getBounds().position.x + this->playfield->getBounds().size.x - 5) {
-        this->player->setPosition((this->playfield->getBounds().position.x) + (this->playfield->getBounds().size.x) - (this->player->getBounds().size.x) - 5, 
+    else if(this->player->getBounds().position.x + this->player->getBounds().size.x > this->rightPlayfieldBorder) {
+        this->player->setPosition((this->playfield->getBounds().position.x) + (this->playfield->getBounds().size.x) - (this->player->getBounds().size.x) - this->borderThickness, 
         this->player->getBounds().position.y);
     }
 }
 
+
 /**
- * 
- *  iFrames in int for modulo
- * 
+ * @brief Handles actions functionally and visually when colliding with an enemy.
+ * @remark iFrames in int for mod-operator.
  */
 void Game::updateCollisionEnemy() {
-    // Visual Iframes
-    if(this->iFramesMax > this->iFrames)
-        this->iFrames += 1;
-        if(this->player->getHp() > 0) {
+    // Actions after colliding with an enemy
+    if(this->player->getHp() > 0) {
+        if(this->iFrames <= this->iFramesMax) {
+            this->iFrames += 1;
+            // Makes player visible 
             if((this->iFramesMax - 5  > this->iFrames) && this->iFrames % 10 == 0) {
                 this->player->setColor(255, 255, 255 ,255);
             } 
+            // Makes player transparent
             else if((this->iFramesMax - 5  > this->iFrames) && this->iFrames % 5 == 0) {
                 this->player->setColor(255, 255, 255 ,150);
             }
@@ -277,28 +213,36 @@ void Game::updateCollisionEnemy() {
                     this->shakeScreen();
                 }
             }
-        }
-
+        }        
+    }
+    
+    // Actions when colliding with an enemy 
     if(this->iFrames >= this->iFramesMax) {
-        for(Enemy* enemy : this->spawner->enemies) {
+        for(Enemy* enemy : this->spawner->getEnemyVector()) {
+            // Player gets hit
             if(this->player->getBounds().findIntersection(enemy->getBounds())) {
                 this->iFrames = 0.f;
                 this->player->takeDamage(this->enemyDamage);
-                this->gui->setSize(sf::Vector2f(35.f * this->player->getHp() / this->player->getHpMax(), 30.f));
+                // TODO rename setSize()
+                this->gui->setSizeHPRemaining(sf::Vector2f(35.f * this->player->getHp() / this->player->getHpMax(), 30.f));
                 this->gui->setHpString(this->player->getHp());
 
-                if(this->player->getHp() <= 0) 
+                if(this->player->getHp() <= 0) {
                     this->gameOver = true;
-
+                    this->deathAction();
+                }
+                
+                // Should not play with death
                 this->gui->playHitSound();
             }
         }
     }
 }
 
+
 /** 
- *  @brief Increases the buttonCooldown if the Button got pressed and set to 0.f. Gets called (buttonCooldownMax / buttonCooldown) times till 
- *  buttonCooldown is up.
+ * @brief Increases the buttonCooldown if the Button got pressed and set to 0.f. Gets called (buttonCooldownMax / buttonCooldown) times till 
+ * buttonCooldown is up.
  */
 void Game::updateButtonCooldown() {
     if(this->buttonCooldown < this->buttonCooldownMax) {
@@ -306,17 +250,222 @@ void Game::updateButtonCooldown() {
     }
 }
 
-/**
- *  @brief Updates the frame of the Muffet animation. 
- */
-void Game::updateDeltaTime() {
-    this->deltaTime = clock.restart();
-    this->gui->updateSprite(deltaTime);
-}
 
 /**
- *  @brief The render function of the main method. Draws every object every frame after it got updated to simulate movement.
- *  @remark The order of the function is important.
+ * @brief Updates the spawning and moving of enemeis.
+ */
+void Game::updateEnemies() {
+    this->spawnTimer += 0.5f;
+    if(this->spawnTimer >= this->spawnTimerMax) {
+        this->spawnTimer = 0.f;
+        this->spawner->spawnEnemiesRandom(this->window, this->playfield, this->dataDir);
+    }
+    this->moveEnemy();
+}
+
+
+/**
+ *  @brief If buttonCooldown >= buttonCooldownMax, it sets buttonCooldown back to 0.f and returns true. 
+ *  @return true: If cooldown is up and the button is ready to press. 
+ */
+const bool Game::canPressButton() {
+    if(this->buttonCooldown >=  this->buttonCooldownMax) {
+        this->buttonCooldown = 0.f;
+        return true;
+    }
+
+    return false;
+}
+
+
+/**
+ * @brief Helping method to animate the "shaking" of the screen when hit.
+ */
+void Game::shakeScreen() {
+    if(this->impactFrames == 0.f) {
+        this->impactFrames = 2.f;
+    }
+    this->playfield->setPosition(playfieldPosX - this->impactFrames, playfieldPosY - this->impactFrames);
+    this->playfield->setLevelPositions(this->playfield->getBounds().position.x - this->impactFrames, playfieldCenterY - this->impactFrames);
+    this->player->setPosition(this->player->getBounds().position.x - this->impactFrames, this->player->getBounds().position.y - this->impactFrames);
+    this->gui->setSpritePosition(this->spritePosX - this->impactFrames, this->spritePosY - this->impactFrames);
+
+    for(Enemy* enemy : this->spawner->getEnemyVector()) {
+        enemy->setPosition(enemy->getBounds().position.x - this->impactFrames, enemy->getBounds().position.y - this->impactFrames);
+    }
+}
+
+
+/**
+ * @brief Helping method to reset the shaking of one instance and reduce the amplitude.
+ */
+void Game::resetScreen() {
+    this->playfield->setPosition(playfieldPosX, playfieldPosY);
+    this->playfield->setLevelPositions(this->playfield->getBounds().position.x, playfieldCenterY);
+    this->player->setPosition(this->player->getBounds().position.x + this->impactFrames, this->player->getBounds().position.y + this->impactFrames);
+    this->gui->setSpritePosition(this->spritePosX, this->spritePosY);
+
+    for(Enemy* enemy : this->spawner->getEnemyVector()) {
+        enemy->setPosition(enemy->getBounds().position.x + this->impactFrames, enemy->getBounds().position.y + this->impactFrames);
+    }
+
+    this->impactFrames -= 1.f;
+}
+
+
+/**
+ * @brief Moves odd enemies right (+1) and even enemies left (-1).
+ */
+void Game::moveEnemy() {     
+    auto& enemies = this->spawner->getEnemyVector();
+    for (auto it = enemies.begin(); it != enemies.end();) {
+        Enemy* enemy = *it;
+        bool shouldRemove = false;
+        // Move right
+        if (enemy->getSpawnPoint() % 2 == 1) {
+            if (this->borderReachedOdd(*enemy))
+                shouldRemove = true;
+            else
+                enemy->move(1.f, 0.f);
+        // Move left
+        } else {
+            if (this->borderReachedEven(*enemy))
+                shouldRemove = true;
+            else
+                enemy->move(-1.f, 0.f);
+        }
+        // deletes enemy after enemy reached the border
+        if (shouldRemove) {
+            it = enemies.erase(it);
+            delete enemy;
+        } else {
+            ++it;
+        }
+    }    
+}
+
+
+/**
+ * @brief Checks for enemies with odd spawn position if they reached their given border border.
+ */
+bool Game::borderReachedOdd(Enemy& movingEnemy) const {
+    if(movingEnemy.getBounds().position.x >= this->oddEnemyBorder) {
+            return true;
+    } else {
+        return false;
+    }
+}
+
+
+/**
+ * @brief Checks for enemies with even spawn position if they reached their given border border.
+ */
+bool Game::borderReachedEven(Enemy& movingEnemy) const {
+     if(movingEnemy.getBounds().position.x <= this->evenEnemyBorder) {
+            return true;
+    } else {
+        return false;
+    }
+}   
+
+
+// TODO Add deletion for enemies inside.
+/**
+ * @brief Handles all one-time actions after losing all HP.
+ */
+void Game::deathAction() {
+    this->gui->stopMusic();
+}
+
+
+/**
+ * @brief Handles the death animation for transition to the deafeat screen.
+ */
+void Game::deathAnimation() {
+    // Update
+    if(this->gameOverTimer < 125) {
+        this->gameOverTimer += 1;
+    }
+    // Break the Heart
+    if(this->gameOverTimer == 30 && defeatFlag == NORMAL) {
+        this->gameOverTimer = 0;
+        this->player->setDefeatTexture();
+        this->gui->playDefeatSound();
+        this->defeatFlag = BROKEN;
+    // Fading
+    } else if(this->gameOverTimer >= 80 && this->defeatFlag == 1) {
+        this->player->setColor(255,255,255,250 - this->gameOverTimer * 2);
+    }
+    // Reset timer after heart completely vanished
+    if(this->gameOverTimer == 125 && this->defeatFlag == BROKEN) {
+        this->gameOverTimer = 0;
+        this->defeatFlag = VANISHED;
+    }
+    // Switch to Defeat Menu
+    if(this->gameOverTimer == 30 && this->defeatFlag == VANISHED) {
+        this->switchToDFScreen = true;
+    }
+}
+
+
+/**
+ *  Public Functions
+ */
+
+
+/**
+ * @brief Constructor of Game object.
+ * @remark The Order of the init functions is important, else you can get seg fault.
+ */
+Game::Game(std::string dataDir, sf::RenderWindow *window) {
+    this->dataDir = dataDir;
+    this->window = window;
+
+    this->playfield = new Playfield();
+    this->gui = new GUI(this->dataDir, this->window);
+    this->player = new Player(this->dataDir);
+    this->spawner = new Spawner();
+
+    this->initVariables();
+    this->initPlayfield();
+    this->initPlayer();
+    this->initGUI();
+    this->initConst();
+
+    this->gui->playMusic();
+}
+
+
+/**
+ * @brief Destroy the Game object.
+ */
+Game::~Game() {
+    // Just in case
+    this->spawner->deleteEnemies();
+
+    delete this->playfield;
+    delete this->gui;
+    delete this->player;
+    delete this->spawner;
+}
+
+
+/**
+ *  @brief The update function of the main method. Executes all update function of the game to update every frame.
+ */
+void Game::update() {
+    if(!gameOver) {
+        this->updateDeltaTime();
+        this->updateInput();
+        this->updateButtonCooldown();
+        this->updateEnemies();
+    }
+}
+
+
+/**
+ * @brief The render function of the main method. Draws every object every frame after it got updated to simulate movement.
+ * @remark The order of the function is important.
  *          1. window->clear();
  *          2. All render functions
  *          3. window->display(); 
@@ -327,131 +476,17 @@ void Game::render() {
 
     if(!gameOver) {
         this->playfield->render(*this->window);
-        this->gui->render(*this->window);
-        for(auto enemy : this->spawner->enemies) {
-            enemy->render(*this->window);
-        }
+        this->gui->render();
+        this->spawner->render(*this->window);
         this->player->render(*this->window);
     } else {
-        this->gui->stopMusic();
-        
         this->player->render(*this->window);
-        this->killScreen();
+        this->deathAnimation();
     }
+
     this->window->display();
 }
 
-/**
- *  @brief 
- * 
- */
-void Game::shakeScreen() {
-    if(this->impactFrames == 0.f) {
-        this->impactFrames = 2.f;
-    }
-    this->playfield->setPosition(playfieldPosX - this->impactFrames, playfieldPosY - this->impactFrames);
-    this->playfield->setLevelPositions(this->playfield->getBounds().position.x - this->impactFrames, playfieldCenterY - this->impactFrames);
-    this->player->setPosition(this->player->getBounds().position.x - this->impactFrames, this->player->getBounds().position.y - this->impactFrames);
-    this->gui->setSpritePosition(this->spritePosX - 2.f, this->spritePosY - 2.f);
-
-    for(Enemy* enemy : this->spawner->enemies) {
-        enemy->setPosition(enemy->getBounds().position.x - this->impactFrames, enemy->getBounds().position.y - this->impactFrames);
-    }
-}
-
-/**
- *  @brief 
- * 
- */
-void Game::resetScreen() {
-    this->playfield->setPosition(playfieldPosX, playfieldPosY);
-    this->playfield->setLevelPositions(this->playfield->getBounds().position.x, playfieldCenterY);
-    this->player->setPosition(this->player->getBounds().position.x + this->impactFrames, this->player->getBounds().position.y + this->impactFrames);
-    this->gui->setSpritePosition(this->spritePosX, this->spritePosY);
-
-    for(Enemy* enemy : this->spawner->enemies) {
-        enemy->setPosition(enemy->getBounds().position.x + this->impactFrames, enemy->getBounds().position.y + this->impactFrames);
-    }
-
-    this->impactFrames -= 1.f;
-
-}
-
-
-// SPAWNER FUNCTOINS 
-
-bool Game::borderReachedOdd(Enemy& movingEnemy) const {
-    if(movingEnemy.getBounds().position.x >= (this->playfield->getBounds().position.x) + (this->playfield->getBounds().size.x) + (this->playfield->getBounds().size.x / 4)) {
-            return true;
-    } else {
-        return false;
-    }
-}
-
-bool Game::borderReachedEven(Enemy& movingEnemy) const {
-     if(movingEnemy.getBounds().position.x <= (this->playfield->getBounds().position.x) - (this->playfield->getBounds().size.x / 4) - this->spawner->enemy->getSize()) {
-            return true;
-    } else {
-        return false;
-    }
-}   
-
-void Game::moveEnemy() { 
-    for(auto* movingEnemy : this->spawner->enemies) {
-        // Moving Right
-        if((movingEnemy->getSpawnPoint() % 2) == 1) {
-            if(this->borderReachedOdd(*movingEnemy)) {
-                this->spawner->enemies.erase(this->spawner->enemies.begin());
-                delete movingEnemy;
-            } else {
-                movingEnemy->move(1.f, 0.f);
-            }
-        } else {
-        // Moving Left
-            if(this->borderReachedEven(*movingEnemy)) {
-                this->spawner->enemies.erase(this->spawner->enemies.begin());
-                delete movingEnemy;
-            } else {
-                movingEnemy->move(-1.f, 0.f);
-            }
-        }
-    }
-}
-
-void Game::upadteEnemies() {
-    this->spawnTimer += 0.5f;
-    if(this->spawnTimer >= this->spawnTimerMax) {
-        this->spawnTimer = 0.f;
-        this->spawner->spawnEnemiesRandom(this->window, this->playfield, this->dataDir);
-    }
-    this->moveEnemy();
-}
-
-
-// Game over functions
-
-void Game::killScreen() {
-    if(this->gameOverTimer < 125) {
-        this->gameOverTimer += 1;
-    }
-    if(this->gameOverTimer == 30 && this->defeatSpriteCounter == 0) {
-        this->gameOverTimer = 0;
-        this->player->setDefeatTexture();
-        this->gui->playDefeatSound();
-        this->defeatSpriteCounter = 1;
-    } else if(this->gameOverTimer >= 80 && this->defeatSpriteCounter == 1) {
-        this->player->setColor(255,255,255,250 - this->gameOverTimer * 2);
-    }
-
-    if(this->gameOverTimer == 125 && this->defeatSpriteCounter == 1) {
-        this->gameOverTimer = 0;
-        this->defeatSpriteCounter = 2;
-    }
-
-    if(this->gameOverTimer == 30 && this->defeatSpriteCounter == 2) {
-        this->switchToDFScreen = true;
-    }
-}
 
 
 

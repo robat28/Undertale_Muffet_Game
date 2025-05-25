@@ -1,19 +1,26 @@
+#ifndef _GAMESCREEN_
+#define _GAMESCREEN_
+
 #include "cScreen.hpp"
 #include "Game.hpp"
 
+
 class GameScreen : public cScreen {
     private:
+    
+        std::string dataDir;
 
-    std::string dataDir;
-    sf::RenderWindow* window;
-    bool running;
-
-    std::unique_ptr<Game> game;
+        // Game objects
+        sf::RenderWindow* window;
+        std::unique_ptr<Game> game;
 
     public:
-
-    virtual int Run();
-    GameScreen(std::string dataDir, sf::RenderWindow *window);
+        
+        // Constructor 
+        GameScreen(std::string dataDir, sf::RenderWindow *window);
     
+        // cScreen function
+        virtual int Run();
 };
 
+#endif

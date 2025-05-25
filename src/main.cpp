@@ -1,3 +1,6 @@
+#ifndef _MAIN_
+#define _MAIN_
+
 #include "Menu.hpp"
 #include "GameScreen.hpp"
 #include "DefeatMenu.hpp"
@@ -5,7 +8,7 @@
 int main(int argc, char** argv) {
     
     /**
-     *  @brief Find the directory of files
+     *  @brief Find the directory of files.
      */
     std::string dataDir = argv[0];
     dataDir.erase(dataDir.rfind("/"));
@@ -14,18 +17,28 @@ int main(int argc, char** argv) {
 
     /**
      *  @brief Initializes and sets all Properties of the window.
-     *  @remark FramerateLimit is at 60 Frames, so the game appears same on most devices.
+     *  @remark FramerateLimit is at 60 Frames, so the game appears same on all devices.
      */
     sf::VideoMode vMode = sf::VideoMode({1000, 750});
-    std::string title = "Undertale Muffet Minigame";
+    std::string title = "Muffet Game";
 
     sf::RenderWindow* window = new sf::RenderWindow(vMode, title, sf::Style::Titlebar | sf::Style::Close);
     window->setFramerateLimit(60);
-    //TODO this->window->setIcon()
 
-    
+
     /**
-     * @brief Applications variables and screen preparation
+     * @brief Loads the image and sets the image as an icon for the game.
+     */
+    auto image = sf::Image{};
+    if(!image.loadFromFile(dataDir + "/textures/game_icon.png")) {
+        std::cout << "IMAGE LOADING ERROR::MAIN::game_icon.png" << '\n';
+    }
+    window->setIcon({image.getSize().x, image.getSize().y}, image.getPixelsPtr());
+
+
+
+    /**
+     * @brief Applications variables and screen preparation.
      */
     Menu menu(dataDir, window);
     GameScreen gamescreen(dataDir, window);
@@ -37,9 +50,12 @@ int main(int argc, char** argv) {
     screens.push_back(&gamescreen);
     screens.push_back(&defMenu);
 
+    // Runs application until it returns -1.
     while(screen >= 0) {
         screen = screens[screen]->Run();
     }
 
     return 0;
 }
+
+#endif
