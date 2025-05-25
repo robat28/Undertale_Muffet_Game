@@ -11,7 +11,7 @@ LFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 FLAGS = -o bin/main -I./include -stdlib=libc++ -std=c++17
 
 main: $(SRC) bin
-	$(CXX) $(FLAGS) $(SRC) $(LFLAGS) 
+  $(CXX) $(SRC) $(LFLAGS) $(FLAGS) 
 
 bin: 
 	mkdir -p bin
