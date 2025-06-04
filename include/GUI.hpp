@@ -4,6 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 
 
 class GUI {
@@ -16,6 +18,8 @@ class GUI {
         // Time Variables
         sf::Time totalTime;
         sf::Time frameDuration;
+        sf::Time elapsedTime;
+        std::unique_ptr<sf::Text> time;
 
         // Animation Variables
         sf::IntRect frameRect;
@@ -27,7 +31,7 @@ class GUI {
         sf::Texture spritesheetTexture;
         std::unique_ptr<sf::Sprite> sprite;
 
-        // HP-Bar
+        // HP-Bar Variables
         sf::Font font;
         std::unique_ptr<sf::Text> healthText;
         std::unique_ptr<sf::Text> playerName;
@@ -50,6 +54,7 @@ class GUI {
         void initHealthText();
         void initHealthBar();
         void initPlayerName();
+        void initTimer();
         void loadSpriteSheetTexture();
         void loadSounds();
         void loadMusic();
@@ -65,11 +70,15 @@ class GUI {
         const float getSpriteHeight() const;
         const float getPlayerNameSizeX() const;
         const float getPlayerNameSizeY() const;
+        const float getTimerSizeX() const;
+        const float getTimerSizeY() const;
+        const std::string getFinalTimer() const;
 
         // Setter
         void setSpritePosition(const float& x, const float& y);
         void setHPBarPosition(const float& x, const float& y);
         void setPlayerNamePosition(const float& x, const float& y);
+        void setTimerPosition(const float& x, const float& y);
         void setFrameRect(const int& currentFrame);
         void setHpString(const int& currentHp);
         void setSizeHPRemaining(sf::Vector2f size);
@@ -81,6 +90,7 @@ class GUI {
         void stopGameOverSound();
         void playHitSound();
         void playDefeatSound();
+        void updateVisualTimer(sf::Clock& clock);
 
         void updateSprite(sf::Time& deltaTime);
         void render();

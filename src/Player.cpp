@@ -11,7 +11,7 @@
 void Player::initVariables() {
     this->currentLevel = MIDDLE;
     this->movementSpeed = 4.f;
-    this->hpMax = 4.f;
+    this->hpMax = 20.f;
     this->hp = this->hpMax;
 }
 

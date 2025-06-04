@@ -81,6 +81,20 @@ void GUI::initPlayerName() {
 
 
 /**
+ * @brief Initializes the variables for the timer.
+ */
+void GUI::initTimer() {
+    this->time = std::make_unique<sf::Text>(this->font);
+    this->time->setFillColor(sf::Color::White);
+    this->time->scale({0.7f, 0.7f});
+
+    this->time->setString("00:00:00");
+    auto bounds = this->time->getLocalBounds();
+    this->time->setOrigin({bounds.position.x + bounds.size.x / 2.f,bounds.position.y  + bounds.size.y/2.f});
+}
+
+
+/**
  * @brief Loads the Texture from the file and handles it if it can't. 
  */
 void GUI::loadSpriteSheetTexture() {
@@ -153,6 +167,7 @@ GUI::GUI(std::string dataDir, sf::RenderWindow* window) {
     this->initHealthText();
     this->initPlayerName();
     this->initSounds();
+    this->initTimer();
 }
 
 
@@ -187,6 +202,31 @@ const float GUI::getPlayerNameSizeY() const {
     return this->playerName->getGlobalBounds().size.y;
 }
 
+
+/**
+ * @brief Getter for the width of the timer string.
+ */
+const float GUI::getTimerSizeX() const {
+    return this->time->getGlobalBounds().size.x;
+}
+
+
+/**
+ * @brief Getter for the height of the timer string.
+ */
+const float GUI::getTimerSizeY() const {
+    return this->time->getGlobalBounds().size.y;
+}
+
+
+/**
+ * @brief Getter for the string of the sf::Text timer.
+ */
+const std::string GUI::getFinalTimer() const {
+    return this->time.get()->getString();
+}
+
+
 /**
  * @brief Sets the position of the sprite centered above the playfield. 
  */  
@@ -210,6 +250,14 @@ void GUI::setHPBarPosition(const float& x, const float& y) {
  */
 void GUI::setPlayerNamePosition(const float& x, const float& y) {
     this->playerName->setPosition({x, y});
+}
+
+
+/**
+ * @brief Sets the position of the visual timer below the HP Bar.
+ */
+void GUI::setTimerPosition(const float& x, const float& y) {
+    this->time->setPosition({x, y});
 }
 
 
@@ -290,6 +338,26 @@ void GUI::playDefeatSound() {
 
 
 /**
+ * @brief Updates the timer shown on the screen. Needs to be converted from sf::Time to float to string.
+ */
+void GUI::updateVisualTimer(sf::Clock& clock) {
+    int totalMs = clock.getElapsedTime().asMilliseconds();
+
+    int minutes = totalMs / 60000;
+    int seconds = (totalMs / 1000) % 60;
+    int centiseconds = (totalMs / 10) % 100;
+
+    // Build "MM:SS:CC" with leading zeros
+    std::ostringstream oss;
+    oss << std::setw(2) << std::setfill('0') << minutes << ':'
+        << std::setw(2) << std::setfill('0') << seconds << ':'
+        << std::setw(2) << std::setfill('0') << centiseconds;
+
+    this->time->setString(oss.str());
+}
+
+
+/**
  * @brief Updates the current frame of the sprite sheet.
  */
 void GUI::updateSprite(sf::Time& deltaTime) {
@@ -312,5 +380,6 @@ void GUI::render() {
     this->window->draw(this->healthBarRemaining);
     this->window->draw(*this->healthText);
     this->window->draw(*this->playerName);
+    this->window->draw(*this->time);
 }
 

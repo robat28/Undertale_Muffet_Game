@@ -5,6 +5,7 @@
 #include "GameScreen.hpp"
 #include "DefeatMenu.hpp"
 
+
 int main(int argc, char** argv) {
     
     /**
@@ -36,7 +37,6 @@ int main(int argc, char** argv) {
     window->setIcon({image.getSize().x, image.getSize().y}, image.getPixelsPtr());
 
 
-
     /**
      * @brief Applications variables and screen preparation.
      */
@@ -45,6 +45,7 @@ int main(int argc, char** argv) {
     DefeatMenu defMenu(dataDir, window);
     std::vector<cScreen*> screens;
     int screen = 0;
+    std::string currentTime = "-";
 
     screens.push_back(&menu);
     screens.push_back(&gamescreen);
@@ -52,6 +53,13 @@ int main(int argc, char** argv) {
 
     // Runs application until it returns -1.
     while(screen >= 0) {
+        // Delivers the time of the previous run to the defeat menu and to the scores screen.
+        if(screen == 2) {
+            currentTime = gamescreen.getTime();
+            defMenu.setTime(currentTime);
+            // TODO Scores
+        }
+
         screen = screens[screen]->Run();
     }
 

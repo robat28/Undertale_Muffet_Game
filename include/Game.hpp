@@ -24,6 +24,7 @@ class Game {
         GUI* gui;        
 
         // Update Time 
+        sf::Clock deltaClock;
         sf::Clock clock;
         sf::Time deltaTime;
 
@@ -80,6 +81,7 @@ class Game {
 
         // Update and draw Functions
         void updateDeltaTime();
+        void updateTimer();
         void updateInput();
         void updateCollisionPlayfield();
         void updateCollisionEnemy();
@@ -103,6 +105,9 @@ class Game {
         
         // Destructor
         ~Game();
+
+        // Getter
+        const std::string getFinalTime() const;
 
         // Public Variables
         bool switchToDFScreen;

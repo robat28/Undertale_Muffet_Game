@@ -14,13 +14,23 @@ class GameScreen : public cScreen {
         sf::RenderWindow* window;
         std::unique_ptr<Game> game;
 
-    public:
+        // Time
+        std::string time;
+
+        // Initialization
+        void initGameScreen();
+        
+        public:
         
         // Constructor 
         GameScreen(std::string dataDir, sf::RenderWindow *window);
-    
+        
         // cScreen function
         virtual int Run();
+
+        // Getter
+        std::string getTime();
+
 };
 
 #endif

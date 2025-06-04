@@ -2,6 +2,19 @@
 
 
 /**
+ * Private Functions 
+ */
+
+
+/**
+ * @brief Initializes all variables of the game screen.
+ */
+void GameScreen::initGameScreen() {
+    this->time = "";
+}
+
+
+/**
  * Public Functions 
  */
 
@@ -12,6 +25,14 @@
 GameScreen::GameScreen(std::string dataDir, sf::RenderWindow *window) {
     this->dataDir = dataDir;
     this->window = window;
+}
+
+
+/**
+ * @brief Getter for the time of the last game run. Used by main loop.
+ */
+std::string GameScreen::getTime() {
+    return this->time;
 }
 
 
@@ -38,6 +59,7 @@ int GameScreen::Run() {
         }
 
         if(this->game->switchToDFScreen) {
+            this->time = this->game->getFinalTime();
             return (2);
         }
         

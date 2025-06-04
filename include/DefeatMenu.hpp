@@ -3,6 +3,7 @@
 
 #include "cScreen.hpp"
 #include "GUI.hpp"
+#include <optional>
 
 
 enum SELECTED_DF {RETRY, EXIT};
@@ -19,6 +20,7 @@ class DefeatMenu : public cScreen {
         sf::Font font;
         std::unique_ptr<sf::Text> text_RETRY;
         std::unique_ptr<sf::Text> text_EXIT;
+        std::unique_ptr<sf::Text> finalTime;
         SELECTED_DF selected;
 
         // Icon
@@ -38,6 +40,7 @@ class DefeatMenu : public cScreen {
         void initGameOverText();
         void initMenuText();
         void initIcon();
+        void initFinalTime();
         void loadFont();
         void loadTexture();
 
@@ -56,6 +59,9 @@ class DefeatMenu : public cScreen {
 
         // cScreen function
         virtual int Run();
+
+        // Setter
+        void setTime(const std::string& time);
 };
 
 #endif

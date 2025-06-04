@@ -73,8 +73,8 @@ void Game::initGUI() {
     this->gui->setSpritePosition(this->spritePosX, this->spritePosY);
 
     this->gui->setHPBarPosition(this->playfieldPosX + this->playfield->getWidth() / 4.f, this->playerStartPosY + this->playfield->getHeight() / 2.f + 25.f);
-
     this->gui->setPlayerNamePosition(this->playfieldPosX - this->gui->getPlayerNameSizeX() / 2, this->playerStartPosY + this->playfield->getHeight() / 2 + this->gui->getPlayerNameSizeY() * 1.4f);
+    this->gui->setTimerPosition(this->windowSizeX / 2.f, this->windowSizeY - 30.f);
 }
 
 
@@ -105,8 +105,16 @@ void Game::initConst() {
  * @brief Updates the frame of the Muffet animation. 
  */
 void Game::updateDeltaTime() {
-    this->deltaTime = clock.restart();
+    this->deltaTime = deltaClock.restart();
     this->gui->updateSprite(deltaTime);
+}
+
+
+/**
+ * @brief 
+ */
+void Game::updateTimer() {
+    this->gui->updateVisualTimer(this->clock);
 }
 
 
@@ -223,7 +231,6 @@ void Game::updateCollisionEnemy() {
             if(this->player->getBounds().findIntersection(enemy->getBounds())) {
                 this->iFrames = 0.f;
                 this->player->takeDamage(this->enemyDamage);
-                // TODO rename setSize()
                 this->gui->setSizeHPRemaining(sf::Vector2f(35.f * this->player->getHp() / this->player->getHpMax(), 30.f));
                 this->gui->setHpString(this->player->getHp());
 
@@ -450,11 +457,20 @@ Game::~Game() {
 
 
 /**
+ * @brief Get the Final Time object
+ */
+const std::string Game::getFinalTime() const {
+    return this->gui->getFinalTimer();
+}
+
+
+/**
  *  @brief The update function of the main method. Executes all update function of the game to update every frame.
  */
 void Game::update() {
     if(!gameOver) {
         this->updateDeltaTime();
+        this->updateTimer();
         this->updateInput();
         this->updateButtonCooldown();
         this->updateEnemies();

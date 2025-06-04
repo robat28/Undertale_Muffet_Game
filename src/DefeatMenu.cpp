@@ -62,6 +62,19 @@ void DefeatMenu::initIcon() {
 
 
 /**
+ * @brief Initializes the variables for the visual time string of the previous run.
+ */
+void DefeatMenu::initFinalTime() {
+    this->finalTime = std::make_unique<sf::Text>(this->font);
+    this->finalTime->setString("00:00:00"); 
+    this->finalTime->setCharacterSize(20);
+
+    this->finalTime->setPosition({this->window->getSize().x / 2 - this->finalTime->getGlobalBounds().size.x / 2, this->gameOverText_BOTTOM->getPosition().y + this->gameOverText_BOTTOM->getGlobalBounds().size.y + 25.f});
+    this->finalTime->setFillColor({128,128,128,255});
+}
+
+
+/**
  * @brief Loads the font of the defeat menu text. Returns error message if it can not find the directory.
  */
 void DefeatMenu::loadFont() {
@@ -109,6 +122,7 @@ void DefeatMenu::render() {
     this->window->draw(*this->text_RETRY);
     this->window->draw(*this->text_EXIT);
     this->window->draw(*this->icon);
+    this->window->draw(*this->finalTime);
     this->window->display();
 }
 
@@ -144,8 +158,17 @@ DefeatMenu::DefeatMenu(std::string dataDir, sf::RenderWindow* window) {
     this->initGameOverText();
     this->initMenuText();
     this->initIcon();
+    this->initFinalTime();
 
     this->gui = new GUI(this->dataDir, this->window);
+}
+
+
+/**
+ * @brief Sets the run time after the player lost the game. 
+ */
+void DefeatMenu::setTime(const std::string& time) {
+    this->finalTime->setString(time);
 }
 
 
