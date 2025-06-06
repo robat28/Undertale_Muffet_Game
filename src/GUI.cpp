@@ -76,7 +76,7 @@ void GUI::initHealthBar() {
 void GUI::initPlayerName() {
     this->playerName = std::make_unique<sf::Text>(this->font);
     this->playerName->scale({0.7f, 0.7f});
-    this->playerName->setString("FRISK");
+    this->playerName->setString("FRISK    LV1");
 }
 
 

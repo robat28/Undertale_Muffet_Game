@@ -19,7 +19,9 @@ class Menu : public cScreen{
         std::unique_ptr<sf::Text> text_PLAY;
         std::unique_ptr<sf::Text> text_QUIT;
         std::unique_ptr<sf::Text> text_SCORES;
+        std::unique_ptr<sf::Text> version;
         SELECTED selected;
+        std::string versionNumber;
         int textSize;
 
         // Icon
@@ -31,6 +33,7 @@ class Menu : public cScreen{
         void initVariables();
         void initMenu();
         void initIcon();
+        void initVersion();
         void loadFont();
         void loadTexture();
         void updateSelection();

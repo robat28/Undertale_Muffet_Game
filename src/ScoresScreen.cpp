@@ -10,10 +10,12 @@
  * @brief Initializes all variables of the scores screen.
  */
 void ScoresScreen::initVariables() {
-   this->iconDistanceToText = 65.f; 
-   this->topPosition = this->window->getSize().y * 0.15f;
-   this->offsetY = 0.f;
-   this->newHighscore = false;
+    this->charSize = 25;
+    this->iconDistanceToText = 65.f; 
+    this->rankDistanceToScore = 65.f;
+    this->topPosition = this->window->getSize().y * 0.15f;
+    this->offsetY = 0.f;
+    this->newHighscore = false;
 }
 
 
@@ -25,7 +27,7 @@ void ScoresScreen::initScores() {
     this->initScoresFromFile();
     
     for(int i = 1; i < 6; i++) {
-        this->highscores[i].setCharacterSize(25);
+        this->highscores[i].setCharacterSize(this->charSize);
         this->highscores[i].setFillColor({128,128,128,255});
         this->highscores[i].setPosition({this->window->getSize().x / 2 - this->highscores[i].getGlobalBounds().size.x / 2, this->topPosition + this->offsetY});
         this->offsetY += this->highscores[i].getGlobalBounds().size.x / 3;
@@ -34,12 +36,12 @@ void ScoresScreen::initScores() {
     
     this->seperator = std::make_unique<sf::Text>(this->font);
     this->seperator->setString("---Latest Time:---");
-    this->seperator->setCharacterSize(25);
+    this->seperator->setCharacterSize(this->charSize);
     this->seperator->setPosition({this->window->getSize().x / 2 - this->seperator->getGlobalBounds().size.x / 2, this->topPosition + this->offsetY});
     this->offsetY += this->highscores[1].getGlobalBounds().size.x / 3;
 
     // The latest time
-    this->highscores[0].setCharacterSize(25);
+    this->highscores[0].setCharacterSize(this->charSize);
     this->highscores[0].setFillColor({128,128,128,255});
     this->highscores[0].setPosition({this->window->getSize().x / 2 - this->highscores[0].getGlobalBounds().size.x / 2, this->topPosition + this->offsetY});
     this->offsetY += this->highscores[1].getGlobalBounds().size.x / 3;
@@ -60,6 +62,20 @@ void ScoresScreen::initScoresFromFile() {
         }
         file.close();
     } else std::cout << "Unable to open scores.txt";
+}
+
+
+/**
+ * @brief Initializes the viusal ranks on the screen.
+ */
+void ScoresScreen::initRankingText() {
+    for (int i = 1; i < 6; i++) {
+        sf::Text rank(this->font);
+        rank.setString(std::to_string(i) + ".");
+        rank.setCharacterSize(this->charSize);
+        rank.setPosition({this->highscores[i].getPosition().x - this->rankDistanceToScore, this->highscores[i].getPosition().y});
+        this->rankings.push_back(rank);
+    }
 }
 
 
@@ -177,9 +193,8 @@ void ScoresScreen::updateHighscores(const std::string& time) {
  */
 void ScoresScreen::render() {
     this->window->clear();
-    for(sf::Text score : this->highscores) {
-        this->window->draw(score);
-    }
+    for(sf::Text rank: this->rankings) {this->window->draw(rank);}
+    for(sf::Text score : this->highscores) {this->window->draw(score);}
     this->window->draw(*this->seperator);
     this->window->draw(*this->text_EXIT);
     this->window->draw(*this->icon);
@@ -204,6 +219,7 @@ ScoresScreen::ScoresScreen(std::string dataDir, sf::RenderWindow* window) {
 
     this->initVariables();
     this->initScores();
+    this->initRankingText();
     this->initExitText();
     this->initIcon();
 }
@@ -222,9 +238,6 @@ int ScoresScreen::Run() {
             // Key pressed
             if (const auto* keyPressed = evnt->getIf<sf::Event::KeyPressed>()) {
                 switch (keyPressed->scancode) {
-                    // Close Programm (Escape)
-                    case sf::Keyboard::Scancode::Escape:
-                        return (-1);
                     // Go back to the main menu
                     case sf::Keyboard::Scancode::Enter:
                         return (0);

@@ -19,7 +19,9 @@ class ScoresScreen : public cScreen {
         sf::Font font;
         std::unique_ptr<sf::Text> text_EXIT;
         std::unique_ptr<sf::Text> seperator;
+        int charSize;
         float iconDistanceToText;
+        float rankDistanceToScore;
         float topPosition;
         float offsetY;
 
@@ -29,13 +31,14 @@ class ScoresScreen : public cScreen {
 
         // Highscores
         std::vector<sf::Text> highscores;
+        std::vector<sf::Text> rankings;
         bool newHighscore;
 
         // Private Functions
         void initVariables();
         void initScores();
         void initScoresFromFile();
-        void initLatestTime();
+        void initRankingText();
         void initExitText();
         void initIcon();
         void loadFont();

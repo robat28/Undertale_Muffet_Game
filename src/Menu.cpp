@@ -12,6 +12,7 @@ void Menu::initVariables() {
     this->textSize = 40;
     this->selected = PLAY;
     this->iconDistanceToText = 65.f;
+    this->versionNumber = "1.0.0";
 }
 
 
@@ -45,6 +46,19 @@ void Menu::initIcon() {
 
     this->icon->setOrigin({this->icon->getGlobalBounds().size.x / 2, this->icon->getGlobalBounds().size.y / 2});
     this->icon->setPosition({this->text_PLAY->getPosition().x - this->text_PLAY->getGlobalBounds().size.x / 2, this->text_PLAY->getPosition().y - this->icon->getGlobalBounds().size.y / 2});
+}
+
+
+/**
+ * @brief Initializes the version number on the bottom right of the screen.
+ */
+void Menu::initVersion() {
+    this->version = std::make_unique<sf::Text>(this->font);
+    this->version->setString(this->versionNumber);
+    this->version->setCharacterSize(this->textSize / 4);
+    this->version->setFillColor({128,128,128,255});
+
+    this->version->setPosition({this->window->getSize().x - 1.5f*this->version->getGlobalBounds().size.x, this->window->getSize().y - 2*this->version->getGlobalBounds().size.y});
 }
 
 
@@ -92,6 +106,7 @@ void Menu::render() {
     this->window->draw(*this->text_PLAY);
     this->window->draw(*this->text_QUIT);
     this->window->draw(*this->text_SCORES);
+    this->window->draw(*this->version);
     this->window->draw(*this->icon);
 
     this->window->display();
@@ -116,6 +131,7 @@ Menu::Menu(std::string dataDir, sf::RenderWindow *window) {
     this->initVariables();
     this->initMenu();
     this->initIcon();
+    this->initVersion();
 }
 
 
@@ -135,10 +151,8 @@ int Menu::Run() {
             // Key pressed
             if (const auto* keyPressed = evnt->getIf<sf::Event::KeyPressed>()) {
                 switch (keyPressed->scancode) {
-                    // Close Programm (Escape)
-                    case sf::Keyboard::Scancode::Escape:
-                        return (-1);
                     case sf::Keyboard::Scancode::W:
+                    case sf::Keyboard::Scancode::Up:
                         if(this->selected == QUIT)
                             this->selected =  PLAY;
                         else if(this->selected == SCORES) {
@@ -146,6 +160,7 @@ int Menu::Run() {
                         } 
                         break;
                     case sf::Keyboard::Scancode::S:
+                    case sf::Keyboard::Scancode::Down:
                         if(this->selected == PLAY)
                             this->selected =  QUIT;
                         else if(this->selected == QUIT) {

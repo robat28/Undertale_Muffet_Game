@@ -50,7 +50,7 @@ int GameScreen::Run() {
             if (const auto* keyPressed = evnt->getIf<sf::Event::KeyPressed>()) {
                 switch (keyPressed->scancode) {
                     case sf::Keyboard::Scancode::Escape:
-                        return (-1);
+                        return (0);
                     default:
                         break;
                 }

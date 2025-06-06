@@ -69,7 +69,7 @@ void DefeatMenu::initFinalTime() {
     this->finalTime->setString("00:00:00"); 
     this->finalTime->setCharacterSize(20);
 
-    this->finalTime->setPosition({this->window->getSize().x / 2 - this->finalTime->getGlobalBounds().size.x / 2, this->gameOverText_BOTTOM->getPosition().y + this->gameOverText_BOTTOM->getGlobalBounds().size.y + 25.f});
+    this->finalTime->setPosition({this->window->getSize().x / 2 - this->finalTime->getGlobalBounds().size.x / 2, this->gameOverText_BOTTOM->getPosition().y + this->gameOverText_BOTTOM->getGlobalBounds().size.y + 35.f});
     this->finalTime->setFillColor({128,128,128,255});
 }
 
@@ -107,7 +107,7 @@ void DefeatMenu::setGameOverTextPosition(const float& x, const float& y) {
  * @brief Helper method to easier set the position of the menu text. 
  */
 void DefeatMenu::setMenuTextPosition(const float& x, const float& y) {
-    this->text_RETRY->setPosition(sf::Vector2f(x / 2 - this->text_RETRY->getGlobalBounds().size.x / 2, y * 0.7f));
+    this->text_RETRY->setPosition(sf::Vector2f(x / 2 - this->text_RETRY->getGlobalBounds().size.x / 2, y * 0.725f));
     this->text_EXIT->setPosition(sf::Vector2f(x / 2 - this->text_EXIT->getGlobalBounds().size.x / 2, y * 0.85f));
 }
 
@@ -188,16 +188,15 @@ int DefeatMenu::Run() {
             // Key pressed
             if (const auto* keyPressed = evnt->getIf<sf::Event::KeyPressed>()) {
                 switch (keyPressed->scancode) {
-                    // Close Programm (Escape)
-                    case sf::Keyboard::Scancode::Escape:
-                        return (-1);
                     // Go up (W)
                     case sf::Keyboard::Scancode::W:
+                    case sf::Keyboard::Scancode::Up:
                         if(selected == EXIT)
                             selected = RETRY;
                         break;
                     // Go down (S)
                     case sf::Keyboard::Scancode::S:
+                    case sf::Keyboard::Scancode::Down:
                         if(selected == RETRY)
                         selected = EXIT;
                         break;

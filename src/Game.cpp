@@ -73,7 +73,7 @@ void Game::initGUI() {
     this->gui->setSpritePosition(this->spritePosX, this->spritePosY);
 
     this->gui->setHPBarPosition(this->playfieldPosX + this->playfield->getWidth() / 4.f, this->playerStartPosY + this->playfield->getHeight() / 2.f + 25.f);
-    this->gui->setPlayerNamePosition(this->playfieldPosX - this->gui->getPlayerNameSizeX() / 2, this->playerStartPosY + this->playfield->getHeight() / 2 + this->gui->getPlayerNameSizeY() * 1.4f);
+    this->gui->setPlayerNamePosition(this->playfieldPosX - this->gui->getPlayerNameSizeX() / 1.33f, this->playerStartPosY + this->playfield->getHeight() / 2 + this->gui->getPlayerNameSizeY() * 1.4f);
     this->gui->setTimerPosition(this->windowSizeX / 2.f, this->windowSizeY - 30.f);
 }
 
@@ -111,7 +111,7 @@ void Game::updateDeltaTime() {
 
 
 /**
- * @brief 
+ * @brief Updates the timer shown on the screen
  */
 void Game::updateTimer() {
     this->gui->updateVisualTimer(this->clock);
@@ -129,15 +129,15 @@ void Game::updateInput() {
     // Can move only if your alive
     if(this->player->getHp() > 0.f) {
         // Moving LEFT
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::A)) {
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Left)) {
             this->player->move(-1.f, 0.f);
         } 
         // Moving RIGHT
-        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::D)) {
+        else if((sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Right))) {
                 this->player->move(1.f, 0.f);
         }
         // Moving UP
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::W) && this->canPressButton()) {
+        if((sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Up)) && this->canPressButton()) {
             switch(this->player->getCurrentLevel()) {
                 case TOP: 
                     break;
@@ -154,7 +154,7 @@ void Game::updateInput() {
             }
         }
         // Moving DOWN
-        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::S) && this->canPressButton())  {
+        else if((sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Down)) && this->canPressButton())  {
             switch(this->player->getCurrentLevel()) {
                 case TOP: 
                     this->player->setNewLevel(MIDDLE);
