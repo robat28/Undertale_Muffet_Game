@@ -4,6 +4,7 @@
 #include "Menu.hpp"
 #include "GameScreen.hpp"
 #include "DefeatMenu.hpp"
+#include "ScoresScreen.hpp"
 
 
 int main(int argc, char** argv) {
@@ -42,6 +43,7 @@ int main(int argc, char** argv) {
      */
     Menu menu(dataDir, window);
     GameScreen gamescreen(dataDir, window);
+    ScoresScreen scorescreen(dataDir, window);
     DefeatMenu defMenu(dataDir, window);
     std::vector<cScreen*> screens;
     int screen = 0;
@@ -49,17 +51,17 @@ int main(int argc, char** argv) {
 
     screens.push_back(&menu);
     screens.push_back(&gamescreen);
+    screens.push_back(&scorescreen);
     screens.push_back(&defMenu);
 
     // Runs application until it returns -1.
     while(screen >= 0) {
         // Delivers the time of the previous run to the defeat menu and to the scores screen.
-        if(screen == 2) {
+        if(screen == 3) {
             currentTime = gamescreen.getTime();
             defMenu.setTime(currentTime);
-            // TODO Scores
+            scorescreen.deliverTime(currentTime);
         }
-
         screen = screens[screen]->Run();
     }
 

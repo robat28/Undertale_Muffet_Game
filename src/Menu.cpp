@@ -31,8 +31,8 @@ void Menu::initMenu() {
 
     this->text_SCORES = std::make_unique<sf::Text>(this->font);
     this->text_SCORES->setString("Scores");
-    this->text_SCORES->setCharacterSize(this->textSize * 0.75f);
-    this->text_SCORES->setPosition(sf::Vector2f(this->window->getSize().x / 2 - this->text_SCORES->getGlobalBounds().size.x / 2, this->window->getSize().y * 0.9f));
+    this->text_SCORES->setCharacterSize(this->textSize * 0.5f);
+    this->text_SCORES->setPosition(sf::Vector2f(this->window->getSize().x / 2 - this->text_SCORES->getGlobalBounds().size.x / 2, this->window->getSize().y * 0.85f));
 }
 
 
@@ -160,8 +160,7 @@ int Menu::Run() {
                             // Quit
                             return (-1);
                         } else if(this->selected == 2) {
-                            // Scores TODO
-                            //return (2);
+                            return (2);
                         }
                         break;
                     default:
