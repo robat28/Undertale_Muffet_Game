@@ -60,7 +60,7 @@ int GameScreen::Run() {
 
         if(this->game->switchToDFScreen) {
             this->time = this->game->getFinalTime();
-            return (2);
+            return (3);
         }
         
         this->game->update();
