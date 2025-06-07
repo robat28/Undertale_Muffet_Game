@@ -34,11 +34,10 @@ void Game::initVariables() {
     this->iFrames = iFramesMax;
     this->impactFrames = 0.f;
     // Spawner
-    this->spawnTimerMax = 15.f;
+    this->spawnTimerMax = 30.f;
     this->spawnTimer = 0.f;
     // Enemy
     this->enemyDamage = 4.f;
-    std::vector<Enemy*> enemies = {};
     // Deafeat Variables
     this->defeatFlag = NORMAL;
     this->gameOverTimer = 0;
@@ -262,10 +261,10 @@ void Game::updateButtonCooldown() {
  * @brief Updates the spawning and moving of enemeis.
  */
 void Game::updateEnemies() {
-    this->spawnTimer += 0.5f;
+    this->spawnTimer += 1.f;
     if(this->spawnTimer >= this->spawnTimerMax) {
         this->spawnTimer = 0.f;
-        this->spawner->spawnEnemiesRandom(this->window, this->playfield, this->dataDir);
+        this->spawner->spawn();
     }
     this->moveEnemy();
 }
@@ -430,14 +429,15 @@ Game::Game(std::string dataDir, sf::RenderWindow *window) {
     this->playfield = new Playfield();
     this->gui = new GUI(this->dataDir, this->window);
     this->player = new Player(this->dataDir);
-    this->spawner = new Spawner();
-
+    
     this->initVariables();
     this->initPlayfield();
     this->initPlayer();
     this->initGUI();
+    
+    this->spawner = new Spawner(this->dataDir, this->window, this->playfield);
+    
     this->initConst();
-
     this->gui->playMusic();
 }
 
@@ -492,7 +492,7 @@ void Game::render() {
     if(!gameOver) {
         this->playfield->render(*this->window);
         this->gui->render();
-        this->spawner->render(*this->window);
+        this->spawner->render();
         this->player->render(*this->window);
     } else {
         this->player->render(*this->window);
