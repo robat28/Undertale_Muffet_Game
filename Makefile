@@ -8,7 +8,7 @@ SRC = src/main.cpp src/Game.cpp src/Player.cpp src/Enemy.cpp src/Playfield.cpp s
 LFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 # Standard c++ flags (Default c++17)
-FLAGS = -o bin/main -I./include -stdlib=libc++ -std=c++17
+FLAGS = -o bin/Muffet_Game -I./include -stdlib=libc++ -std=c++17
 
 main: $(SRC) bin
 	$(CXX) $(SRC) $(LFLAGS) $(FLAGS) 
