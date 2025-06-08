@@ -11,7 +11,6 @@
  */
 void Enemy::initVariables() {
     this->spriteSize = 30.f;
-    this->movementSpeed = 7.f;
 }
 
 
@@ -50,8 +49,10 @@ Enemy::Enemy() {
 /**
  * @brief Constructor of Enemy.
  */
-Enemy::Enemy(float x, float y, const int spawnPosition, std::string dataDir) {
+Enemy::Enemy(std::string dataDir, const float& x, const float& y, const int& spawnPosition, const float& movementSpeed) {
     this->dataDir = dataDir;
+    this->spawnPosition = spawnPosition;
+    this->movementSpeed = movementSpeed;
 
     this->loadTexture();
 
@@ -59,7 +60,6 @@ Enemy::Enemy(float x, float y, const int spawnPosition, std::string dataDir) {
     this->initSprite();
     
     this->sprite->setPosition({x,y});
-    this->spawnPosition = spawnPosition;
 }
 
 
@@ -90,8 +90,16 @@ const int Enemy::getSpawnPoint() const{
 /**
  * @brief Set the position of the enemy at (x, y).
  */
-void Enemy::setPosition(const float x, const float y) {
+void Enemy::setPosition(const float& x, const float& y) {
     this->sprite->setPosition({x,y});
+}
+
+
+/**
+ * @brief Sets the speed of the enemy
+ */
+void Enemy::setSpeed(const float& x) {
+    this->movementSpeed = x;
 }
 
 

@@ -10,11 +10,17 @@
   * @brief Initializes all variables of spawner.
   */
 void Spawner::initVariables() {
-    this->eventTimerMax = 19;
+    this->eventTimerMax = 18;
     this->eventTimer = 0;
+    this->penTimer = 0;
+    this->penTimerMax = 1;
     this->spawnPosX = 0.f;
     this->spawnPosY = 0.f;
     this->randomEvent = SINGLE;
+    this->latestEvent = SINGLE;
+    this->speedIncrease = 0.f;
+    this->outsideSpawn = true;
+    this->penalty = false;
 }
 
 
@@ -91,11 +97,44 @@ void Spawner::render() {
  * @brief Spawner method called by Game.cpp. Generall call to spawn an enemy.
  */
 void Spawner::spawn() {
+    // Updates the event
     if(this->eventTimer >= this->eventTimerMax) {
         this->eventTimer = 0;
-        this->randomEvent = rand() % size;
+        this->speedIncrease += 0.1f;
+
+        // Checks for repetition. One event should not repeat back to back.
+        int r = std::rand() % (size - 1);
+        this->randomEvent = (r >= this->latestEvent) ? (r + 1) : r;
+
+        // Handles changes of enemies for each events.
+        switch(this->latestEvent) {
+            case SINGLE:
+                this->penTimerMax = 0;
+                break;
+            case PAIR:
+                this->penTimerMax = 2;
+                break;
+            case LANE:
+                this->outsideSpawn = true;
+                this->penTimerMax = 3;
+                break;
+        }
+
+        this->latestEvent = this->randomEvent;
+        this->penalty = true;
     }
-    this->spawnEnemies(randomEvent);
+
+    // Adds a spawn penalty for each event, so it doesnt spawn enemys directly after changing events.
+    if(!this->penalty) {
+        this->spawnEnemies(this->randomEvent);
+    } else {
+        if(this->penTimer >= this->penTimerMax) {
+            this->penTimer = 0;
+            this->penalty = false;
+        }
+        this->penTimer += 1;
+    }
+
     this->eventTimer += 1;
 }
 
@@ -105,23 +144,21 @@ void Spawner::spawn() {
  */
 void Spawner::spawnEnemies(int& event) {
     switch (event) {
-    case SINGLE:
-        this->spawnSingleEnemy();
-        break;
-    case PAIR:
-        this->spawnEnemyPair();
-        break;
-    default:
-        break;
+        case SINGLE: this->spawnSingleEnemy(); break;
+        case PAIR: this->spawnEnemyPair(); break;
+        case LANE: this->spawnEnemiesLane(); break;
+        default: break;
     }
 }
 
 
 /**
- * @brief Spawns single enemy on one of the 6 spawn points.
+ * @brief Spawns single enemy on one of the 6 spawn points. // change speed
  */
 void Spawner::spawnSingleEnemy() {
     int randomPosition = rand() % 6 + 1;
+    this->movementSpeed = 7.f + this->speedIncrease;
+
     if((randomPosition % 2) == 1) {
         // Left spawn
         this->spawnPosX = this->spawnPointsX[0];
@@ -132,16 +169,39 @@ void Spawner::spawnSingleEnemy() {
         this->spawnPosY = this->spawnPointsY[(randomPosition/2) - 1];
     }
 
-    Enemy* newEnemy = new Enemy(this->spawnPosX, this->spawnPosY, randomPosition, this->dataDir);
+    Enemy* newEnemy = new Enemy(this->dataDir, this->spawnPosX, this->spawnPosY, randomPosition, this->movementSpeed);
     this->enemies.push_back(newEnemy);
 }
 
 
 /**
- * @brief Spawns two enemies next to each other.
+ * @brief Spawns single enemy on given conditions.  // change speed
+ */
+void Spawner::spawnSingleEnemy(int& position, float& speed) {
+    this->movementSpeed = speed + this->speedIncrease;
+
+    if((position % 2) == 1) {
+        // Left spawn
+        this->spawnPosX = this->spawnPointsX[0];
+        this->spawnPosY = this->spawnPointsY[(position-1) / 2];
+    } else {
+        // Right spawn 
+        this->spawnPosX = this->spawnPointsX[1];
+        this->spawnPosY = this->spawnPointsY[(position/2) - 1];
+    }
+
+    Enemy* newEnemy = new Enemy(this->dataDir, this->spawnPosX, this->spawnPosY, position, this->movementSpeed);
+    this->enemies.push_back(newEnemy);
+}
+
+
+/**
+ * @brief Spawns two enemies next to each other. // change speed
  */
 void Spawner::spawnEnemyPair() {
     int randomPosition = rand() % 4 + 1;
+    this->movementSpeed = 5.f + this->speedIncrease/2;
+
     for(int i = 0; i < 2; i++) {
         if((randomPosition % 2) == 1) {
             // Left spawn
@@ -153,10 +213,82 @@ void Spawner::spawnEnemyPair() {
             this->spawnPosY = this->spawnPointsY[(randomPosition/2) - 1 + i];
         }
 
-        Enemy* newEnemy = new Enemy(this->spawnPosX, this->spawnPosY, randomPosition, this->dataDir);
+        Enemy* newEnemy = new Enemy(this->dataDir, this->spawnPosX, this->spawnPosY, randomPosition, this->movementSpeed);
         this->enemies.push_back(newEnemy);
     }
 }
+
+
+/**
+ * @brief Spawns enemies on top and bottom which create gaps and faster enemies in the middle.
+ */
+void Spawner::spawnEnemiesLane() {
+    if(this->outsideSpawn) {
+        int position1 = 2;
+        int position2 = 6;
+        this->movementSpeed = 3.f + this->speedIncrease/2;
+
+        // Top Enemy
+        this->spawnPosX = this->spawnPointsX[1];
+        this->spawnPosY = this->spawnPointsY[0];
+        Enemy* newEnemy1 = new Enemy(this->dataDir, this->spawnPosX, this->spawnPosY, position1, this->movementSpeed);
+        this->enemies.push_back(newEnemy1);
+
+        // Bottom Enemy
+        this->spawnPosX = this->spawnPointsX[1];
+        this->spawnPosY = this->spawnPointsY[2];
+        Enemy* newEnemy2 = new Enemy(this->dataDir, this->spawnPosX, this->spawnPosY, position1, this->movementSpeed);
+        this->enemies.push_back(newEnemy2);
+
+        this->outsideSpawn = false;
+
+    } else {
+        int position = 3;
+        this->movementSpeed = 7.f + this->speedIncrease;
+
+        this->spawnPosX = this->spawnPointsX[0];
+        this->spawnPosY = this->spawnPointsY[1];
+        Enemy* newEnemy = new Enemy(this->dataDir, this->spawnPosX, this->spawnPosY, position, this->movementSpeed);
+        this->enemies.push_back(newEnemy);
+
+        this->outsideSpawn = true;
+    }
+}
+
+
+/**
+ * @brief Spawns enemy alternately at the middle and on both top and bottom.
+ */
+void Spawner::spawnEnemiesCrossed() {
+    // TODO
+}
+
+
+/**
+ * @brief Spawns less but very fast enemies.
+ */
+void Spawner::spawnSpeedyEnemy() {
+    // TODO
+}
+
+
+/**
+ * @brief Spawns enemies in such way that it creates a path between them.
+ */
+void Spawner::spawnEnemiesPath() {
+    // TODO
+}
+
+
+/**
+ * @brief Spawns four enemies on two levels and on each side one.
+ */
+void Spawner::spawnEnemiesSandwich() {
+    // TODO
+}
+
+
+
 
 
 

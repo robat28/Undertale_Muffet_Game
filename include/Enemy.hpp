@@ -28,7 +28,7 @@ class Enemy{
 
         // Constructor
         Enemy();
-        Enemy(float x, float y, const int spawnPosition, std::string dataDir);
+        Enemy(std::string dataDir, const float& x, const float& y, const int& spawnPosition, const float& movementspeed);
 
         // Getter
         const sf::FloatRect getBounds() const;
@@ -36,7 +36,8 @@ class Enemy{
         const int getSpawnPoint() const;
 
         // Setter
-        void setPosition(const float x, const float y);
+        void setPosition(const float& x, const float& y);
+        void setSpeed(const float& x);
 
         // Public Functions
         void move(const float& x, const float& y);
