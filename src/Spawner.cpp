@@ -14,6 +14,8 @@ void Spawner::initVariables() {
     this->eventTimer = 0;
     this->penTimer = 0;
     this->penTimerMax = 1;
+    this->speedTimer = 0;
+    this->speedTimerMax = 2;
     this->spawnPosX = 0.f;
     this->spawnPosY = 0.f;
     this->randomEvent = SINGLE;
@@ -21,6 +23,7 @@ void Spawner::initVariables() {
     this->speedIncrease = 0.f;
     this->outsideSpawn = true;
     this->penalty = false;
+    this->path = 1;
 }
 
 
@@ -118,6 +121,14 @@ void Spawner::spawn() {
                 this->outsideSpawn = true;
                 this->penTimerMax = 3;
                 break;
+            case SPEED:
+                this->penTimerMax = 0;
+            case PATH:
+                this->path = 1;
+                this->directionUp = false;
+                this->penTimerMax = 2;
+            default:
+                break;
         }
 
         this->latestEvent = this->randomEvent;
@@ -147,30 +158,10 @@ void Spawner::spawnEnemies(int& event) {
         case SINGLE: this->spawnSingleEnemy(); break;
         case PAIR: this->spawnEnemyPair(); break;
         case LANE: this->spawnEnemiesLane(); break;
+        case SPEED: this->spawnSpeedyEnemy(); break;
+        case PATH: this->spawnEnemiesPath(); break;
         default: break;
     }
-}
-
-
-/**
- * @brief Spawns single enemy on one of the 6 spawn points. // change speed
- */
-void Spawner::spawnSingleEnemy() {
-    int randomPosition = rand() % 6 + 1;
-    this->movementSpeed = 7.f + this->speedIncrease;
-
-    if((randomPosition % 2) == 1) {
-        // Left spawn
-        this->spawnPosX = this->spawnPointsX[0];
-        this->spawnPosY = this->spawnPointsY[(randomPosition-1) / 2];
-    } else {
-        // Right spawn 
-        this->spawnPosX = this->spawnPointsX[1];
-        this->spawnPosY = this->spawnPointsY[(randomPosition/2) - 1];
-    }
-
-    Enemy* newEnemy = new Enemy(this->dataDir, this->spawnPosX, this->spawnPosY, randomPosition, this->movementSpeed);
-    this->enemies.push_back(newEnemy);
 }
 
 
@@ -191,6 +182,28 @@ void Spawner::spawnSingleEnemy(int& position, float& speed) {
     }
 
     Enemy* newEnemy = new Enemy(this->dataDir, this->spawnPosX, this->spawnPosY, position, this->movementSpeed);
+    this->enemies.push_back(newEnemy);
+}
+
+
+/**
+ * @brief Spawns single enemy on one of the 6 spawn points. // change speed
+ */
+void Spawner::spawnSingleEnemy() {
+    int randomPosition = rand() % 6 + 1;
+    this->movementSpeed = 8.f + this->speedIncrease;
+
+    if((randomPosition % 2) == 1) {
+        // Left spawn
+        this->spawnPosX = this->spawnPointsX[0];
+        this->spawnPosY = this->spawnPointsY[(randomPosition-1) / 2];
+    } else {
+        // Right spawn 
+        this->spawnPosX = this->spawnPointsX[1];
+        this->spawnPosY = this->spawnPointsY[(randomPosition/2) - 1];
+    }
+
+    Enemy* newEnemy = new Enemy(this->dataDir, this->spawnPosX, this->spawnPosY, randomPosition, this->movementSpeed);
     this->enemies.push_back(newEnemy);
 }
 
@@ -237,14 +250,14 @@ void Spawner::spawnEnemiesLane() {
         // Bottom Enemy
         this->spawnPosX = this->spawnPointsX[1];
         this->spawnPosY = this->spawnPointsY[2];
-        Enemy* newEnemy2 = new Enemy(this->dataDir, this->spawnPosX, this->spawnPosY, position1, this->movementSpeed);
+        Enemy* newEnemy2 = new Enemy(this->dataDir, this->spawnPosX, this->spawnPosY, position2, this->movementSpeed);
         this->enemies.push_back(newEnemy2);
 
         this->outsideSpawn = false;
 
     } else {
         int position = 3;
-        this->movementSpeed = 7.f + this->speedIncrease;
+        this->movementSpeed = 8.f + this->speedIncrease;
 
         this->spawnPosX = this->spawnPointsX[0];
         this->spawnPosY = this->spawnPointsY[1];
@@ -257,18 +270,21 @@ void Spawner::spawnEnemiesLane() {
 
 
 /**
- * @brief Spawns enemy alternately at the middle and on both top and bottom.
- */
-void Spawner::spawnEnemiesCrossed() {
-    // TODO
-}
-
-
-/**
  * @brief Spawns less but very fast enemies.
  */
 void Spawner::spawnSpeedyEnemy() {
-    // TODO
+    if(this->speedTimer >= this->speedTimerMax) {
+        this->speedTimer = 0;
+        
+        // Spawns the enemy
+        int randomPosition = rand() % 6 + 1;
+        this->movementSpeed = 11.f + this->speedIncrease/2;
+
+        this->spawnSingleEnemy(randomPosition, this->movementSpeed);
+        
+    } else {
+        this->speedTimer += 1;
+    }
 }
 
 
@@ -276,16 +292,68 @@ void Spawner::spawnSpeedyEnemy() {
  * @brief Spawns enemies in such way that it creates a path between them.
  */
 void Spawner::spawnEnemiesPath() {
-    // TODO
+    this->movementSpeed = 6.f + this->speedIncrease/2;
+    // Level 1 is free
+    if(this->path == 0) {
+        int position1 = 4;
+        int position2 = 6;
+
+        // Middle Enemy
+        this->spawnPosX = this->spawnPointsX[1];
+        this->spawnPosY = this->spawnPointsY[1];
+        Enemy* newEnemy1 = new Enemy(this->dataDir, this->spawnPosX, this->spawnPosY, position1, this->movementSpeed);
+        this->enemies.push_back(newEnemy1);
+
+        // Bottom Enemy
+        this->spawnPosX = this->spawnPointsX[1];
+        this->spawnPosY = this->spawnPointsY[2];
+        Enemy* newEnemy2 = new Enemy(this->dataDir, this->spawnPosX, this->spawnPosY, position2, this->movementSpeed);
+        this->enemies.push_back(newEnemy2);
+
+        this->path = 1;
+        this->directionUp = false;
+
+    // Level 2 is free
+    } else if(this->path == 1) {
+        int position1 = 2;
+        int position2 = 6;
+
+        // Top Enemy
+        this->spawnPosX = this->spawnPointsX[1];
+        this->spawnPosY = this->spawnPointsY[0];
+        Enemy* newEnemy1 = new Enemy(this->dataDir, this->spawnPosX, this->spawnPosY, position1, this->movementSpeed);
+        this->enemies.push_back(newEnemy1);
+
+        // Bottom Enemy
+        this->spawnPosX = this->spawnPointsX[1];
+        this->spawnPosY = this->spawnPointsY[2];
+        Enemy* newEnemy2 = new Enemy(this->dataDir, this->spawnPosX, this->spawnPosY, position2, this->movementSpeed);
+        this->enemies.push_back(newEnemy2);
+
+        this->path = (this->directionUp) ? 0 : 2;
+
+    // Level 3 is free
+    } else if(this->path == 2) {
+        int position1 = 2;
+        int position2 = 4;
+
+        // Top Enemy
+        this->spawnPosX = this->spawnPointsX[1];
+        this->spawnPosY = this->spawnPointsY[0];
+        Enemy* newEnemy1 = new Enemy(this->dataDir, this->spawnPosX, this->spawnPosY, position1, this->movementSpeed);
+        this->enemies.push_back(newEnemy1);
+
+        // Middle Enemy
+        this->spawnPosX = this->spawnPointsX[1];
+        this->spawnPosY = this->spawnPointsY[1];
+        Enemy* newEnemy2 = new Enemy(this->dataDir, this->spawnPosX, this->spawnPosY, position2, this->movementSpeed);
+        this->enemies.push_back(newEnemy2);
+
+        this->path = 1;
+        this->directionUp = true;
+    }
 }
 
-
-/**
- * @brief Spawns four enemies on two levels and on each side one.
- */
-void Spawner::spawnEnemiesSandwich() {
-    // TODO
-}
 
 
 
