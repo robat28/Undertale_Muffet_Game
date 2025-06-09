@@ -1,5 +1,5 @@
 # Chose Compiler (Default clang++)
-CXX = clang++
+CXX = g++
 
 # All source files
 SRC = src/main.cpp src/Game.cpp src/Player.cpp src/Enemy.cpp src/Playfield.cpp src/GUI.cpp src/Spawner.cpp src/Menu.cpp src/DefeatMenu.cpp src/GameScreen.cpp src/ScoresScreen.cpp
