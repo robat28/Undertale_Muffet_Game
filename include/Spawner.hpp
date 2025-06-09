@@ -5,7 +5,7 @@
 #include "Playfield.hpp"
 
 // Random, double, path
-enum EVENT {SINGLE, PAIR, LANE, size};
+enum EVENT {SINGLE, PAIR, LANE, SPEED, PATH, size};
 
 class Spawner {
     private:
@@ -34,10 +34,14 @@ class Spawner {
         int eventTimerMax;
         int penTimer;
         int penTimerMax;
+        float speedTimer;
+        float speedTimerMax;
 
         // Event
         int randomEvent;
         int latestEvent;
+        int path;
+        bool directionUp;
         bool outsideSpawn;
         bool penalty;
 
@@ -61,11 +65,10 @@ class Spawner {
         // Spawner Functions
         void spawn();
         void spawnEnemies(int& event);
-        void spawnSingleEnemy();
         void spawnSingleEnemy(int& position, float& speed);
+        void spawnSingleEnemy();
         void spawnEnemyPair();
         void spawnEnemiesLane();
-        void spawnEnemiesCrossed();
         void spawnSpeedyEnemy();
         void spawnEnemiesPath();
         void spawnEnemiesSandwich();
