@@ -1,6 +1,6 @@
 # Undertale Muffet Game
 
-A fan-made recreation of the iconic Muffet boss battle from *Undertale*. This game is built using **\[C++/SFML]** and aims to recreate a bullet hell version of the boss fight.
+A fan-made recreation of the iconic Muffet boss battle from *Undertale*. This game is built using **\[C++/SFML]** and aims to recreate a time based bullet hell version of the boss fight.
 
 ---
 
@@ -10,7 +10,6 @@ A fan-made recreation of the iconic Muffet boss battle from *Undertale*. This ga
 * [Usage](#usage)
 * [Controls](#controls)
 * [Dependencies](#dependencies)
-* [Project Structure](#project-structure)
 * [Contributing](#contributing)
 * [License](#license)
 * [Contact](#contact)
@@ -136,20 +135,6 @@ By using these methods, **you avoid bloating the repo** and keep SFML versioning
 
 ---
 
-## Project Structure
-
-```
-Undertale_Muffet_Game/
-├── src/             # game source code
-├── assets/          # images, audio, fonts
-├── docs/            # documentation, screenshots
-├── config/          # configuration files
-├── builds/          # compiled binaries
-└── README.md        # this file
-```
-
----
-
 ## Contributing
 
 Contributions are welcome! To contribute:
@@ -174,4 +159,3 @@ This project is licensed under the [MIT License](LICENSE).
 
 Maintainer: **robat28**
 GitHub: [github.com/robat28](https://github.com/robat28)
-Email: [robert@example.com](mailto:robert@example.com)
