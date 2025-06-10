@@ -12,7 +12,7 @@ void Menu::initVariables() {
     this->textSize = 40;
     this->selected = PLAY;
     this->iconDistanceToText = 65.f;
-    this->versionNumber = "1.0.0";
+    this->versionNumber = "1.0.1";
 }
 
 

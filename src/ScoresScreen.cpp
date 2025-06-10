@@ -52,7 +52,7 @@ void ScoresScreen::initScores() {
  * @brief Initializes the highscore vector with the values of the file.
  */
 void ScoresScreen::initScoresFromFile() {
-    std::ifstream file("scores.txt");
+    std::ifstream file(this->dataDir + "scores.txt");
     std::string line;
     if(file) {
         while(getline(file, line)) {
@@ -127,7 +127,7 @@ void ScoresScreen::loadTexture() {
  * @brief Creating the textfile if the game has been started for the first time.
  */
 void ScoresScreen::createFile() {
-    const std::string filename = "scores.txt";
+    const std::string filename = this->dataDir + "scores.txt";
     std::ifstream check(filename);
 
     if(!check) {
@@ -176,7 +176,7 @@ void ScoresScreen::updateHighscores(const std::string& time) {
     }
     
     // Writes new time to file
-    std::ofstream file("scores.txt");
+    std::ofstream file(this->dataDir + "scores.txt");
     if(file) {  
         for (int i = 0; i < 6; ++i) {
             file << highscores[i].getString().toAnsiString() << "\n";
