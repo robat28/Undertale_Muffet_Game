@@ -14,8 +14,8 @@ void Spawner::initVariables() {
     this->eventTimer = 0;
     this->penTimer = 0;
     this->penTimerMax = 1;
-    this->speedTimer = 0;
-    this->speedTimerMax = 2;
+    this->speedTimerMax = 1;
+    this->speedTimer = this->speedTimerMax;
     this->spawnPosX = 0.f;
     this->spawnPosY = 0.f;
     this->randomEvent = SINGLE;
@@ -122,6 +122,7 @@ void Spawner::spawn() {
                 this->penTimerMax = 3;
                 break;
             case SPEED:
+                this->speedTimer = this->speedTimerMax;
                 this->penTimerMax = 0;
             case PATH:
                 this->path = 1;
