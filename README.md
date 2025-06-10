@@ -31,17 +31,17 @@ If you’re new to C++, follow these steps in order:
         pacman -S mingw-w64-x86_64-gcc
         ```
    - **macOS:**
-     1. Open Terminal and install Xcode command line tools:
+        Open Terminal and install Xcode command line tools:
         ```bash
         xcode-select --install
         ```
    - **Linux (Ubuntu/Debian):**
-     ```bash
-     sudo apt-get update
-     ```
-     ```bash
-     sudo apt-get install build-essential
-     ```
+        ```bash
+        sudo apt-get update
+        ```
+        ```bash
+        sudo apt-get install build-essential
+        ```
 
 2. **Install Make** (if not already installed)
    - **Windows (MSYS2):** included with MSYS2 above
@@ -49,19 +49,19 @@ If you’re new to C++, follow these steps in order:
    - **Linux:** part of `build-essential` on Ubuntu/Debian
 
 3. **Clone this repository**
-   ```bash
-   git clone https://github.com/robat28/Undertale_Muffet_Game.git
-   ```
-   ```bash
-   cd Undertale_Muffet_Game
-   ```
+      ```bash
+      git clone https://github.com/robat28/Undertale_Muffet_Game.git
+      ```
+      ```bash
+      cd Undertale_Muffet_Game
+      ```
    
 4. **Install SFML** (see Dependencies)
 
 5. **Build the game**
-   ```bash
-   make
-   ```
+      ```bash
+      make
+      ```
 
 ---
 
@@ -69,9 +69,9 @@ If you’re new to C++, follow these steps in order:
 
 Run the game via the engine’s play command:
 
-```bash
-bin/Muffet_Game
-```
+      ```bash
+      bin/Muffet_Game
+      ```
 
 ---
 
@@ -80,7 +80,7 @@ bin/Muffet_Game
 | Action          | Default Key |
 | --------------- | ----------- |
 | Move            | W/A/S/D     |
-| or              | Arrow keys  |
+|                 | Arrow keys  |
 | Select          | W / S       |
 | Confirm         | Enter       |
 
@@ -90,23 +90,23 @@ bin/Muffet_Game
 
 This project uses **SFML3 (Simple and Fast Multimedia Library)** for graphics, window management, and audio. To keep the repo lean, **we do not include SFML’s source or binaries** directly.
 
-### Install SFML3.0.1
+### Install SFML 3.0.1
 
 - **Download:** Download the SDK from [https://www.sfml-dev.org](https://www.sfml-dev.org) and extract.
 - **Install via package manager:**
    - **Windows (MSYS2):**
-    ```bash
-    pacman -S mingw-w64-x86_64-sfml
-    ```
+       ```bash
+       pacman -S mingw-w64-x86_64-sfml
+       ```
    - **macOS:**
-    ```bash
-    brew install sfml
-    ```
+       ```bash
+       brew install sfml
+       ```
    - **Ubuntu/Debian:**
-    ```bash
-    sudo apt-get update
-    sudo apt-get install libsfml-dev
-    ```
+       ```bash
+       sudo apt-get update
+       sudo apt-get install libsfml-dev
+       ```
 
 **Linking SFML in your Makefile** 
 todo
