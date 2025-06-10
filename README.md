@@ -22,10 +22,10 @@ If you’re new to C++, follow these steps in order:
 
 1. **Install a C++ compiler**
    - **Windows:**
-     1. Install [MSYS2](https://www.msys2.org/): follow the official guide to download and run the installer.
-     2. Open the MSYS2 MSYS terminal and run:
+     1. Install MSYS2 from [https://www.msys2.org/](https://www.msys2.org/) and follow the official guide to download and run the installer.
+     2. Open the MSYS2 MSYS terminal and run: 
         ```bash
-        pacman -Syu          # update package database
+        pacman -Syu         
         ```
         ```bash
         pacman -S mingw-w64-x86_64-gcc
@@ -67,7 +67,7 @@ If you’re new to C++, follow these steps in order:
 
 ## Usage
 
-Run the game via the engine’s play command:
+Run the game via the play command:
    ```bash
    bin/Muffet_Game
    ```
@@ -91,8 +91,8 @@ This project uses **SFML3 (Simple and Fast Multimedia Library)** for graphics, w
 
 ### Install SFML 3.0.1
 
-- **Download:** Download the SDK from [https://www.sfml-dev.org](https://www.sfml-dev.org) and extract.
-- **Install via package manager:**
+*  **Download:** Download the SDK from [https://www.sfml-dev.org](https://www.sfml-dev.org) and extract.
+*  **Install via package manager:**
    - **Windows (MSYS2):**
        ```bash
        pacman -S mingw-w64-x86_64-sfml
@@ -109,10 +109,42 @@ This project uses **SFML3 (Simple and Fast Multimedia Library)** for graphics, w
        sudo apt-get install libsfml-dev
        ```
 
-**Linking SFML in your Makefile** 
-todo
+### Linking SFML in your Makefile
 
-Adjust include/library paths if SFML is installed elsewhere.
+* Adjust include/library paths and compiler if SFML is installed elsewhere or you are using another compiler.
+
+* **Windows:** 
+   - If you installed the SFML SDK, follow the instructions of the Makefile below. 
+   - (Simply uncomment the given lines by removing the '#' and comment the default lines by writting a '#' in front of the line and add the path to your SFML library.)
+   - If you installed SFML with MSYS2: Set `SFML_HOME=/mingw64`
+```makefile
+# Choose Compiler (Default g++)
+CXX = g++
+
+# Windows users:
+# Uncomment and set SFML_HOME to your SDK path:
+# SFML_HOME = <Insert SDK path here>, e.g. C:/SFML       <-- Uncomment 
+
+...
+
+# All links to SFML modules
+LFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio # Default (cross-platform)
+
+# Windows (uncomment to use SFML_HOME):
+# LFLAGS = -L$(SFML_HOME)/lib -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio       <-- Uncomment 
+
+# Standard C++ flags (Default C++17)
+FLAGS = -o bin/Muffet_Game -I./include -std=c++17 # Default include path
+
+# Windows (uncomment to use SFML_HOME):
+# FLAGS = -o bin/Muffet_Game -I$(SFML_HOME)/include -std=c++17       <-- Uncomment 
+
+...
+```
+
+* **macOS / Linux:**
+
+   - If you installed SFML with a package manager, you don't need to change anything in the Makefile and you are ready to go on.
 
 ---
 
