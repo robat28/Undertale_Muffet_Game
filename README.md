@@ -1,6 +1,6 @@
 # Undertale Muffet Game
 
-A fan-made recreation of the iconic Muffet boss battle from *Undertale*. This game is built using **\[C++/SFML]** and aims to recreate a time based bullet hell version of the boss fight.
+A fan-made recreation of the iconic Muffet boss battle from *Undertale*. This game is built using **\[C++/SFML3]** and aims to recreate a time based bullet hell version of the boss fight.
 
 ---
 
@@ -88,13 +88,28 @@ bin/Muffet_Game
 
 ## Dependencies
 
-This project uses **SFML (Simple and Fast Multimedia Library)** for graphics, window management, and audio. To keep the repo lean, **we do not include SFML’s source or binaries** directly.
+This project uses **SFML3 (Simple and Fast Multimedia Library)** for graphics, window management, and audio. To keep the repo lean, **we do not include SFML’s source or binaries** directly.
 
-### Install via your system/package manager
+### Install SFML3.0.1
 
-* **Windows:** Download the SDK from [https://www.sfml-dev.org](https://www.sfml-dev.org) and extract; set `SFML_ROOT` to the SDK path.
-* **macOS:** `brew install sfml`
-* **Ubuntu/Debian:** `sudo apt-get install libsfml-dev`
+- **Download:** Download the SDK from [https://www.sfml-dev.org](https://www.sfml-dev.org) and extract.
+- **Install via package manager:**
+   - **Windows (MSYS2):**
+    ```bash
+    pacman -S mingw-w64-x86_64-sfml
+    ```
+   - **macOS:**
+    ```bash
+    brew install sfml
+    ```
+   - **Ubuntu/Debian:**
+    ```bash
+    sudo apt-get update
+    sudo apt-get install libsfml-dev
+    ```
+
+**Linking SFML in your Makefile** 
+todo
 
 Adjust include/library paths if SFML is installed elsewhere.
 
