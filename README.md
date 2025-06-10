@@ -68,10 +68,9 @@ If you’re new to C++, follow these steps in order:
 ## Usage
 
 Run the game via the engine’s play command:
-
-      ```bash
-      bin/Muffet_Game
-      ```
+   ```bash
+   bin/Muffet_Game
+   ```
 
 ---
 
@@ -105,6 +104,8 @@ This project uses **SFML3 (Simple and Fast Multimedia Library)** for graphics, w
    - **Ubuntu/Debian:**
        ```bash
        sudo apt-get update
+       ```
+       ```bash
        sudo apt-get install libsfml-dev
        ```
 
