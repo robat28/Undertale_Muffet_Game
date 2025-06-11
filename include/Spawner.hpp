@@ -4,7 +4,7 @@
 #include "Enemy.hpp"
 #include "Playfield.hpp"
 
-// Random, double, path
+
 enum EVENT {SINGLE, PAIR, LANE, SPEED, PATH, size};
 
 class Spawner {

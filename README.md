@@ -35,6 +35,13 @@ If you’re new to C++, follow these steps in order:
         ```bash
         xcode-select --install
         ```
+   - **Linux (Arch):**
+        ```bash
+        sudo pacman -Syu
+        ```
+        ```bash
+        sudo pacman -S base-devel
+        ```
    - **Linux (Ubuntu/Debian):**
         ```bash
         sudo apt-get update
@@ -46,7 +53,7 @@ If you’re new to C++, follow these steps in order:
 2. **Install Make** (if not already installed)
    - **Windows (MSYS2):** included with MSYS2 above
    - **macOS:** included with Xcode tools
-   - **Linux:** part of `build-essential` on Ubuntu/Debian
+   - **Linux:** part of `build-essential` on Ubuntu/Debian and `base-devel` on Arch
 
 3. **Clone this repository**
       ```bash
@@ -94,20 +101,29 @@ This project uses **SFML3 (Simple and Fast Multimedia Library)** for graphics, w
 *  **Download:** Download the SDK from [https://www.sfml-dev.org](https://www.sfml-dev.org) and extract.
 *  **Install via package manager:**
    - **Windows (MSYS2):**
-       ```bash
-       pacman -S mingw-w64-x86_64-sfml
-       ```
+      ```bash
+      pacman -S mingw-w64-x86_64-sfml
+      ```
    - **macOS:**
-       ```bash
-       brew install sfml
-       ```
+      ```bash
+      brew install sfml
+      ```
+   - **Arch:**
+      ```bash
+      sudo pacman -Syu
+      ```
+      ```bash
+      sudo pacman -S sfml
+      ```
    - **Ubuntu/Debian:**
-       ```bash
-       sudo apt-get update
-       ```
-       ```bash
-       sudo apt-get install libsfml-dev
-       ```
+      ```bash
+      sudo apt-get update
+      ```
+      ```bash
+      sudo apt-get install libsfml-dev
+      ```
+   
+
 
 ### Linking SFML in your Makefile
 
@@ -121,23 +137,23 @@ This project uses **SFML3 (Simple and Fast Multimedia Library)** for graphics, w
 # Choose Compiler (Default g++)
 CXX = g++
 
-# Windows users:
-# Uncomment and set SFML_HOME to your SDK path:
-# SFML_HOME = <Insert SDK path here>, e.g. C:/SFML       <-- Uncomment 
+# If you installed the SDK, uncomment and set SFML_HOME to your SDK path:
+#SFML_HOME = <Insert path to SDK here, e.g. C:/SFML/3.0.1>       <-- Remove '#' and insert path
 
-...
+# All source files
+SRC = src/main.cpp src/Game.cpp src/Player.cpp src/Enemy.cpp src/Playfield.cpp src/GUI.cpp src/Spawner.cpp src/Menu.cpp src/DefeatMenu.cpp src/GameScreen.cpp src/ScoresScreen.cpp
 
 # All links to SFML modules
-LFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio # Default (cross-platform)
+LFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio # Default (cross-platform)       <-- Write '#' at beginning
 
-# Windows (uncomment to use SFML_HOME):
-# LFLAGS = -L$(SFML_HOME)/lib -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio       <-- Uncomment 
+# With SDK (uncomment to use SFML_HOME):
+#LFLAGS = -L$(SFML_HOME)/lib -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio        <-- Remove '#'
 
 # Standard C++ flags (Default C++17)
-FLAGS = -o bin/Muffet_Game -I./include -std=c++17 # Default include path
+FLAGS = -o bin/Muffet_Game -I./include -std=c++17 # Default include path      <-- Write '#' at beginning
 
-# Windows (uncomment to use SFML_HOME):
-# FLAGS = -o bin/Muffet_Game -I$(SFML_HOME)/include -std=c++17       <-- Uncomment 
+# With SDK (uncomment to use SFML_HOME):
+#FLAGS = -o bin/Muffet_Game -I$(SFML_HOME)/include -I./include -std=c++17        <-- Remove '#'
 
 ...
 ```

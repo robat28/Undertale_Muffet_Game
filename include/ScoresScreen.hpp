@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <memory>
+#include <algorithm>
 
 
 class ScoresScreen : public cScreen {
