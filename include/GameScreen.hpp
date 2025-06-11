@@ -3,6 +3,7 @@
 
 #include "cScreen.hpp"
 #include "Game.hpp"
+#include <memory>
 
 
 class GameScreen : public cScreen {

@@ -4,6 +4,7 @@
 #include "cScreen.hpp"
 #include "GUI.hpp"
 #include <optional>
+#include <memory>
 
 
 enum SELECTED_DF {RETRY, EXIT};

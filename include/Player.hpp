@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <memory>
 
 
 enum LEVEL{TOP, MIDDLE, BOTTOM};

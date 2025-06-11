@@ -3,6 +3,8 @@
 
 #include "cScreen.hpp"
 #include <iostream>
+#include <memory>
+
 
 enum SELECTED {PLAY, QUIT, SCORES};
 
