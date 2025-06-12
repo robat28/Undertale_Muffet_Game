@@ -66,6 +66,15 @@ If you’re new to C++, follow these steps in order:
 4. **Install SFML** (see Dependencies)
 
 5. **Build the game**
+   - **With SDK:** insert the path to the SFML directory. It looks like this for example: "../SFML/3.0.1/".
+      ```bash
+      make SFMLPATH=<Insert path here>
+      ```
+   - **Windows (MSYS2):** 
+      ```bash
+      make SFMLPATH=/mingw64
+      ```
+   - **macOS / Linux;**
       ```bash
       make
       ```
@@ -125,42 +134,13 @@ This project uses **SFML3 (Simple and Fast Multimedia Library)** for graphics, w
    
 
 
-### Linking SFML in your Makefile
+### Other adjustments
 
-* Adjust include/library paths and compiler if SFML is installed elsewhere or you are using another compiler.
+* Adjust include/library paths if SFML is installed elsewhere.
 
-* **Windows:** 
-   - If you installed the SFML SDK, follow the instructions of the Makefile below. 
-   - (Simply uncomment the given lines by removing the '#' and comment the default lines by writting a '#' in front of the line and add the path to your SFML library.)
-   - If you installed SFML with MSYS2: Set `SFML_HOME=/mingw64`
-```makefile
-# Choose Compiler (Default g++)
-CXX = g++
+* Adjust compiler if you are using another compiler as `clang++`.
 
-# If you installed the SDK, uncomment and set SFML_HOME to your SDK path:
-#SFML_HOME = <Insert path to SDK here, e.g. C:/SFML/3.0.1>       <-- Remove '#' and insert path
-
-# All source files
-SRC = src/main.cpp src/Game.cpp src/Player.cpp src/Enemy.cpp src/Playfield.cpp src/GUI.cpp src/Spawner.cpp src/Menu.cpp src/DefeatMenu.cpp src/GameScreen.cpp src/ScoresScreen.cpp
-
-# All links to SFML modules
-LFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio # Default (cross-platform)       <-- Write '#' at beginning
-
-# With SDK (uncomment to use SFML_HOME):
-#LFLAGS = -L$(SFML_HOME)/lib -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio        <-- Remove '#'
-
-# Standard C++ flags (Default C++17)
-FLAGS = -o bin/Muffet_Game -I./include -std=c++17 # Default include path      <-- Write '#' at beginning
-
-# With SDK (uncomment to use SFML_HOME):
-#FLAGS = -o bin/Muffet_Game -I$(SFML_HOME)/include -I./include -std=c++17        <-- Remove '#'
-
-...
-```
-
-* **macOS / Linux:**
-
-   - If you installed SFML with a package manager, you don't need to change anything in the Makefile and you are ready to go on.
+Simply open the Makefile and change the values of the variables.
 
 ---
 
