@@ -1,29 +1,51 @@
-# Choose Compiler (Default g++)
-CXX = g++
+########################################################################
+#  Project & build settings
+########################################################################
+TARGET := Muffet_Game
+OUT := bin/$(TARGET)
+BUILDDIR := bin/build
+SFMLPATH ?=
 
-# If you installed the SDK, uncomment and set SFML_HOME to your SDK path:
-#SFML_HOME = <Insert path to SDK here, e.g. C:/SFML/3.0.1>
+# ----- toolchain & flags ----------------------------------------------
+CXX := g++
+CPPFLAGS ?= -I./include 
+CXXFLAGS ?= -MMD -MP -Wall -pedantic -O2 -std=c++17 
+LDFLAGS ?= -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
-# All source files
-SRC = src/main.cpp src/Game.cpp src/Player.cpp src/Enemy.cpp src/Playfield.cpp src/GUI.cpp src/Spawner.cpp src/Menu.cpp src/DefeatMenu.cpp src/GameScreen.cpp src/ScoresScreen.cpp
+ifneq ($(SFMLPATH),)
+CPPFLAGS += -I$(SFMLPATH)/include
+LDFLAGS := -L$(SFMLPATH)/lib $(LDFLAGS)
+endif	
 
-# All links to SFML modules
-LFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio # Default (cross-platform)
+# ----- file lists ------------------------------------------------------
+SRC := $(wildcard src/*.cpp)
+OBJ := $(patsubst src/%.cpp,$(BUILDDIR)/%.o,$(SRC))
+DEP := $(OBJ:.o=.d)
 
-# With SDK (uncomment to use SFML_HOME):
-#LFLAGS = -L$(SFML_HOME)/lib -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
+########################################################################
+#  Build rules
+########################################################################
+all: $(OUT)
 
-# Standard C++ flags (Default C++17)
-FLAGS = -o bin/Muffet_Game -I./include -std=c++17 # Default include path
+# ----- link ------------------------------------------------------------
+$(OUT): $(OBJ) | bin
+	$(CXX) $(OBJ) $(LDFLAGS) -o "$@"
 
-# With SDK (uncomment to use SFML_HOME):
-#FLAGS = -o bin/Muffet_Game -I$(SFML_HOME)/include -I./include -std=c++17
+# ----- compile ---------------------------------------------------------
+$(BUILDDIR)/%.o: src/%.cpp | $(BUILDDIR)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c "$<" -o "$@"
 
-main: $(SRC) bin
-	$(CXX) $(SRC) $(FLAGS) $(LFLAGS) 
+# ----- on-demand directories -------------------------------------------
+bin $(BUILDDIR):
+	mkdir -p $@
 
-bin:
-	mkdir -p bin
+########################################################################
+#  House-keeping
+########################################################################
+clean: 
+	rm -rf bin
 
-clean:
-	rm -r bin
+.PHONY: all clean
+
+# ----- include auto-generated header dependency files (ignore if missing)
+-include $(DEP)

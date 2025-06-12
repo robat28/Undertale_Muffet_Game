@@ -48,7 +48,6 @@ class Game {
         float playerStartPosX;
         float playerStartPosY;
         float playerPositionX;
-        float playerPositionY;
         float impactFrames;
         int iFrames;
         int iFramesMax;
